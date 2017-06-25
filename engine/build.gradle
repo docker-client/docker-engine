@@ -4,7 +4,6 @@ buildscript {
     repositories {
         mavenLocal()
         jcenter()
-        // testutil
         maven { url "https://plugins.gradle.org/m2/" }
         mavenCentral()
     }
@@ -29,7 +28,6 @@ ext {
 repositories {
     mavenLocal()
     jcenter()
-    maven { url "http://dl.bintray.com/gesellix/docker-utils" }
     maven { url "http://dl.bintray.com/jetbrains/spek" }
     mavenCentral()
 }
