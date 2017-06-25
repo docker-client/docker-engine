@@ -32,7 +32,7 @@ class OkDockerClientIntegrationSpec extends Specification {
         then:
         response.content.last() in [
                 [status: "Status: Image is up to date for ${CONSTANTS.imageName}".toString()],
-                [status: "Downloaded newer image for ${CONSTANTS.imageName}".toString()]
+                [status: "Status: Downloaded newer image for ${CONSTANTS.imageName}".toString()]
         ]
     }
 
