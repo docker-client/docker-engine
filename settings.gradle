@@ -1,1 +1,3 @@
 rootProject.name = 'docker-engine'
+include 'engine'
+include 'integrationtest'

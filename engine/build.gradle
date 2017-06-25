@@ -1,0 +1,129 @@
+import java.text.SimpleDateFormat
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        // testutil
+        maven { url "https://plugins.gradle.org/m2/" }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4"
+        classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
+    }
+}
+
+
+//apply plugin: "org.junit.platform.gradle.plugin"
+apply plugin: "net.ossindex.audit"
+apply plugin: "maven-publish"
+apply plugin: "com.jfrog.bintray"
+
+ext {
+    bintrayDryRun = false
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven { url "http://dl.bintray.com/gesellix/docker-utils" }
+    maven { url "http://dl.bintray.com/jetbrains/spek" }
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy:2.4.11'
+    compile 'org.codehaus.groovy:groovy-json:2.4.11'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
+
+    compile 'com.squareup.okio:okio:1.13.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.8.1'
+
+    compile 'org.apache.commons:commons-compress:1.14'
+
+    compile 'de.gesellix:docker-filesocket:2017-06-24T14-21-18'
+    testCompile 'de.gesellix:testutil:2017-06-25T08-04-50'
+
+    compile 'org.bouncycastle:bcpkix-jdk15on:1.57'
+
+    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+        exclude module: 'groovy-all'
+    }
+    testCompile 'cglib:cglib-nodep:3.2.5'
+
+    testCompile 'commons-lang:commons-lang:2.6'
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+
+    testCompile "org.jetbrains.kotlin:kotlin-test"
+    testCompile("org.jetbrains.spek:spek-api:1.1.2") {
+//    testCompile("org.jetbrains.spek:spek-api:$kotlin_version") {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:1.1.2") {
+//    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:$kotlin_version") {
+        exclude group: 'org.junit.platform'
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-M4"
+}
+
+//junitPlatform {
+//    filters {
+//        engines {
+//            include 'spek'
+//        }
+//    }
+//}
+
+task sourcesJar(type: Jar) {
+    dependsOn classes
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+test {
+    // minimal way of providing a special environment variable for the EnvFileParserTest
+    environment "A_KNOWN_VARIABLE", "my value"
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        engineClient(MavenPublication) {
+            artifactId 'docker-engine'
+            version artifactVersion
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
+
+bintray {
+    user = System.env.BINTRAY_USER ?: project["bintray.user"]
+    key = System.env.BINTRAY_API_KEY ?: project["bintray.key"]
+    publications = ['engineClient']
+    pkg {
+        repo = 'docker-utils'
+        name = 'engine-client'
+        desc = 'Bare HTTP client for the Docker engine api'
+        licenses = ['MIT']
+        labels = ['docker', 'engine api', 'remote api', 'http', 'client', 'java', 'kotlin']
+        version = [
+                name: artifactVersion
+        ]
+        vcsUrl = 'https://github.com/docker-client/docker-engine.git'
+    }
+    dryRun = bintrayDryRun
+}
+bintrayUpload.dependsOn build

@@ -10,7 +10,7 @@ script:
 - "./gradlew clean build --stacktrace --info -Dscan"
 deploy:
   provider: script
-  script: "./gradlew bintrayUpload -x check --info --stacktrace"
+  script: "./gradlew :engine:bintrayUpload -x check --info --stacktrace"
   skip_cleanup: true
   on:
     branch: master

@@ -1,0 +1,35 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'groovy'
+
+repositories {
+    mavenLocal()
+    jcenter()
+    // testutil, docker-engine
+    maven { url "http://dl.bintray.com/gesellix/docker-utils" }
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':engine')
+
+    testCompile 'net.jodah:failsafe:1.0.4'
+
+    runtime 'ch.qos.logback:logback-classic:1.2.3'
+
+    testCompile 'de.gesellix:testutil:2017-06-25T08-04-50'
+    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+        exclude module: 'groovy-all'
+    }
+    testCompile 'cglib:cglib-nodep:3.2.5'
+    testCompile 'commons-lang:commons-lang:2.6'
+    testCompile 'joda-time:joda-time:2.9.9'
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
+}
+check.shouldRunAfter ':engine:check'
