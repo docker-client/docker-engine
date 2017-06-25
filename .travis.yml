@@ -1,0 +1,15 @@
+sudo: false
+language: java
+jdk:
+- oraclejdk8
+env:
+  global:
+  - TERM=dumb
+script:
+- "./gradlew clean build --stacktrace --info -Dscan"
+deploy:
+  provider: script
+  script: "./gradlew bintrayUpload -x check --info --stacktrace"
+  skip_cleanup: true
+  on:
+    branch: master

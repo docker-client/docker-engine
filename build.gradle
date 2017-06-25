@@ -1,0 +1,140 @@
+import java.text.SimpleDateFormat
+
+buildscript {
+    ext {
+        kotlin_version = "1.1.3"
+    }
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven { url = "https://plugins.gradle.org/m2/" }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.15.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4"
+        classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
+    }
+}
+
+ext {
+    artifactVersion = new SimpleDateFormat('yyyy-MM-dd\'T\'HH-mm-ss').format(new Date())
+    bintrayDryRun = false
+}
+
+apply plugin: "org.junit.platform.gradle.plugin"
+apply plugin: "kotlin"
+apply plugin: "net.ossindex.audit"
+apply plugin: "maven-publish"
+apply plugin: "com.jfrog.bintray"
+apply plugin: "com.github.ben-manes.versions"
+
+group = 'de.gesellix'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+def dependencyVersions = [
+]
+
+configurations.all {
+    resolutionStrategy {
+        failOnVersionConflict()
+        force dependencyVersions
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url "http://dl.bintray.com/jetbrains/spek" }
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+
+    testCompile "org.jetbrains.kotlin:kotlin-test"
+    testCompile("org.jetbrains.spek:spek-api:1.1.2") {
+//    testCompile("org.jetbrains.spek:spek-api:$kotlin_version") {
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:1.1.2") {
+//    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:$kotlin_version") {
+        exclude group: 'org.junit.platform'
+        exclude group: 'org.jetbrains.kotlin'
+    }
+    testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-M4"
+}
+
+junitPlatform {
+    filters {
+        engines {
+            include 'spek'
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    dependsOn classes
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+    publications {
+        dockerEngine(MavenPublication) {
+            artifactId 'docker-engine'
+            version artifactVersion
+            from components.java
+            artifact sourcesJar
+        }
+    }
+}
+
+bintray {
+    user = System.env.BINTRAY_USER ?: project["bintray.user"]
+    key = System.env.BINTRAY_API_KEY ?: project["bintray.key"]
+    publications = ['dockerEngine']
+    pkg {
+        repo = 'docker-utils'
+        name = 'docker-engine'
+        desc = 'Bare HTTP client for the Docker engine api'
+        licenses = ['MIT']
+        labels = ['docker', 'engine api', 'remote api', 'http', 'java', 'kotlin']
+        version = [
+                name: artifactVersion
+        ]
+        vcsUrl = 'https://github.com/docker-client/docker-engine.git'
+    }
+    dryRun = bintrayDryRun
+}
+bintrayUpload.dependsOn build
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0'
+    distributionType = Wrapper.DistributionType.ALL
+}
