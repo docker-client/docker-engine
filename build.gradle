@@ -8,7 +8,6 @@ buildscript {
         mavenLocal()
         jcenter()
         // testutil
-        maven { url "http://dl.bintray.com/gesellix/docker-utils" }
         maven { url "https://plugins.gradle.org/m2/" }
         mavenCentral()
     }
@@ -71,6 +70,7 @@ configurations.all {
 repositories {
     mavenLocal()
     jcenter()
+    maven { url "http://dl.bintray.com/gesellix/docker-utils" }
     maven { url "http://dl.bintray.com/jetbrains/spek" }
     mavenCentral()
 }
@@ -162,11 +162,9 @@ bintray {
     pkg {
         repo = 'docker-utils'
         name = 'engine-client'
-        desc = 'A Docker engine api client for the JVM'
         desc = 'Bare HTTP client for the Docker engine api'
         licenses = ['MIT']
-        labels = ['docker', 'engine api', 'remote api', 'client', 'java']
-        labels = ['docker', 'engine api', 'remote api', 'http', 'java', 'kotlin']
+        labels = ['docker', 'engine api', 'remote api', 'http', 'client', 'java', 'kotlin']
         version = [
                 name: artifactVersion
         ]
