@@ -110,10 +110,8 @@ class OkDockerClient implements EngineClient {
 
         // https://docs.docker.com/engine/reference/api/docker_remote_api_v1.24/#attach-to-a-container
         if (requestConfig.attach) {
-            config.headers = [
-                    "Upgrade"   : "tcp",
-                    "Connection": "Upgrade"
-            ]
+            config.headers["Upgrade"] = "tcp"
+            config.headers["Connection"] = "Upgrade"
         }
         AttachConfig attachConfig = requestConfig.attach ?: null
 //        boolean multiplexStreams = config.multiplexStreams
