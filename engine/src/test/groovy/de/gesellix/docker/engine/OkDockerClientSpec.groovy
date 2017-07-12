@@ -5,6 +5,8 @@ import de.gesellix.docker.rawstream.RawInputStream
 import de.gesellix.docker.ssl.DockerSslSocket
 import de.gesellix.docker.ssl.SslSocketConfigFactory
 import de.gesellix.util.IOUtils
+import groovy.util.logging.Slf4j
+import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -23,11 +25,14 @@ import spock.lang.Unroll
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSession
 import javax.net.ssl.SSLSocket
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 import static de.gesellix.docker.rawstream.StreamType.STDOUT
 import static java.net.Proxy.Type.DIRECT
 import static java.net.Proxy.Type.HTTP
 
+@Slf4j
 class OkDockerClientSpec extends Specification {
 
     @IgnoreIf({ System.env.DOCKER_HOST })
@@ -309,7 +314,7 @@ class OkDockerClientSpec extends Specification {
         mockWebServer.start()
 
         def hasVerified = false
-        Closure<Boolean> verifyResponse = { Response response, Interceptor.Chain chain ->
+        Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
             if (chain.connection()?.route()?.proxy()?.type() != DIRECT) {
                 throw new AssertionError("got ${chain.connection()?.route()?.proxy()}")
             }
@@ -340,6 +345,7 @@ class OkDockerClientSpec extends Specification {
     }
 
     def "uses configured proxy"() {
+        given:
         def mockWebServer = new MockWebServer()
         mockWebServer.enqueue(new MockResponse().setBody("mock-response"))
         mockWebServer.start()
@@ -348,7 +354,7 @@ class OkDockerClientSpec extends Specification {
         def proxy = new Proxy(HTTP, new InetSocketAddress(serverUrl.host(), serverUrl.port()))
 
         def hasVerified = false
-        Closure<Boolean> verifyResponse = { Response response, Interceptor.Chain chain ->
+        Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
             def actualProxy = chain.connection()?.route()?.proxy()
             if (actualProxy != proxy) {
                 throw new AssertionError("got ${actualProxy}")
@@ -389,7 +395,7 @@ class OkDockerClientSpec extends Specification {
 
         def serverUrl = mockWebServer.url("/")
         def hasVerified = false
-        Closure<Boolean> verifyResponse = { Response response, Interceptor.Chain chain ->
+        Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
             def expectedUrl = serverUrl.newBuilder()
                     .encodedPath("/a-resource")
                     .build()
@@ -431,7 +437,7 @@ class OkDockerClientSpec extends Specification {
 
         def serverUrl = mockWebServer.url("/")
         def hasVerified = false
-        Closure<Boolean> verifyResponse = { Response response, Interceptor.Chain chain ->
+        Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
             def expectedUrl = serverUrl.newBuilder()
                     .encodedPath("/v1.23/a-resource")
                     .build()
@@ -474,7 +480,7 @@ class OkDockerClientSpec extends Specification {
 
         def serverUrl = mockWebServer.url("/")
         def hasVerified = false
-        Closure<Boolean> verifyResponse = { Response response, Interceptor.Chain chain ->
+        Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
             def expectedUrl = serverUrl.newBuilder()
                     .encodedPath("/a-resource")
                     .encodedQuery("baz=la%2Fla&answer=42")
@@ -510,6 +516,68 @@ class OkDockerClientSpec extends Specification {
         mockWebServer.shutdown()
     }
 
+    def "async request with headers"() {
+        given:
+        def mockWebServer = new MockWebServer()
+        mockWebServer.enqueue(new MockResponse()
+                                      .setResponseCode(101)
+                                      .addHeader("Connection", "Upgrade")
+                                      .addHeader("Upgrade", "tcp"))
+        mockWebServer.start()
+
+        def errors = []
+        def hasVerified = false
+        Closure<Boolean> verifyRequest = { Interceptor.Chain chain ->
+            def expectedHeaders = Headers.of("header-a", "header-a-value")
+            expectedHeaders.names().each { String k ->
+                def v = expectedHeaders.get(k)
+                if (chain.request().headers().get(k) != v) {
+                    errors << "expected header ${k} to be ${v}, got ${chain.request().headers().get(k)}"
+//                    throw new AssertionError("expected header ${k} to be ${v}, got ${chain.request().headers().get(k)}")
+                }
+            }
+            hasVerified = true
+            log.info("verified: ${errors}")
+            true
+        }
+        def client = new OkDockerClient() {
+
+            @Override
+            OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
+                clientBuilder
+                        .addNetworkInterceptor(new TestInterceptor(verifyRequest, { r, c -> true }))
+                        .build()
+            }
+        }
+        client.dockerClientConfig.apply(new DockerEnv(
+                dockerHost: mockWebServer.url("/").toString()))
+
+        when:
+        def latch = new CountDownLatch(1)
+        def onResponse = {
+            latch.countDown()
+        }
+        client.request([
+                method : "OPTIONS",
+                path   : "/a-resource",
+                attach : new AttachConfig(onResponse: onResponse),
+                headers: [
+                        "header-a"  : "header-a-value",
+                        "Upgrade"   : "tcp",
+                        "Connection": "Upgrade"
+                ]
+        ])
+        then:
+        latch.await(10, TimeUnit.SECONDS)
+        and:
+        errors.empty
+        and:
+        hasVerified
+
+        cleanup:
+        mockWebServer.shutdown()
+    }
+
     def "connect via plain http connection"() {
         given:
         def mockWebServer = new MockWebServer()
@@ -517,7 +585,7 @@ class OkDockerClientSpec extends Specification {
         mockWebServer.start()
 
         def hasVerified = false
-        Closure<Boolean> verifyResponse = { Response response, Interceptor.Chain chain ->
+        Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
             if (chain.connection()?.socket() instanceof SSLSocket) {
                 throw new AssertionError("didn't expect a SSLSocket, got ${chain.connection()?.socket()}")
             }
@@ -559,7 +627,7 @@ class OkDockerClientSpec extends Specification {
         mockWebServer.start()
 
         def hasVerified = false
-        Closure<Boolean> verifyResponse = { Response response, Interceptor.Chain chain ->
+        Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
             if (!(chain.connection()?.socket() instanceof SSLSocket)) {
                 throw new AssertionError("expected a SSLSocket, got ${chain.connection()?.socket()}")
             }
