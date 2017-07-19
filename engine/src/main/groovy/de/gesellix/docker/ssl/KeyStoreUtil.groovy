@@ -1,23 +1,27 @@
 package de.gesellix.docker.ssl
 
+import groovy.util.logging.Slf4j
+import org.bouncycastle.asn1.pkcs.PrivateKeyInfo
 import org.bouncycastle.openssl.PEMKeyPair
 import org.bouncycastle.openssl.PEMParser
+import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
 
 import java.security.GeneralSecurityException
-import java.security.KeyFactory
 import java.security.KeyStore
 import java.security.KeyStoreException
+import java.security.NoSuchAlgorithmException
 import java.security.PrivateKey
 import java.security.cert.Certificate
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
-import java.security.spec.PKCS8EncodedKeySpec
+import java.security.spec.InvalidKeySpecException
 
 /**
  * A slightly modified copy from https://github.com/rhuss/docker-maven-plugin
  * with kind permission of Roland Huß (https://twitter.com/ro14nd).
  */
+@Slf4j
 class KeyStoreUtil {
 
     static KEY_STORE_PASSWORD = "docker".toCharArray()
@@ -35,14 +39,31 @@ class KeyStoreUtil {
     }
 
     static PrivateKey loadPrivateKey(String keyPath) throws IOException, GeneralSecurityException {
-        PEMKeyPair keyPair = loadPEM(keyPath)
-        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyPair.getPrivateKeyInfo().getEncoded())
-        return KeyFactory.getInstance("RSA").generatePrivate(keySpec)
+        PEMParser parser = new PEMParser(new BufferedReader(new FileReader(keyPath)))
+        def parsedObject = parser.readObject()
+        if (parsedObject instanceof PEMKeyPair) {
+            PEMKeyPair keyPair = (PEMKeyPair) parsedObject
+            return generatePrivateKey(keyPair.getPrivateKeyInfo())
+        }
+        else if (parsedObject instanceof PrivateKeyInfo) {
+            return generatePrivateKey((PrivateKeyInfo) parsedObject)
+        }
+        throw new GeneralSecurityException("Cannot generate private key from file: " + keyPath)
     }
 
-    static <T> T loadPEM(String keyPath) throws IOException {
-        PEMParser parser = new PEMParser(new BufferedReader(new FileReader(keyPath)))
-        return (T) parser.readObject()
+    static PrivateKey generatePrivateKey(PrivateKeyInfo keyInfo) throws IOException, NoSuchAlgorithmException,
+                                                                        InvalidKeySpecException {
+        try {
+//            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyInfo.getEncoded())
+//            return KeyFactory.getInstance("RSA").generatePrivate(keySpec)
+//            def algorithmFinder = new DefaultAlgorithmNameFinder()
+//            X9ObjectIdentifiers.id_ecPublicKey
+            return new JcaPEMKeyConverter().getPrivateKey(keyInfo)
+        }
+        catch (InvalidKeySpecException e) {
+            log.error("couldn't create private key for asn1oid '${keyInfo.getPrivateKeyAlgorithm().algorithm.id}'", e)
+            throw e
+        }
     }
 
     static void addCA(KeyStore keyStore, String caPath) throws KeyStoreException, FileNotFoundException, CertificateException {
