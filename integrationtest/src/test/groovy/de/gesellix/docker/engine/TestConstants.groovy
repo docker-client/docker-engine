@@ -51,13 +51,13 @@ class TestConstants {
             versionDetails = [
                     ApiVersion   : { it == "1.30" },
                     Arch         : { it == "amd64" },
-                    BuildTime    : { it == "2017-06-20T07:18:21.114284942+00:00" },
-                    GitCommit    : { it == "b7e4173" },
+                    BuildTime    : { it == "2017-07-14T07:33:35.157915846+00:00" },
+                    GitCommit    : { it == "77b4dce" },
                     GoVersion    : { it == "go1.8.3" },
                     KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
                     MinAPIVersion: { it == "1.12" },
                     Os           : { it == "linux" },
-                    Version      : { it == "17.06.0-ce-rc5" }]
+                    Version      : { it == "17.06.1-ce-rc1" }]
         }
     }
 }
