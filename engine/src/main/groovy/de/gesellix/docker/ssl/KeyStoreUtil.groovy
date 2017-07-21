@@ -54,10 +54,6 @@ class KeyStoreUtil {
     static PrivateKey generatePrivateKey(PrivateKeyInfo keyInfo) throws IOException, NoSuchAlgorithmException,
                                                                         InvalidKeySpecException {
         try {
-//            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyInfo.getEncoded())
-//            return KeyFactory.getInstance("RSA").generatePrivate(keySpec)
-//            def algorithmFinder = new DefaultAlgorithmNameFinder()
-//            X9ObjectIdentifiers.id_ecPublicKey
             return new JcaPEMKeyConverter().getPrivateKey(keyInfo)
         }
         catch (InvalidKeySpecException e) {
