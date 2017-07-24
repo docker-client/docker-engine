@@ -34,6 +34,11 @@ class KeyStoreUtilTest extends Specification {
         KeyStoreUtil.loadPrivateKey(getFile("algorithm/ECDSA/keys/ecdsa.pem")) != null
     }
 
+    def "can load ECDSA (skip params)"() {
+        expect:
+        KeyStoreUtil.loadPrivateKey(getFile("algorithm/ECDSA/keys/ecdsa_with_params.pem")) != null
+    }
+
     def "cannot load invalid key"() {
         when:
         KeyStoreUtil.loadPrivateKey(getFile("algorithm/RSA/keys/invalid.pem"))

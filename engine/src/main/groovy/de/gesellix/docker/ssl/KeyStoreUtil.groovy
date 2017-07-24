@@ -2,6 +2,7 @@ package de.gesellix.docker.ssl
 
 import groovy.util.logging.Slf4j
 import org.bouncycastle.asn1.pkcs.PrivateKeyInfo
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.openssl.PEMKeyPair
 import org.bouncycastle.openssl.PEMParser
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter
@@ -11,6 +12,7 @@ import java.security.KeyStore
 import java.security.KeyStoreException
 import java.security.NoSuchAlgorithmException
 import java.security.PrivateKey
+import java.security.Security
 import java.security.cert.Certificate
 import java.security.cert.CertificateException
 import java.security.cert.CertificateFactory
@@ -23,6 +25,12 @@ import java.security.spec.InvalidKeySpecException
  */
 @Slf4j
 class KeyStoreUtil {
+
+    static {
+        if (!Security.getProvider(BouncyCastleProvider.PROVIDER_NAME)) {
+            Security.addProvider(new BouncyCastleProvider())
+        }
+    }
 
     static KEY_STORE_PASSWORD = "docker".toCharArray()
 
@@ -40,13 +48,15 @@ class KeyStoreUtil {
 
     static PrivateKey loadPrivateKey(String keyPath) throws IOException, GeneralSecurityException {
         PEMParser parser = new PEMParser(new BufferedReader(new FileReader(keyPath)))
-        def parsedObject = parser.readObject()
-        if (parsedObject instanceof PEMKeyPair) {
-            PEMKeyPair keyPair = (PEMKeyPair) parsedObject
-            return generatePrivateKey(keyPair.getPrivateKeyInfo())
-        }
-        else if (parsedObject instanceof PrivateKeyInfo) {
-            return generatePrivateKey((PrivateKeyInfo) parsedObject)
+        Object parsedObject
+        while ((parsedObject = parser.readObject()) != null) {
+            if (parsedObject instanceof PEMKeyPair) {
+                PEMKeyPair keyPair = (PEMKeyPair) parsedObject
+                return generatePrivateKey(keyPair.getPrivateKeyInfo())
+            }
+            else if (parsedObject instanceof PrivateKeyInfo) {
+                return generatePrivateKey((PrivateKeyInfo) parsedObject)
+            }
         }
         throw new GeneralSecurityException("Cannot generate private key from file: " + keyPath)
     }
