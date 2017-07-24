@@ -35,6 +35,7 @@ class KeyStoreUtilTest extends Specification {
     }
 
     def "can load ECDSA (skip params)"() {
+        // created via `openssl ecparam -name secp521r1 -genkey -param_enc explicit -out ecdsa_with_params.pem`
         expect:
         KeyStoreUtil.loadPrivateKey(getFile("algorithm/ECDSA/keys/ecdsa_with_params.pem")) != null
     }
