@@ -47,7 +47,7 @@ class KeyStoreUtil {
     }
 
     static PrivateKey loadPrivateKey(String keyPath) throws IOException, GeneralSecurityException {
-        PEMParser parser = new PEMParser(new BufferedReader(new FileReader(keyPath)))
+        PEMParser parser = new PEMParser(new FileReader(keyPath))
         Object parsedObject
         while ((parsedObject = parser.readObject()) != null) {
             if (parsedObject instanceof PEMKeyPair) {
