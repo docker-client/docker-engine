@@ -47,15 +47,28 @@ class KeyStoreUtil {
     }
 
     static PrivateKey loadPrivateKey(String keyPath) throws IOException, GeneralSecurityException {
-        PEMParser parser = new PEMParser(new FileReader(keyPath))
-        Object parsedObject
-        while ((parsedObject = parser.readObject()) != null) {
-            if (parsedObject instanceof PEMKeyPair) {
-                PEMKeyPair keyPair = (PEMKeyPair) parsedObject
-                return generatePrivateKey(keyPair.getPrivateKeyInfo())
+        PEMParser parser
+        try {
+            parser = new PEMParser(new FileReader(keyPath))
+            Object parsedObject
+            while ((parsedObject = parser.readObject()) != null) {
+                if (parsedObject instanceof PEMKeyPair) {
+                    PEMKeyPair keyPair = (PEMKeyPair) parsedObject
+                    return generatePrivateKey(keyPair.getPrivateKeyInfo())
+                }
+                else if (parsedObject instanceof PrivateKeyInfo) {
+                    return generatePrivateKey((PrivateKeyInfo) parsedObject)
+                }
             }
-            else if (parsedObject instanceof PrivateKeyInfo) {
-                return generatePrivateKey((PrivateKeyInfo) parsedObject)
+        }
+        finally {
+            if (parser) {
+                try {
+                    parser.close()
+                }
+                catch (Exception ignored) {
+                    // silently ignored
+                }
             }
         }
         throw new GeneralSecurityException("Cannot generate private key from file: " + keyPath)
@@ -81,7 +94,20 @@ class KeyStoreUtil {
     }
 
     static Collection<Certificate> loadCertificates(String certPath) throws FileNotFoundException, CertificateException {
-        InputStream is = new FileInputStream(certPath)
-        return CertificateFactory.getInstance("X509").generateCertificates(is)
+        InputStream is
+        try {
+            is = new FileInputStream(certPath)
+            return CertificateFactory.getInstance("X509").generateCertificates(is)
+        }
+        finally {
+            if (is) {
+                try {
+                    is.close()
+                }
+                catch (Exception ignored) {
+                    // silently ignored
+                }
+            }
+        }
     }
 }
