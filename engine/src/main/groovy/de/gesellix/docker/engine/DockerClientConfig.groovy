@@ -99,6 +99,8 @@ class DockerClientConfig {
         // Setting env.DOCKER_TLS_VERIFY to the empty string disables tls verification,
         // while any other value (including "0" or "false") enables tls verification.
         // See https://docs.docker.com/engine/reference/commandline/cli/#environment-variables
+        // for the official docs and https://github.com/moby/moby/issues/22411 for a detailed
+        // discussion about enabling/disabling TLS verification in Docker.
 
         // explicitly disabled?
         if (env.tlsVerify == "") {
