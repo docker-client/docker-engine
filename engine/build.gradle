@@ -1,5 +1,3 @@
-import java.text.SimpleDateFormat
-
 buildscript {
     repositories {
         mavenLocal()
@@ -33,8 +31,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.4.11'
-    compile 'org.codehaus.groovy:groovy-json:2.4.11'
+    compile 'org.codehaus.groovy:groovy:2.4.12'
+    compile 'org.codehaus.groovy:groovy-json:2.4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
     compile 'org.slf4j:slf4j-api:1.7.25'
@@ -49,7 +47,7 @@ dependencies {
     compile 'de.gesellix:docker-filesocket:2017-08-13T22-55-03'
     testCompile 'de.gesellix:testutil:2017-08-13T22-50-36'
 
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.57'
+    compile 'org.bouncycastle:bcpkix-jdk15on:1.58'
 
     testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
         exclude module: 'groovy-all'
