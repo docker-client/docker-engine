@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.0-RC3"
         classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
     }
@@ -44,7 +44,7 @@ dependencies {
 
     compile 'org.apache.commons:commons-compress:1.14'
 
-    compile 'de.gesellix:docker-filesocket:2017-08-13T22-55-03'
+    compile 'de.gesellix:docker-filesocket:2017-08-27T22-21-41'
     testCompile 'de.gesellix:testutil:2017-08-13T22-50-36'
 
     compile 'org.bouncycastle:bcpkix-jdk15on:1.58'
@@ -59,16 +59,16 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
     testCompile "org.jetbrains.kotlin:kotlin-test"
-    testCompile("org.jetbrains.spek:spek-api:1.1.2") {
+    testCompile("org.jetbrains.spek:spek-api:1.1.4") {
 //    testCompile("org.jetbrains.spek:spek-api:$kotlin_version") {
         exclude group: 'org.jetbrains.kotlin'
     }
-    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:1.1.2") {
+    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:1.1.4") {
 //    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:$kotlin_version") {
         exclude group: 'org.junit.platform'
         exclude group: 'org.jetbrains.kotlin'
     }
-    testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-M4"
+    testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-RC3"
 }
 
 //junitPlatform {
