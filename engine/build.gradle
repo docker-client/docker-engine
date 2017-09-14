@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.0-RC3"
+        classpath "org.junit.platform:junit-platform-gradle-plugin:$junit_platform_version"
         classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
     }
@@ -39,13 +39,13 @@ dependencies {
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
     compile 'com.squareup.okio:okio:1.13.0'
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.8.1'
+    compile 'com.squareup.okhttp3:okhttp:3.9.0'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
 
     compile 'org.apache.commons:commons-compress:1.14'
 
-    compile 'de.gesellix:docker-filesocket:2017-08-27T22-21-41'
-    testCompile 'de.gesellix:testutil:2017-08-13T22-50-36'
+    compile 'de.gesellix:docker-filesocket:2017-09-14T21-03-25'
+    testCompile 'de.gesellix:testutil:2017-09-14T20-57-51'
 
     compile 'org.bouncycastle:bcpkix-jdk15on:1.58'
 
@@ -68,7 +68,7 @@ dependencies {
         exclude group: 'org.junit.platform'
         exclude group: 'org.jetbrains.kotlin'
     }
-    testRuntime "org.junit.platform:junit-platform-launcher:1.0.0-RC3"
+    testRuntime "org.junit.platform:junit-platform-launcher:$junit_platform_version"
 }
 
 //junitPlatform {
