@@ -44,8 +44,8 @@ dependencies {
 
     compile 'org.apache.commons:commons-compress:1.14'
 
-    compile 'de.gesellix:docker-filesocket:2017-09-14T21-03-25'
-    testCompile 'de.gesellix:testutil:2017-09-14T20-57-51'
+    compile 'de.gesellix:docker-filesocket:2017-10-07T20-48-41'
+    testCompile 'de.gesellix:testutil:2017-10-07T20-41-30'
 
     compile 'org.bouncycastle:bcpkix-jdk15on:1.58'
 
@@ -59,11 +59,11 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
     testCompile "org.jetbrains.kotlin:kotlin-test"
-    testCompile("org.jetbrains.spek:spek-api:1.1.4") {
+    testCompile("org.jetbrains.spek:spek-api:1.1.5") {
 //    testCompile("org.jetbrains.spek:spek-api:$kotlin_version") {
         exclude group: 'org.jetbrains.kotlin'
     }
-    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:1.1.4") {
+    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:1.1.5") {
 //    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:$kotlin_version") {
         exclude group: 'org.junit.platform'
         exclude group: 'org.jetbrains.kotlin'
