@@ -49,6 +49,12 @@ class DockerEnv {
 
     def tmpdir = System.getProperty("docker.tmpdir", System.env.DOCKER_TMPDIR as String)
 
+    def dockerContentTrust = System.getProperty("docker.content.trust", System.env.DOCKER_CONTENT_TRUST as String)
+
+    def contentTrustServer = System.getProperty("docker.content.trust.server", System.env.DOCKER_CONTENT_TRUST_SERVER as String)
+
+    def officialNotaryServer = "https://notary.docker.io"
+
     def setDockerConfigFile(File dockerConfigFile) {
         this.dockerConfigFile = dockerConfigFile
     }

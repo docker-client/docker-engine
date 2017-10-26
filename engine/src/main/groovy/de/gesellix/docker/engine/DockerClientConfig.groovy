@@ -37,7 +37,7 @@ class DockerClientConfig {
         this.certPath = dockerClientConfig.certPath
     }
 
-    def getActualConfig(DockerEnv env) {
+    Map getActualConfig(DockerEnv env) {
         String dockerHost = env.dockerHost
         if (!dockerHost) {
             throw new IllegalStateException("dockerHost must be set")
@@ -141,6 +141,19 @@ class DockerClientConfig {
             log.debug("dockerCertPath=${env.certPath}")
             return env.certPath
         }
+    }
+
+    def isContentTrustEnabled(DockerEnv env) {
+        if (env.dockerContentTrust?.trim() == "" || isFalsy(env.dockerContentTrust)) {
+            return false
+        }
+        // is a truthy value or any other (non-empty and non-falsy) value
+        return true
+    }
+
+    static def isFalsy(String value) {
+        def sanitizedValue = value?.trim()?.toLowerCase()
+        return sanitizedValue in ["0", "false", "no"]
     }
 
     static class TlsConfig {
