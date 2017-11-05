@@ -132,7 +132,7 @@ class OkDockerClient implements EngineClient {
             def cb = new OkResponseCallback(client, connectionProvider, attachConfig)
             call.enqueue(cb)
             log.debug("request enqueued")
-            def dockerResponse = new EngineResponse()
+            def dockerResponse = new EngineResponse(responseCallback: cb)
             return dockerResponse
         }
         else {

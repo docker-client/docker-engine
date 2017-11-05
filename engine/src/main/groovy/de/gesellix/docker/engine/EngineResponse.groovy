@@ -16,4 +16,6 @@ class EngineResponse {
     def content
 
     Future taskFuture
+
+    OkResponseCallback responseCallback
 }
