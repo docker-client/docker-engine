@@ -18,16 +18,17 @@ class OkResponseCallback implements Callback {
     OkHttpClient client
     ConnectionProvider connectionProvider
     AttachConfig attachConfig
-    InputStream stdin
     Closure onResponse
     Closure onSinkClosed
     Closure onSourceConsumed
+
+    Thread writer
+    Thread reader
 
     OkResponseCallback(OkHttpClient client, ConnectionProvider connectionProvider, AttachConfig attachConfig) {
         this.client = client
         this.connectionProvider = connectionProvider
         this.attachConfig = attachConfig
-        this.stdin = attachConfig.streams.stdin
         this.onResponse = attachConfig.onResponse
         this.onSinkClosed = attachConfig.onSinkClosed
         this.onSourceConsumed = attachConfig.onSourceConsumed
@@ -52,7 +53,7 @@ class OkResponseCallback implements Callback {
             // pass input from the client via stdin and pass it to the output stream
             // running it in an own thread allows the client to gain back control
             def stdinSource = Okio.source(attachConfig.streams.stdin)
-            def writer = new Thread(new Runnable() {
+            writer = new Thread(new Runnable() {
 
                 @Override
                 void run() {
@@ -67,22 +68,31 @@ class OkResponseCallback implements Callback {
                         }, done)
                         done.await(5, SECONDS)
                     }
+                    catch (InterruptedException e) {
+                        log.debug("stdin->sink interrupted", e)
+                        Thread.currentThread().interrupt()
+                    }
                     catch (Exception e) {
                         onFailure(e)
                     }
                     finally {
+//                        client.connectionPool().evictAll()
 //                        client.dispatcher().executorService().awaitTermination(5, SECONDS)
-                        client.dispatcher().executorService().shutdown()
+//                        client.dispatcher().executorService().shutdown()
+                        log.trace("writer finished")
                     }
                 }
             })
             writer.setName("stdin-writer ${call.request().url().encodedPath()}")
             writer.start()
         }
+        else {
+            log.debug("no stdin.")
+        }
 
         if (attachConfig.streams.stdout != null) {
             def bufferedStdout = Okio.buffer(Okio.sink(attachConfig.streams.stdout))
-            def reader = new Thread(new Runnable() {
+            reader = new Thread(new Runnable() {
 
                 @Override
                 void run() {
@@ -95,13 +105,23 @@ class OkResponseCallback implements Callback {
                         }, done)
                         done.await(5, SECONDS)
                     }
+                    catch (InterruptedException e) {
+                        log.debug("source->stdout interrupted", e)
+                        Thread.currentThread().interrupt()
+                    }
                     catch (Exception e) {
                         onFailure(e)
+                    }
+                    finally {
+                        log.trace("reader finished")
                     }
                 }
             })
             reader.setName("stdout-reader ${call.request().url().encodedPath()}")
             reader.start()
+        }
+        else {
+            log.debug("no stdout.")
         }
 
         onResponse(response)
@@ -123,5 +143,13 @@ class OkResponseCallback implements Callback {
                 },
                 delay
         )
+    }
+
+    void interruptWriter() {
+        writer?.interrupt()
+    }
+
+    void interruptReader() {
+        reader?.interrupt()
     }
 }
