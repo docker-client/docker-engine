@@ -9,10 +9,6 @@ import okhttp3.Response
 import okio.Okio
 
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
 
 import static java.util.concurrent.TimeUnit.SECONDS
 
@@ -56,8 +52,6 @@ class OkResponseCallback implements Callback {
             def stdinSource = Okio.source(attachConfig.streams.stdin)
             Thread writer = new Thread(new Runnable() {
 
-                private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor()
-
                 @Override
                 void run() {
                     try {
@@ -65,12 +59,16 @@ class OkResponseCallback implements Callback {
                         IOUtils.copy(stdinSource, bufferedSink.buffer())
                         bufferedSink.flush()
                         def done = new CountDownLatch(1)
-                        ScheduledFuture d = delayed(scheduler, 100, {
-                            bufferedSink.close()
-                            onSinkClosed(response)
+                        delayed(100, {
+                            try {
+                                bufferedSink.close()
+                                onSinkClosed(response)
+                            }
+                            catch (Exception e) {
+                                log.warn("error", e)
+                            }
                         }, done)
                         done.await(5, SECONDS)
-                        d?.cancel(true)
                     }
                     catch (InterruptedException e) {
                         log.debug("stdin->sink interrupted", e)
@@ -80,7 +78,6 @@ class OkResponseCallback implements Callback {
                         onFailure(e)
                     }
                     finally {
-                        scheduler.shutdown()
                         log.trace("writer finished")
                     }
                 }
@@ -96,19 +93,16 @@ class OkResponseCallback implements Callback {
             def bufferedStdout = Okio.buffer(Okio.sink(attachConfig.streams.stdout))
             Thread reader = new Thread(new Runnable() {
 
-                private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor()
-
                 @Override
                 void run() {
                     try {
                         IOUtils.copy(connectionProvider.source, bufferedStdout.buffer())
                         bufferedStdout.flush()
                         def done = new CountDownLatch(1)
-                        ScheduledFuture d = delayed(scheduler, 100, {
+                        delayed(100, {
                             onSourceConsumed()
                         }, done)
                         done.await(5, SECONDS)
-                        d?.cancel(true)
                     }
                     catch (InterruptedException e) {
                         log.debug("source->stdout interrupted", e)
@@ -118,7 +112,6 @@ class OkResponseCallback implements Callback {
                         onFailure(e)
                     }
                     finally {
-                        scheduler.shutdown()
                         log.trace("reader finished")
                     }
                 }
@@ -133,20 +126,23 @@ class OkResponseCallback implements Callback {
         onResponse(response)
     }
 
-    static delayed(ScheduledExecutorService scheduler, long delay, Closure action, CountDownLatch done) {
-        if (scheduler.isShutdown()) {
-            return null
-        }
-        return scheduler.schedule(new Runnable() {
-            @Override
-            void run() {
-                try {
-                    action()
-                }
-                finally {
-                    done.countDown()
-                }
-            }
-        }, delay, TimeUnit.MILLISECONDS)
+    static delayed(long delay, Closure action, CountDownLatch done) {
+        new Timer(true).schedule(
+                new TimerTask() {
+
+                    @Override
+                    void run() {
+                        Thread.currentThread().setName("Delayed action (${Thread.currentThread().getName()})")
+                        try {
+                            action()
+                        }
+                        finally {
+                            done.countDown()
+                            cancel()
+                        }
+                    }
+                },
+                delay
+        )
     }
 }
