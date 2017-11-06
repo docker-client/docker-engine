@@ -22,9 +22,6 @@ class OkResponseCallback implements Callback {
     Closure onSinkClosed
     Closure onSourceConsumed
 
-    Thread writer
-    Thread reader
-
     OkResponseCallback(OkHttpClient client, ConnectionProvider connectionProvider, AttachConfig attachConfig) {
         this.client = client
         this.connectionProvider = connectionProvider
@@ -53,7 +50,7 @@ class OkResponseCallback implements Callback {
             // pass input from the client via stdin and pass it to the output stream
             // running it in an own thread allows the client to gain back control
             def stdinSource = Okio.source(attachConfig.streams.stdin)
-            writer = new Thread(new Runnable() {
+            Thread writer = new Thread(new Runnable() {
 
                 @Override
                 void run() {
@@ -92,7 +89,7 @@ class OkResponseCallback implements Callback {
 
         if (attachConfig.streams.stdout != null) {
             def bufferedStdout = Okio.buffer(Okio.sink(attachConfig.streams.stdout))
-            reader = new Thread(new Runnable() {
+            Thread reader = new Thread(new Runnable() {
 
                 @Override
                 void run() {
@@ -128,28 +125,22 @@ class OkResponseCallback implements Callback {
     }
 
     static delayed(long delay, Closure action, CountDownLatch done) {
-        new Timer().schedule(
+        new Timer(true).schedule(
                 new TimerTask() {
 
                     @Override
                     void run() {
+                        Thread.currentThread().setName("Delayed action (${Thread.currentThread().getName()})")
                         try {
                             action()
                         }
                         finally {
                             done.countDown()
+                            cancel()
                         }
                     }
                 },
                 delay
         )
-    }
-
-    void interruptWriter() {
-        writer?.interrupt()
-    }
-
-    void interruptReader() {
-        reader?.interrupt()
     }
 }
