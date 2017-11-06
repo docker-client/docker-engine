@@ -70,7 +70,7 @@ class OkResponseCallback implements Callback {
                             onSinkClosed(response)
                         }, done)
                         done.await(5, SECONDS)
-                        d.cancel(true)
+                        d?.cancel(true)
                     }
                     catch (InterruptedException e) {
                         log.debug("stdin->sink interrupted", e)
@@ -108,7 +108,7 @@ class OkResponseCallback implements Callback {
                             onSourceConsumed()
                         }, done)
                         done.await(5, SECONDS)
-                        d.cancel(true)
+                        d?.cancel(true)
                     }
                     catch (InterruptedException e) {
                         log.debug("source->stdout interrupted", e)
@@ -134,6 +134,9 @@ class OkResponseCallback implements Callback {
     }
 
     static delayed(ScheduledExecutorService scheduler, long delay, Closure action, CountDownLatch done) {
+        if (scheduler.isShutdown()) {
+            return null
+        }
         return scheduler.schedule(new Runnable() {
             @Override
             void run() {
