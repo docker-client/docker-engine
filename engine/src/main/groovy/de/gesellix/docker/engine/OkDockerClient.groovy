@@ -163,8 +163,9 @@ class OkDockerClient implements EngineClient {
         }
         String queryAsString = (config.query) ? "${queryToString(config.query as Map)}" : ""
 
+        Boolean pathAlreadyEncoded = config.pathAlreadyEncoded as Boolean
         def urlBuilder = new HttpUrl.Builder()
-                .addPathSegments(path)
+                .addPathSegments(path, pathAlreadyEncoded ?: false)
                 .encodedQuery(queryAsString ?: null)
         def httpUrl = createUrl(urlBuilder, protocol, host, port)
 

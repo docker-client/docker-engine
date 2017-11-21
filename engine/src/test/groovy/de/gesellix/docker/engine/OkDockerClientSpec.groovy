@@ -11,6 +11,7 @@ import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.WebSocketListener
@@ -953,6 +954,34 @@ class OkDockerClientSpec extends Specification {
         and:
         response.content == null
     }
+
+    def "prepareRequest should urlencode path"() {
+        given:
+        def client = new OkDockerClient()
+        when:
+        def config = [method : "GET",
+                      path   :"path1%2fpath2"]
+        def request = client.prepareRequest(new Request.Builder(),config).build()
+        then:
+        String url = request.url().toString()
+        String urlEnd = "path1%252fpath2"
+        url.substring(url.length() - urlEnd.length()) == urlEnd
+    }
+
+    def "prepareRequest should not urlencode path when add pathAlreadyEncoded:true is added"() {
+        given:
+        def client = new OkDockerClient()
+        when:
+        def config = [method : "GET",
+                      path   :"pathPath1%2fpathPath2",
+                      pathAlreadyEncoded:true]
+        def request = client.prepareRequest(new Request.Builder(),config).build()
+        then:
+        String url = request.url().toString()
+        String urlEnd = "pathPath1%2fpathPath2"
+        url.substring(url.length() - urlEnd.length()) == urlEnd
+    }
+
 
     static class TestContentHandlerFactory implements ContentHandlerFactory {
 
