@@ -9,7 +9,7 @@ buildscript {
     dependencies {
         classpath "org.junit.platform:junit-platform-gradle-plugin:$junit_platform_version"
         classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0"
     }
 }
 
@@ -31,21 +31,21 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.4.12'
-    compile 'org.codehaus.groovy:groovy-json:2.4.12'
+    compile 'org.codehaus.groovy:groovy:2.4.13'
+    compile 'org.codehaus.groovy:groovy-json:2.4.13'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
     compile 'com.squareup.okio:okio:1.13.0'
-    compile 'com.squareup.okhttp3:okhttp:3.9.0'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.9.0'
+    compile 'com.squareup.okhttp3:okhttp:3.9.1'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.9.1'
 
-    compile 'org.apache.commons:commons-compress:1.14'
+    compile 'org.apache.commons:commons-compress:1.15'
 
-    compile 'de.gesellix:docker-filesocket:2017-10-07T20-48-41'
-    testCompile 'de.gesellix:testutil:2017-10-07T20-41-30'
+    compile 'de.gesellix:docker-filesocket:2017-12-18T18-53-05'
+    testCompile 'de.gesellix:testutil:2017-12-18T18-44-17'
 
     compile 'org.bouncycastle:bcpkix-jdk15on:1.58'
 
