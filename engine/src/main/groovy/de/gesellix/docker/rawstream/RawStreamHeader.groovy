@@ -1,14 +1,21 @@
 package de.gesellix.docker.rawstream
 
+import groovy.util.logging.Slf4j
+
 /**
- * see https://docs.docker.com/reference/api/docker_remote_api_v1.17/#attach-to-a-container.
+ See the paragraph _Stream format_ at https://docs.docker.com/engine/api/v1.33/#operation/ContainerAttach.
+ <br/>
+ Reference implementation: https://github.com/moby/moby/blob/master/pkg/stdcopy/stdcopy.go.
+ <br/>
+ Docker client GoDoc: https://godoc.org/github.com/moby/moby/client#Client.ContainerAttach.
  */
+@Slf4j
 class RawStreamHeader {
 
     final static EMPTY_HEADER = new RawStreamHeader()
 
-    def streamType
-    def frameSize
+    StreamType streamType
+    int frameSize
 
     private RawStreamHeader() {
     }
@@ -29,7 +36,13 @@ class RawStreamHeader {
         if (header[0] < 0) {
             throw new EOFException("${header[0]}")
         }
-        return StreamType.valueOf((byte) (header[0] & 0xFF))
+        try {
+            return StreamType.valueOf((byte) (header[0] & 0xFF))
+        }
+        catch (Exception e) {
+            log.error("Invalid StreamType '${(byte) (header[0] & 0xFF)}'")
+            throw e
+        }
     }
 
     int readFrameSize(int[] header) throws IOException {

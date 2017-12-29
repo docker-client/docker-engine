@@ -7,16 +7,23 @@ package de.gesellix.docker.rawstream
  <li>0: stdin (will be written on stdout)</li>
  <li>1: stdout</li>
  <li>2: stderr</li>
+ <li>3: systemerr</li>
  </ul>
  </p>
+ See the paragraph _Stream format_ at https://docs.docker.com/engine/api/v1.33/#operation/ContainerAttach.
+ <br/>
+ Reference implementation: https://github.com/moby/moby/blob/master/pkg/stdcopy/stdcopy.go.
+ <br/>
+ Docker client GoDoc: https://godoc.org/github.com/moby/moby/client#Client.ContainerAttach.
  */
 enum StreamType {
 
     STDIN((byte) 0),
     STDOUT((byte) 1),
-    STDERR((byte) 2)
+    STDERR((byte) 2),
+    SYSTEMERR((byte) 3)
 
-    private final byte streamTypeId;
+    private final byte streamTypeId
 
     StreamType(streamTypeId) {
         this.streamTypeId = streamTypeId

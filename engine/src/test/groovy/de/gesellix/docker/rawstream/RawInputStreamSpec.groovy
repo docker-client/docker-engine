@@ -5,6 +5,7 @@ import spock.lang.Specification
 
 import static de.gesellix.docker.rawstream.StreamType.STDERR
 import static de.gesellix.docker.rawstream.StreamType.STDOUT
+import static de.gesellix.docker.rawstream.StreamType.SYSTEMERR
 
 class RawInputStreamSpec extends Specification {
 
@@ -81,5 +82,23 @@ class RawInputStreamSpec extends Specification {
         stdout.toString() == actualText
         and:
         stderr.toString() == actualError
+    }
+
+    def "should fail on Systemerr"() {
+        given:
+        def actualSysError = "docker errors!"
+        def headerAndPayloadErr = new RawHeaderAndPayload(SYSTEMERR, actualSysError.bytes)
+        def bytes = headerAndPayloadErr.bytes
+        def inputStream = new ByteArrayInputStream((byte[]) bytes)
+        def stdout = new ByteArrayOutputStream()
+        def stderr = new ByteArrayOutputStream()
+
+        when:
+        def rawInputStream = new RawInputStream(inputStream)
+        rawInputStream.copyFullyMultiplexed(stdout, stderr)
+
+        then:
+        def exc = thrown(IllegalStateException)
+        exc.message == "error from daemon in stream: ${actualSysError}"
     }
 }

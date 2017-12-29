@@ -4,7 +4,11 @@ import de.gesellix.util.IOUtils
 import groovy.util.logging.Slf4j
 
 /**
- * see https://docs.docker.com/reference/api/docker_remote_api_v1.17/#attach-to-a-container.
+ See the paragraph _Stream format_ at https://docs.docker.com/engine/api/v1.33/#operation/ContainerAttach.
+ <br/>
+ Reference implementation: https://github.com/moby/moby/blob/master/pkg/stdcopy/stdcopy.go.
+ <br/>
+ Docker client GoDoc: https://godoc.org/github.com/moby/moby/client#Client.ContainerAttach.
  */
 @Slf4j
 class RawInputStream extends FilterInputStream {
@@ -37,9 +41,12 @@ class RawInputStream extends FilterInputStream {
     }
 
     int copyFrame(OutputStream stdout, OutputStream stderr) {
-        Map<String, OutputStream> outputStreamsByStreamType = [:]
-        outputStreamsByStreamType["${StreamType.STDOUT}"] = stdout ?: stderr
-        outputStreamsByStreamType["${StreamType.STDERR}"] = stderr ?: stdout
+        def systemerr = new ByteArrayOutputStream()
+
+        Map<StreamType, OutputStream> outputStreamsByStreamType = [:]
+        outputStreamsByStreamType[StreamType.STDOUT] = stdout ?: stderr
+        outputStreamsByStreamType[StreamType.STDERR] = stderr ?: stdout
+        outputStreamsByStreamType[StreamType.SYSTEMERR] = systemerr
 
         def parsedHeader = readFrameHeader()
         log.trace(parsedHeader.toString())
@@ -53,15 +60,25 @@ class RawInputStream extends FilterInputStream {
         long count = 0
         int n
         while (EOF != (n = super.read(buffer, 0, Math.min(DEFAULT_BUFFER_SIZE, bytesToRead)))) {
-            def outputStream = outputStreamsByStreamType["${parsedHeader.streamType}"]
+            def outputStream = outputStreamsByStreamType[parsedHeader.streamType]
             outputStream.write(buffer, 0, n)
             count += n
             bytesToRead -= n
             if (bytesToRead <= 0) {
+                failOnSystemerr(parsedHeader, systemerr)
                 return count
             }
         }
+
+        failOnSystemerr(parsedHeader, systemerr)
         return count
+    }
+
+    private void failOnSystemerr(RawStreamHeader parsedHeader, ByteArrayOutputStream systemerr) {
+        if (parsedHeader.streamType == StreamType.SYSTEMERR) {
+            log.error(new String(systemerr.toByteArray()))
+            throw new IllegalStateException("error from daemon in stream: ${new String(systemerr.toByteArray())}")
+        }
     }
 
     @Override
@@ -112,5 +129,15 @@ class RawInputStream extends FilterInputStream {
     def readRemainingFrameSize(byte[] b, int off, int len, int remainingFrameSize) {
         def updatedLen = Math.min(len, remainingFrameSize)
         return super.read(b, off, updatedLen)
+    }
+
+    static class NullOutputStream extends OutputStream {
+        static final NullOutputStream INSTANCE = new NullOutputStream()
+
+        private NullOutputStream() {}
+
+        void write(int b) throws IOException {
+            throw new IOException("Stream closed")
+        }
     }
 }
