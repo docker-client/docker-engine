@@ -130,14 +130,4 @@ class RawInputStream extends FilterInputStream {
         def updatedLen = Math.min(len, remainingFrameSize)
         return super.read(b, off, updatedLen)
     }
-
-    static class NullOutputStream extends OutputStream {
-        static final NullOutputStream INSTANCE = new NullOutputStream()
-
-        private NullOutputStream() {}
-
-        void write(int b) throws IOException {
-            throw new IOException("Stream closed")
-        }
-    }
 }
