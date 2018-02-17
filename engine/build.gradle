@@ -33,38 +33,34 @@ repositories {
 dependencies {
     compile 'org.codehaus.groovy:groovy:2.4.13'
     compile 'org.codehaus.groovy:groovy-json:2.4.13'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
-    compile 'com.squareup.okio:okio:1.13.0'
+    compile 'com.squareup.okio:okio:1.14.0'
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     testCompile 'com.squareup.okhttp3:mockwebserver:3.9.1'
 
-    compile 'org.apache.commons:commons-compress:1.15'
+    compile 'org.apache.commons:commons-compress:1.16.1'
 
-    compile 'de.gesellix:docker-filesocket:2017-12-18T18-53-05'
-    testCompile 'de.gesellix:testutil:2017-12-18T18-44-17'
+    compile 'de.gesellix:docker-filesocket:2018-02-17T21-56-51'
+    testCompile 'de.gesellix:testutil:2018-02-17T21-48-43'
 
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.58'
+    compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
 
     testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
         exclude module: 'groovy-all'
     }
-    testCompile 'cglib:cglib-nodep:3.2.5'
+    testCompile 'cglib:cglib-nodep:3.2.6'
 
     testCompile 'commons-lang:commons-lang:2.6'
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testCompile("org.jetbrains.spek:spek-api:1.1.5") {
-//    testCompile("org.jetbrains.spek:spek-api:$kotlin_version") {
         exclude group: 'org.jetbrains.kotlin'
     }
     testRuntime("org.jetbrains.spek:spek-junit-platform-engine:1.1.5") {
-//    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:$kotlin_version") {
         exclude group: 'org.junit.platform'
         exclude group: 'org.jetbrains.kotlin'
     }

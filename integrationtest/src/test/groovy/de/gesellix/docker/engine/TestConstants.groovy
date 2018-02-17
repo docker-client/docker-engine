@@ -49,15 +49,15 @@ class TestConstants {
                     Version      : { it == "17.05.0-ce" }]
         } else {
             versionDetails = [
-                    ApiVersion   : { it == "1.35" },
+                    ApiVersion   : { it == "1.36" },
                     Arch         : { it == "amd64" },
-                    BuildTime    : { it == "2017-12-20T15:59:49.000000000+00:00" },
-                    GitCommit    : { it == "6a2c058" },
-                    GoVersion    : { it == "go1.9.2" },
+                    BuildTime    : { it == "2018-02-07T21:20:15.000000000+00:00" },
+                    GitCommit    : { it == "fc4de44" },
+                    GoVersion    : { it == "go1.9.3" },
                     KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
                     MinAPIVersion: { it == "1.12" },
                     Os           : { it == "linux" },
-                    Version      : { it == "17.12.0-ce-rc4" }]
+                    Version      : { it == "18.02.0-ce" }]
         }
     }
 }
