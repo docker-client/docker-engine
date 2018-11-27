@@ -7,13 +7,11 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.junit.platform:junit-platform-gradle-plugin:$junit_platform_version"
-        classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0"
+        classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.3.21"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4"
     }
 }
 
-//apply plugin: "org.junit.platform.gradle.plugin"
 apply plugin: "net.ossindex.audit"
 apply plugin: "maven"
 apply plugin: "maven-publish"
@@ -31,49 +29,28 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.4.13'
-    compile 'org.codehaus.groovy:groovy-json:2.4.13'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile 'org.codehaus.groovy:groovy:2.5.4'
+    compile 'org.codehaus.groovy:groovy-json:2.5.4'
 
     compile 'org.slf4j:slf4j-api:1.7.25'
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
-    compile 'com.squareup.okio:okio:1.14.0'
-    compile 'com.squareup.okhttp3:okhttp:3.9.1'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.9.1'
+    compile 'com.squareup.okio:okio:2.1.0'
+    compile 'com.squareup.okhttp3:okhttp:3.12.0'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.12.0'
 
-    compile 'org.apache.commons:commons-compress:1.16.1'
+    compile 'org.apache.commons:commons-compress:1.18'
 
-    compile 'de.gesellix:docker-filesocket:2018-02-17T21-56-51'
-    testCompile 'de.gesellix:testutil:2018-02-17T21-48-43'
+    compile 'de.gesellix:docker-filesocket:2018-11-27T22-29-09'
+    testCompile 'de.gesellix:testutil:2018-11-27T22-08-49'
 
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.59'
+    compile 'org.bouncycastle:bcpkix-jdk15on:1.60'
 
-    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
-        exclude module: 'groovy-all'
-    }
-    testCompile 'cglib:cglib-nodep:3.2.6'
+    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
+    testCompile 'cglib:cglib-nodep:3.2.9'
 
     testCompile 'commons-lang:commons-lang:2.6'
-
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    testCompile("org.jetbrains.spek:spek-api:1.1.5") {
-        exclude group: 'org.jetbrains.kotlin'
-    }
-    testRuntime("org.jetbrains.spek:spek-junit-platform-engine:1.1.5") {
-        exclude group: 'org.junit.platform'
-        exclude group: 'org.jetbrains.kotlin'
-    }
-    testRuntime "org.junit.platform:junit-platform-launcher:$junit_platform_version"
 }
-
-//junitPlatform {
-//    filters {
-//        engines {
-//            include 'spek'
-//        }
-//    }
-//}
 
 task sourcesJar(type: Jar) {
     dependsOn classes

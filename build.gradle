@@ -2,8 +2,7 @@ import java.text.SimpleDateFormat
 
 buildscript {
     ext {
-        junit_platform_version = '1.0.3'
-        kotlin_version = "1.2.21"
+        kotlin_version = "1.3.10"
     }
 
     repositories {
@@ -14,8 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.17.0"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.github.ben-manes:gradle-versions-plugin:0.20.0"
         classpath "gradle.plugin.net.ossindex:ossindex-gradle-plugin:0.1.1"
     }
 }
@@ -25,15 +23,14 @@ ext {
 }
 
 def dependencyVersions = [
-        "com.squareup.okio:okio:1.14.0",
-        "org.bouncycastle:bcpkix-jdk15on:1.59",
-        "org.bouncycastle:bcprov-jdk15on:1.59",
+        "com.squareup.okio:okio:2.1.0",
+        "org.codehaus.groovy:groovy:2.5.4",
+        "org.codehaus.groovy:groovy-json:2.5.4",
         "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
 ]
 
 subprojects {
     apply plugin: 'groovy'
-    apply plugin: "kotlin"
     apply plugin: "net.ossindex.audit"
     apply plugin: "com.github.ben-manes.versions"
 
@@ -41,18 +38,6 @@ subprojects {
 
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-
-    compileTestKotlin {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
 
     configurations.all {
         resolutionStrategy {
@@ -62,7 +47,7 @@ subprojects {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.5.1'
+task updateWrapper(type: Wrapper) {
+    gradleVersion = '4.10.2'
     distributionType = Wrapper.DistributionType.ALL
 }
