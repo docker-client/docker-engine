@@ -36,18 +36,18 @@ dependencies {
     testCompile 'ch.qos.logback:logback-classic:1.2.3'
 
     compile 'com.squareup.okio:okio:2.1.0'
-    compile 'com.squareup.okhttp3:okhttp:3.12.0'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.12.0'
+    compile 'com.squareup.okhttp3:okhttp:3.12.1'
+    testCompile 'com.squareup.okhttp3:mockwebserver:3.12.1'
 
     compile 'org.apache.commons:commons-compress:1.18'
 
-    compile 'de.gesellix:docker-filesocket:2018-11-27T22-29-09'
+    compile 'de.gesellix:docker-filesocket:2018-12-27T14-59-13'
     testCompile 'de.gesellix:testutil:2018-11-27T22-08-49'
 
     compile 'org.bouncycastle:bcpkix-jdk15on:1.60'
 
     testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
-    testCompile 'cglib:cglib-nodep:3.2.9'
+    testCompile 'cglib:cglib-nodep:3.2.10'
 
     testCompile 'commons-lang:commons-lang:2.6'
 }
