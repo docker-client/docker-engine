@@ -2,7 +2,7 @@ buildscript {
     repositories {
         mavenLocal()
         jcenter()
-        maven { url "https://plugins.gradle.org/m2/" }
+        gradlePluginPortal()
         mavenCentral()
     }
 
@@ -29,32 +29,32 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy:2.5.4'
-    compile 'org.codehaus.groovy:groovy-json:2.5.4'
+    compile "org.codehaus.groovy:groovy:2.5.4"
+    compile "org.codehaus.groovy:groovy-json:2.5.4"
 
-    compile 'org.slf4j:slf4j-api:1.7.25'
-    testCompile 'ch.qos.logback:logback-classic:1.2.3'
+    compile "org.slf4j:slf4j-api:1.7.25"
+    testCompile "ch.qos.logback:logback-classic:1.2.3"
 
-    compile 'com.squareup.okio:okio:2.1.0'
-    compile 'com.squareup.okhttp3:okhttp:3.12.1'
-    testCompile 'com.squareup.okhttp3:mockwebserver:3.12.1'
+    compile "com.squareup.okio:okio:2.1.0"
+    compile "com.squareup.okhttp3:okhttp:3.12.1"
+    testCompile "com.squareup.okhttp3:mockwebserver:3.12.1"
 
-    compile 'org.apache.commons:commons-compress:1.18'
+    compile "org.apache.commons:commons-compress:1.18"
 
-    compile 'de.gesellix:docker-filesocket:2018-12-27T14-59-13'
-    testCompile 'de.gesellix:testutil:2018-11-27T22-08-49'
+    compile "de.gesellix:docker-filesocket:2018-12-29T15-29-51"
+    testCompile "de.gesellix:testutil:2018-12-29T16-12-32"
 
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.60'
+    compile "org.bouncycastle:bcpkix-jdk15on:1.60"
 
-    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
-    testCompile 'cglib:cglib-nodep:3.2.10'
+    testCompile "org.spockframework:spock-core:1.2-groovy-2.5"
+    testCompile "cglib:cglib-nodep:3.2.10"
 
-    testCompile 'commons-lang:commons-lang:2.6'
+    testCompile "commons-lang:commons-lang:2.6"
 }
 
 task sourcesJar(type: Jar) {
     dependsOn classes
-    classifier 'sources'
+    classifier "sources"
     from sourceSets.main.allSource
 }
 
@@ -69,16 +69,16 @@ artifacts {
 
 install {
     repositories.mavenInstaller {
-        pom.groupId = 'de.gesellix'
-        pom.artifactId = 'docker-engine'
-        pom.version = 'local'
+        pom.groupId = "de.gesellix"
+        pom.artifactId = "docker-engine"
+        pom.version = "local"
     }
 }
 
 publishing {
     publications {
         engineClient(MavenPublication) {
-            artifactId 'docker-engine'
+            artifactId "docker-engine"
             version artifactVersion
             from components.java
             artifact sourcesJar
@@ -89,17 +89,17 @@ publishing {
 bintray {
     user = System.env.BINTRAY_USER ?: project["bintray.user"]
     key = System.env.BINTRAY_API_KEY ?: project["bintray.key"]
-    publications = ['engineClient']
+    publications = ["engineClient"]
     pkg {
-        repo = 'docker-utils'
-        name = 'engine-client'
-        desc = 'Bare HTTP client for the Docker engine api'
-        licenses = ['MIT']
-        labels = ['docker', 'engine api', 'remote api', 'http', 'client', 'java', 'kotlin']
+        repo = "docker-utils"
+        name = "engine-client"
+        desc = "Bare HTTP client for the Docker engine api"
+        licenses = ["MIT"]
+        labels = ["docker", "engine api", "remote api", "http", "client", "java", "kotlin"]
         version = [
                 name: artifactVersion
         ]
-        vcsUrl = 'https://github.com/docker-client/docker-engine.git'
+        vcsUrl = "https://github.com/docker-client/docker-engine.git"
     }
     dryRun = bintrayDryRun
 }
