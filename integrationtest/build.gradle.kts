@@ -26,8 +26,6 @@ repositories {
 dependencies {
     compile(project(":engine"))
 
-    testCompile("net.jodah:failsafe:2.0.1")
-
     testRuntime("ch.qos.logback:logback-classic:1.2.3")
 
     testCompile("de.gesellix:testutil:2019-02-16T17-54-28")

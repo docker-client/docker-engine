@@ -45,7 +45,7 @@ dependencies {
 
     compile("org.apache.commons:commons-compress:1.18")
 
-    compile("de.gesellix:docker-filesocket:2019-02-16T17-47-40")
+    compile("de.gesellix:docker-filesocket:2019-02-17T22-50-19")
     testCompile("de.gesellix:testutil:2019-02-16T17-54-28")
 
     compile("org.bouncycastle:bcpkix-jdk15on:1.61")
