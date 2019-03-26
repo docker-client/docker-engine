@@ -33,24 +33,24 @@ repositories {
 }
 
 dependencies {
-    compile("org.codehaus.groovy:groovy:2.5.4")
-    compile("org.codehaus.groovy:groovy-json:2.5.4")
+    compile("org.codehaus.groovy:groovy:2.5.6")
+    compile("org.codehaus.groovy:groovy-json:2.5.6")
 
     compile("org.slf4j:slf4j-api:1.7.25")
     testCompile("ch.qos.logback:logback-classic:1.2.3")
 
     compile("com.squareup.okio:okio:2.2.2")
-    compile("com.squareup.okhttp3:okhttp:3.13.1")
-    testCompile("com.squareup.okhttp3:mockwebserver:3.13.1")
+    compile("com.squareup.okhttp3:okhttp:3.14.0")
+    testCompile("com.squareup.okhttp3:mockwebserver:3.14.0")
 
     compile("org.apache.commons:commons-compress:1.18")
 
-    compile("de.gesellix:docker-filesocket:2019-02-17T22-50-19")
-    testCompile("de.gesellix:testutil:2019-02-16T17-54-28")
+    compile("de.gesellix:docker-filesocket:2019-03-26T19-12-05")
+    testCompile("de.gesellix:testutil:2019-03-26T19-16-22")
 
     compile("org.bouncycastle:bcpkix-jdk15on:1.61")
 
-    testCompile("org.spockframework:spock-core:1.2-groovy-2.5")
+    testCompile("org.spockframework:spock-core:1.3-groovy-2.5")
     testCompile("cglib:cglib-nodep:3.2.10")
 }
 
