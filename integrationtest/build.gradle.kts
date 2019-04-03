@@ -28,7 +28,7 @@ dependencies {
 
     testRuntime("ch.qos.logback:logback-classic:1.2.3")
 
-    testCompile("de.gesellix:testutil:2019-03-26T19-16-22")
+    testCompile("de.gesellix:testutil:2019-04-03T07-51-41")
     testCompile("org.spockframework:spock-core:1.3-groovy-2.5")
     testCompile("cglib:cglib-nodep:3.2.10")
     testCompile("joda-time:joda-time:2.10.1")
