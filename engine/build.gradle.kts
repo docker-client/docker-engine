@@ -40,18 +40,18 @@ dependencies {
     testCompile("ch.qos.logback:logback-classic:1.2.3")
 
     compile("com.squareup.okio:okio:2.2.2")
-    compile("com.squareup.okhttp3:okhttp:3.14.0")
-    testCompile("com.squareup.okhttp3:mockwebserver:3.14.0")
+    compile("com.squareup.okhttp3:okhttp:4.0.0")
+    testCompile("com.squareup.okhttp3:mockwebserver:4.0.0")
 
     compile("org.apache.commons:commons-compress:1.18")
 
-    compile("de.gesellix:docker-filesocket:2019-04-03T07-52-55")
-    testCompile("de.gesellix:testutil:2019-04-03T07-51-41")
+    compile("de.gesellix:docker-filesocket:2019-06-27T20-03-50")
+    testCompile("de.gesellix:testutil:2019-06-27T19-49-48")
 
-    compile("org.bouncycastle:bcpkix-jdk15on:1.61")
+    compile("org.bouncycastle:bcpkix-jdk15on:1.62")
 
     testCompile("org.spockframework:spock-core:1.3-groovy-2.5")
-    testCompile("cglib:cglib-nodep:3.2.10")
+    testCompile("cglib:cglib-nodep:3.2.12")
 }
 
 tasks {

@@ -28,10 +28,10 @@ dependencies {
 
     testRuntime("ch.qos.logback:logback-classic:1.2.3")
 
-    testCompile("de.gesellix:testutil:2019-04-03T07-51-41")
+    testCompile("de.gesellix:testutil:2019-06-27T19-49-48")
     testCompile("org.spockframework:spock-core:1.3-groovy-2.5")
-    testCompile("cglib:cglib-nodep:3.2.10")
-    testCompile("joda-time:joda-time:2.10.1")
+    testCompile("cglib:cglib-nodep:3.2.12")
+    testCompile("joda-time:joda-time:2.10.2")
     testCompile("ch.qos.logback:logback-classic:1.2.3")
 }
 tasks.check.get().shouldRunAfter(project(":engine").tasks.check)
