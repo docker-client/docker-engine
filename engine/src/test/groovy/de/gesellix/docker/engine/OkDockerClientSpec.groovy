@@ -1034,7 +1034,10 @@ class OkDockerClientSpec extends Specification {
 
         @Override
         boolean verify(String host, SSLSession sslSession) {
-            return host == "localhost" || host == "127.0.0.1" || host.endsWith(".internal")
+            def whitelist = ["localhost",
+                             "127.0.0.1",
+                             "stratum.antpool.com"]
+            return host in whitelist || host.endsWith(".internal")
         }
     }
 }
