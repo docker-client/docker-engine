@@ -19,6 +19,7 @@ plugins {
     id("com.github.ben-manes.versions")
     id("net.ossindex.audit")
     id("com.jfrog.bintray")
+    id("io.freefair.github.package-registry-maven-publish")
 }
 
 java {
@@ -33,25 +34,25 @@ repositories {
 }
 
 dependencies {
-    compile("org.codehaus.groovy:groovy:2.5.6")
-    compile("org.codehaus.groovy:groovy-json:2.5.6")
+    compile("org.codehaus.groovy:groovy:2.5.8")
+    compile("org.codehaus.groovy:groovy-json:2.5.8")
 
-    compile("org.slf4j:slf4j-api:1.7.25")
+    compile("org.slf4j:slf4j-api:1.7.29")
     testCompile("ch.qos.logback:logback-classic:1.2.3")
 
-    compile("com.squareup.okio:okio:2.2.2")
-    compile("com.squareup.okhttp3:okhttp:4.0.0")
-    testCompile("com.squareup.okhttp3:mockwebserver:4.0.0")
+    compile("com.squareup.okio:okio:2.4.1")
+    compile("com.squareup.okhttp3:okhttp:4.2.2")
+    testCompile("com.squareup.okhttp3:mockwebserver:4.2.2")
 
-    compile("org.apache.commons:commons-compress:1.18")
+    compile("org.apache.commons:commons-compress:1.19")
 
-    compile("de.gesellix:docker-filesocket:2019-06-27T20-03-50")
-    testCompile("de.gesellix:testutil:2019-06-27T19-49-48")
+    compile("de.gesellix:docker-filesocket:2019-11-24T20-53-55")
+    testCompile("de.gesellix:testutil:2019-11-24T20-05-07")
 
-    compile("org.bouncycastle:bcpkix-jdk15on:1.62")
+    compile("org.bouncycastle:bcpkix-jdk15on:1.64")
 
     testCompile("org.spockframework:spock-core:1.3-groovy-2.5")
-    testCompile("cglib:cglib-nodep:3.2.12")
+    testCompile("cglib:cglib-nodep:3.3.0")
 }
 
 tasks {
@@ -98,7 +99,7 @@ publishing {
             artifactId = "docker-engine"
             version = rootProject.extra["artifactVersion"] as String
             from(components["java"])
-            artifact(sourcesJar.get())
+//            artifact(sourcesJar.get())
         }
     }
 }
