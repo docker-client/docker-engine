@@ -1034,7 +1034,7 @@ class OkDockerClientSpec extends Specification {
 
         @Override
         boolean verify(String host, SSLSession sslSession) {
-            return host == "localhost" || host == "127.0.0.1"
+            return host == "localhost" || host == "127.0.0.1" || host.endsWith(".internal")
         }
     }
 }
