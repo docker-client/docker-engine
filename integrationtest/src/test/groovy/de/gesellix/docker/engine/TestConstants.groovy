@@ -36,6 +36,17 @@ class TestConstants {
                     MinAPIVersion: { it == "1.12" },
                     Os           : { it == "linux" },
                     Version      : { it == "17.09.0-ce" }]
+        } else if (System.env.GITHUB_ACTOR) {
+            versionDetails = [
+                    ApiVersion   : { it == "1.40" },
+                    Arch         : { it == "amd64" },
+                    BuildTime    : { it == "2019-10-23T17:54:47.000000000+00:00" },
+                    GitCommit    : { it == "adfac69" },
+                    GoVersion    : { it == "go1.12.10" },
+                    KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
+                    MinAPIVersion: { it == "1.12" },
+                    Os           : { it == "linux" },
+                    Version      : { it == "3.0.8" }]
         } else if (LocalDocker.isNativeWindows()) {
             versionDetails = [
                     ApiVersion   : { it == "1.29" },
