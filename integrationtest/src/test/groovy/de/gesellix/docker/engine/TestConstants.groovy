@@ -24,8 +24,8 @@ class TestConstants {
         }
         imageName = "$imageRepo:$imageTag"
 
-        // TODO consider checking the Docker api version instead of "TRAVIS"
         if (System.env.TRAVIS) {
+            // TODO consider checking the Docker api version instead of "TRAVIS"
             versionDetails = [
                     ApiVersion   : { it == "1.32" },
                     Arch         : { it == "amd64" },
@@ -37,6 +37,7 @@ class TestConstants {
                     Os           : { it == "linux" },
                     Version      : { it == "17.09.0-ce" }]
         } else if (System.env.GITHUB_ACTOR) {
+            // TODO consider checking the Docker api version instead of "GITHUB_ACTOR"
             versionDetails = [
                     ApiVersion   : { it == "1.40" },
                     Arch         : { it == "amd64" },
