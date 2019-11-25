@@ -38,16 +38,29 @@ class TestConstants {
                     Version      : { it == "17.09.0-ce" }]
         } else if (System.env.GITHUB_ACTOR) {
             // TODO consider checking the Docker api version instead of "GITHUB_ACTOR"
-            versionDetails = [
-                    ApiVersion   : { it == "1.40" },
-                    Arch         : { it == "amd64" },
-                    BuildTime    : { it == "2019-10-23T17:54:47.000000000+00:00" },
-                    GitCommit    : { it == "adfac69" },
-                    GoVersion    : { it == "go1.12.10" },
-                    KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
-                    MinAPIVersion: { it == "1.12" },
-                    Os           : { it == "linux" },
-                    Version      : { it == "3.0.8" }]
+            if (LocalDocker.isNativeWindows()){
+                versionDetails = [
+                        ApiVersion   : { it == "1.40" },
+                        Arch         : { it == "amd64" },
+                        BuildTime    : { it == "10/17/2019 23:41:23" },
+                        GitCommit    : { it == "9e27c76fe0" },
+                        GoVersion    : { it == "go1.12.10" },
+                        KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
+                        MinAPIVersion: { it == "1.24" },
+                        Os           : { it == "windows" },
+                        Version      : { it == "19.03.4" }]
+            } else{
+                versionDetails = [
+                        ApiVersion   : { it == "1.40" },
+                        Arch         : { it == "amd64" },
+                        BuildTime    : { it == "2019-10-23T17:54:47.000000000+00:00" },
+                        GitCommit    : { it == "adfac69" },
+                        GoVersion    : { it == "go1.12.10" },
+                        KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
+                        MinAPIVersion: { it == "1.12" },
+                        Os           : { it == "linux" },
+                        Version      : { it == "3.0.8" }]
+            }
         } else if (LocalDocker.isNativeWindows()) {
             versionDetails = [
                     ApiVersion   : { it == "1.29" },
