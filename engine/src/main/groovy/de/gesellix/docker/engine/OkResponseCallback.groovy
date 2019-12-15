@@ -56,7 +56,7 @@ class OkResponseCallback implements Callback {
                 void run() {
                     try {
                         def bufferedSink = Okio.buffer(connectionProvider.sink)
-                        IOUtils.copy(stdinSource, bufferedSink.buffer())
+                        IOUtils.copy(stdinSource, bufferedSink.getBuffer())
                         bufferedSink.flush()
                         def done = new CountDownLatch(1)
                         delayed(100, {
@@ -96,7 +96,7 @@ class OkResponseCallback implements Callback {
                 @Override
                 void run() {
                     try {
-                        IOUtils.copy(connectionProvider.source, bufferedStdout.buffer())
+                        IOUtils.copy(connectionProvider.source, bufferedStdout.getBuffer())
                         bufferedStdout.flush()
                         def done = new CountDownLatch(1)
                         delayed(100, {

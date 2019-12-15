@@ -251,7 +251,7 @@ class OkDockerClient implements EngineClient {
 
     def createRequestBody(String method, String contentType, body) {
         if (!body && HttpMethod.requiresRequestBody(method)) {
-            return RequestBody.create(MediaType.parse("application/json"), "")
+            return RequestBody.create("", MediaType.parse("application/json"))
         }
 
         def requestBody = null
@@ -260,17 +260,17 @@ class OkDockerClient implements EngineClient {
                 case "application/json":
                     def json = new JsonBuilder()
                     json body
-                    requestBody = RequestBody.create(MediaType.parse("application/json"), json.toString())
+                    requestBody = RequestBody.create(json.toString(), MediaType.parse(contentType))
                     break
                 case "application/octet-stream":
                     def source = Okio.source(body as InputStream)
                     def buffer = Okio.buffer(source)
-                    requestBody = RequestBody.create(MediaType.parse("application/octet-stream"), buffer.readByteArray())
+                    requestBody = RequestBody.create(buffer.readByteArray(), MediaType.parse(contentType))
                     break
                 default:
                     def source = Okio.source(body as InputStream)
                     def buffer = Okio.buffer(source)
-                    requestBody = RequestBody.create(MediaType.parse(contentType), buffer.readByteArray())
+                    requestBody = RequestBody.create(buffer.readByteArray(), MediaType.parse(contentType))
                     break
             }
         }
