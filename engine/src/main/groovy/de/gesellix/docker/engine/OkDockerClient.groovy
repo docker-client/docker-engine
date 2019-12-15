@@ -168,7 +168,6 @@ class OkDockerClient implements EngineClient {
                 .encodedQuery(queryAsString ?: null)
         def httpUrl = createUrl(urlBuilder, protocol, host, port)
 
-
         def requestBody = createRequestBody(method, contentType, body)
         builder
                 .method(method, requestBody)
@@ -284,7 +283,7 @@ class OkDockerClient implements EngineClient {
         if (response.status.code == 204) {
             if (response.stream) {
                 // redirect the response body to /dev/null, since it's expected to be empty
-                IOUtils.consumeToDevNull(response.stream as InputStream)
+                IOUtils.consumeToDevNull(response.stream)
             }
             return response
         }
@@ -292,11 +291,13 @@ class OkDockerClient implements EngineClient {
         switch (response.mimeType) {
             case "application/vnd.docker.raw-stream":
                 InputStream rawStream = new RawInputStream(httpResponse.body().byteStream())
-                response.stream = rawStream
                 if (config.stdout) {
                     log.debug("redirecting to stdout.")
-                    IOUtils.copy(response.stream as InputStream, config.stdout as OutputStream)
+                    IOUtils.copy(rawStream, config.stdout as OutputStream)
                     response.stream = null
+                }
+                else {
+                    response.stream = rawStream
                 }
                 break
             case "application/json":
@@ -307,11 +308,11 @@ class OkDockerClient implements EngineClient {
                 break
             case "text/html":
             case "text/plain":
-                def stream = httpResponse.body().byteStream()
+                InputStream stream = httpResponse.body().byteStream()
                 consumeResponseBody(response, stream, config)
                 break
             case "application/octet-stream":
-                def stream = httpResponse.body().byteStream()
+                InputStream stream = httpResponse.body().byteStream()
                 log.debug("passing through via `response.stream`.")
                 if (config.stdout) {
                     IOUtils.copy(stream, config.stdout as OutputStream)
@@ -325,7 +326,7 @@ class OkDockerClient implements EngineClient {
                 if (response.stream) {
                     if (config.stdout) {
                         log.debug("redirecting to stdout.")
-                        IOUtils.copy(response.stream as InputStream, config.stdout as OutputStream)
+                        IOUtils.copy(response.stream, config.stdout as OutputStream)
                         response.stream = null
                     }
                     else {

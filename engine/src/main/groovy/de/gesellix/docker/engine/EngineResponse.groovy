@@ -9,10 +9,10 @@ class EngineResponse {
 
     EngineResponseStatus status = new EngineResponseStatus()
     def headers
-    def contentType
-    def mimeType
-    def contentLength
-    def stream
+    String contentType
+    String mimeType
+    String contentLength
+    InputStream stream
     def content
 
     Future taskFuture
