@@ -330,7 +330,7 @@ class OkDockerClient implements EngineClient {
                         response.stream = null
                     }
                     else {
-                        log.warn("stream won't be consumed.")
+                        log.info("${response.mimeType} stream won't be consumed, but is available in the response.")
                     }
                 }
                 break
