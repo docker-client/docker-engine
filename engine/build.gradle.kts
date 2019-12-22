@@ -34,25 +34,25 @@ repositories {
 }
 
 dependencies {
-    compile("org.codehaus.groovy:groovy:2.5.8")
-    compile("org.codehaus.groovy:groovy-json:2.5.8")
+    implementation("org.codehaus.groovy:groovy:2.5.8")
+    implementation("org.codehaus.groovy:groovy-json:2.5.8")
 
-    compile("org.slf4j:slf4j-api:1.7.29")
-    testCompile("ch.qos.logback:logback-classic:1.2.3")
+    implementation("org.slf4j:slf4j-api:1.7.29")
+    testImplementation("ch.qos.logback:logback-classic:1.2.3")
 
-    compile("com.squareup.okio:okio:2.4.1")
-    compile("com.squareup.okhttp3:okhttp:4.2.2")
-    testCompile("com.squareup.okhttp3:mockwebserver:4.2.2")
+    implementation("com.squareup.okio:okio:2.4.1")
+    implementation("com.squareup.okhttp3:okhttp:4.2.2")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.2.2")
 
-    compile("org.apache.commons:commons-compress:1.19")
+    implementation("org.apache.commons:commons-compress:1.19")
 
-    compile("de.gesellix:docker-filesocket:2019-11-24T20-53-55")
-    testCompile("de.gesellix:testutil:2019-11-24T20-05-07")
+    implementation("de.gesellix:docker-filesocket:2019-12-18T14-21-21")
+    testImplementation("de.gesellix:testutil:2019-12-21T20-15-14")
 
-    compile("org.bouncycastle:bcpkix-jdk15on:1.64")
+    implementation("org.bouncycastle:bcpkix-jdk15on:1.64")
 
-    testCompile("org.spockframework:spock-core:1.3-groovy-2.5")
-    testCompile("cglib:cglib-nodep:3.3.0")
+    testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
+    testImplementation("cglib:cglib-nodep:3.3.0")
 }
 
 tasks {

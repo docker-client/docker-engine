@@ -678,7 +678,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(code, message, ResponseBody.create(mediaType, responseBody)))
+                        .addInterceptor(new ConstantResponseInterceptor(code, message, ResponseBody.create(responseBody, mediaType)))
                         .build()
             }
         }
@@ -710,7 +710,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(mediaType, responseBody)))
+                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(responseBody, mediaType)))
                         .build()
             }
         }
@@ -740,7 +740,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(mediaType, responseBody)))
+                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(responseBody, mediaType)))
                         .build()
             }
         }
@@ -765,7 +765,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(mediaType, responseBody)))
+                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(responseBody, mediaType)))
                         .build()
             }
         }
@@ -792,7 +792,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(mediaType, -1, new Buffer().write(responseBody.bytes))))
+                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(new Buffer().write(responseBody.bytes), mediaType, -1)))
                         .build()
             }
         }
@@ -817,7 +817,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(mediaType, -1, new Buffer().write(responseBody.bytes))))
+                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(new Buffer().write(responseBody.bytes), mediaType, -1)))
                         .build()
             }
         }
@@ -842,7 +842,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(mediaType, -1, new Buffer().write(responseBody.bytes))))
+                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(new Buffer().write(responseBody.bytes), mediaType, -1)))
                         .build()
             }
         }
@@ -869,7 +869,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(mediaType, responseBody)))
+                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(responseBody, mediaType)))
                         .build()
             }
         }
@@ -896,7 +896,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(mediaType, responseBody.bytes)))
+                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(responseBody.bytes, mediaType)))
                         .build()
             }
         }
@@ -925,7 +925,7 @@ class OkDockerClientSpec extends Specification {
             @Override
             OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
                 clientBuilder
-                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(mediaType, responseBody.bytes)))
+                        .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(responseBody.bytes, mediaType)))
                         .build()
             }
         }
@@ -1018,7 +1018,7 @@ class OkDockerClientSpec extends Specification {
             this.responseVerifier = responseVerifier
             this.statusCode = 200
             this.statusMessage = "OK"
-            this.responseBody = ResponseBody.create(MediaType.parse("text/plain"), "ok by ${getClass().simpleName}")
+            this.responseBody = ResponseBody.create("ok by ${getClass().simpleName}", MediaType.parse("text/plain"))
         }
 
         @Override

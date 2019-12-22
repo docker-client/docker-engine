@@ -17,7 +17,8 @@ class TestConstants {
             imageTag = "os-windows"
             imageDigest = "sha256:fd9e2bfa5acf34d40971f7749fcb560f3ef4423a814218055e5d124579ce7bd0"
             //imageDigest = "sha256:ad668e7a31ddd5df9fa481b983df0ea300045da865179cfe058503c6ef16237d"
-        } else {
+        }
+        else {
             imageRepo = "gesellix/testimage"
             imageTag = "os-linux"
             imageDigest = "sha256:0ce18ad10d281bef97fe2333a9bdcc2dbf84b5302f66d796fed73aac675320db"
@@ -36,20 +37,22 @@ class TestConstants {
                     MinAPIVersion: { it == "1.12" },
                     Os           : { it == "linux" },
                     Version      : { it == "17.09.0-ce" }]
-        } else if (System.env.GITHUB_ACTOR) {
+        }
+        else if (System.env.GITHUB_ACTOR) {
             // TODO consider checking the Docker api version instead of "GITHUB_ACTOR"
-            if (LocalDocker.isNativeWindows()){
+            if (LocalDocker.isNativeWindows()) {
                 versionDetails = [
                         ApiVersion   : { it == "1.40" },
                         Arch         : { it == "amd64" },
-                        BuildTime    : { it == "10/17/2019 23:41:23" },
-                        GitCommit    : { it == "9e27c76fe0" },
-                        GoVersion    : { it == "go1.12.10" },
+                        BuildTime    : { it == "11/13/2019 07:58:51" },
+                        GitCommit    : { it == "2ee0c57608" },
+                        GoVersion    : { it == "go1.12.12" },
                         KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
                         MinAPIVersion: { it == "1.24" },
                         Os           : { it == "windows" },
-                        Version      : { it == "19.03.4" }]
-            } else{
+                        Version      : { it == "19.03.5" }]
+            }
+            else {
                 versionDetails = [
                         ApiVersion   : { it == "1.40" },
                         Arch         : { it == "amd64" },
@@ -61,18 +64,20 @@ class TestConstants {
                         Os           : { it == "linux" },
                         Version      : { it == "3.0.8" }]
             }
-        } else if (LocalDocker.isNativeWindows()) {
+        }
+        else if (LocalDocker.isNativeWindows()) {
             versionDetails = [
-                    ApiVersion   : { it == "1.29" },
+                    ApiVersion   : { it == "1.40" },
                     Arch         : { it == "amd64" },
-                    BuildTime    : { it == "2017-05-04T21:43:09.220628248+00:00" },
-                    GitCommit    : { it == "89658be" },
-                    GoVersion    : { it == "go1.7.5" },
+                    BuildTime    : { it == "2019-11-13T07:36:50.000000000+00:00" },
+                    GitCommit    : { it == "633a0ea" },
+                    GoVersion    : { it == "go1.12.12" },
                     KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
                     MinAPIVersion: { it == "1.24" },
                     Os           : { it == "windows" },
-                    Version      : { it == "17.05.0-ce" }]
-        } else {
+                    Version      : { it == "19.03.5" }]
+        }
+        else {
             versionDetails = [
                     ApiVersion   : { it == "1.40" },
                     Arch         : { it == "amd64" },
