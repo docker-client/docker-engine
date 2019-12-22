@@ -36,6 +36,7 @@ repositories {
 dependencies {
     implementation("org.codehaus.groovy:groovy:2.5.8")
     implementation("org.codehaus.groovy:groovy-json:2.5.8")
+    implementation("com.squareup.moshi:moshi:1.9.2")
 
     implementation("org.slf4j:slf4j-api:1.7.29")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")

@@ -5,8 +5,8 @@ import de.gesellix.docker.client.filesocket.NpipeSocketFactory
 import de.gesellix.docker.client.filesocket.UnixSocket
 import de.gesellix.docker.client.filesocket.UnixSocketFactory
 import de.gesellix.docker.client.filesocket.UnixSocketFactorySupport
-import de.gesellix.docker.json.JsonContentHandler
 import de.gesellix.docker.rawstream.RawInputStream
+import de.gesellix.docker.response.JsonContentHandler
 import de.gesellix.docker.ssl.SslSocketConfigFactory
 import de.gesellix.util.IOUtils
 import groovy.json.JsonBuilder
@@ -22,6 +22,7 @@ import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okhttp3.internal.http.HttpMethod
 import okio.Okio
+import okio.Source
 
 import java.util.regex.Pattern
 
@@ -304,10 +305,13 @@ class OkDockerClient implements EngineClient {
                 }
                 break
             case "application/json":
-                def content = new JsonContentHandler(config.async as boolean).getContent(
-                        httpResponse.body().byteStream(),
-                        httpResponse.header("transfer-encoding") == "chunked")
-                consumeResponseBody(response, content, config)
+                if (config.async) {
+                    consumeResponseBody(response, httpResponse.body().source(), config)
+                }
+                else {
+                    def content = new JsonContentHandler().getContent(httpResponse.body().source())
+                    consumeResponseBody(response, content, config)
+                }
                 break
             case "text/html":
             case "text/plain":
@@ -394,7 +398,23 @@ class OkDockerClient implements EngineClient {
     }
 
     def consumeResponseBody(EngineResponse response, Object content, Map config) {
-        if (content instanceof InputStream) {
+        if (content instanceof Source) {
+            if (config.async) {
+                response.stream = Okio.buffer(content).inputStream()
+            }
+            else if (config.stdout) {
+                response.stream = null
+                Okio.buffer(Okio.sink(config.stdout as OutputStream)).writeAll(content)
+            }
+            else if (response.contentLength && Integer.parseInt(response.contentLength as String) >= 0) {
+                response.stream = null
+                response.content = Okio.buffer(content).readUtf8()
+            }
+            else {
+                response.stream = Okio.buffer(content).inputStream()
+            }
+        }
+        else if (content instanceof InputStream) {
             if (config.async) {
                 response.stream = content as InputStream
             }
