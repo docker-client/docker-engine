@@ -98,7 +98,7 @@ class OkDockerClient implements EngineClient {
         Request.Builder requestBuilder = prepareRequest(new Request.Builder(), config)
         def request = requestBuilder.build()
 
-        OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), config.timeout ?: 0)
+        OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), (config.timeout ?: 0) as int)
         def client = newClient(clientBuilder)
 
         def wsCall = client.newWebSocket(request, listener)
@@ -120,19 +120,22 @@ class OkDockerClient implements EngineClient {
         Request.Builder requestBuilder = prepareRequest(new Request.Builder(), config)
         def request = requestBuilder.build()
 
-        OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), config.timeout ?: 0)
-        def connectionProvider = new ConnectionProvider()
-        clientBuilder.addNetworkInterceptor(connectionProvider)
+        OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), (config.timeout ?: 0) as int)
+        def responseCallback = null
+        if (attachConfig) {
+            def connectionProvider = new ConnectionProvider()
+            clientBuilder.addNetworkInterceptor(connectionProvider)
+            responseCallback = new OkResponseCallback(connectionProvider, attachConfig)
+        }
         def client = newClient(clientBuilder)
 
         log.debug("${request.method()} ${request.url()} using proxy: ${client.proxy()}")
 
         def call = client.newCall(request)
-        if (attachConfig) {
-            def cb = new OkResponseCallback(client, connectionProvider, attachConfig)
-            call.enqueue(cb)
+        if (responseCallback) {
+            call.enqueue(responseCallback)
             log.debug("request enqueued")
-            def dockerResponse = new EngineResponse(responseCallback: cb)
+            def dockerResponse = new EngineResponse(responseCallback: responseCallback)
             return dockerResponse
         }
         else {
@@ -214,8 +217,8 @@ class OkDockerClient implements EngineClient {
 
         // do we need to disable the timeout for streaming?
         builder
-                .connectTimeout(currentTimeout as int, MILLISECONDS)
-                .readTimeout(currentTimeout as int, MILLISECONDS)
+                .connectTimeout(currentTimeout, MILLISECONDS)
+                .readTimeout(currentTimeout, MILLISECONDS)
         builder
     }
 

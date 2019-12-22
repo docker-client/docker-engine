@@ -4,7 +4,6 @@ import de.gesellix.util.IOUtils
 import groovy.util.logging.Slf4j
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.OkHttpClient
 import okhttp3.Response
 import okio.Okio
 
@@ -15,15 +14,13 @@ import static java.util.concurrent.TimeUnit.SECONDS
 @Slf4j
 class OkResponseCallback implements Callback {
 
-    OkHttpClient client
     ConnectionProvider connectionProvider
     AttachConfig attachConfig
     Closure onResponse
     Closure onSinkClosed
     Closure onSourceConsumed
 
-    OkResponseCallback(OkHttpClient client, ConnectionProvider connectionProvider, AttachConfig attachConfig) {
-        this.client = client
+    OkResponseCallback(ConnectionProvider connectionProvider, AttachConfig attachConfig) {
         this.connectionProvider = connectionProvider
         this.attachConfig = attachConfig
         this.onResponse = attachConfig.onResponse
