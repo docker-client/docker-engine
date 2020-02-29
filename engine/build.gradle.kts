@@ -100,7 +100,15 @@ publishing {
             artifactId = "docker-engine"
             version = rootProject.extra["artifactVersion"] as String
             from(components["java"])
-//            artifact(sourcesJar.get())
+            artifact(sourcesJar.get())
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
         }
     }
 }
