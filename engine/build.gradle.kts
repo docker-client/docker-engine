@@ -34,21 +34,21 @@ repositories {
 }
 
 dependencies {
-    implementation("org.codehaus.groovy:groovy:2.5.8")
-    implementation("org.codehaus.groovy:groovy-json:2.5.8")
+    implementation("org.codehaus.groovy:groovy:2.5.9")
+    implementation("org.codehaus.groovy:groovy-json:2.5.9")
     implementation("com.squareup.moshi:moshi:1.9.2")
 
-    implementation("org.slf4j:slf4j-api:1.7.29")
+    implementation("org.slf4j:slf4j-api:1.7.30")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
 
-    implementation("com.squareup.okio:okio:2.4.1")
-    implementation("com.squareup.okhttp3:okhttp:4.2.2")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.2.2")
+    implementation("com.squareup.okio:okio:2.4.3")
+    implementation("com.squareup.okhttp3:okhttp:4.4.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.4.0")
 
-    implementation("org.apache.commons:commons-compress:1.19")
+    implementation("org.apache.commons:commons-compress:1.20")
 
-    implementation("de.gesellix:docker-filesocket:2019-12-18T14-21-21")
-    testImplementation("de.gesellix:testutil:2019-12-21T20-15-14")
+    implementation("de.gesellix:docker-filesocket:2020-02-29T17-48-11")
+    testImplementation("de.gesellix:testutil:2020-02-29T17-37-38")
 
     implementation("org.bouncycastle:bcpkix-jdk15on:1.64")
 
