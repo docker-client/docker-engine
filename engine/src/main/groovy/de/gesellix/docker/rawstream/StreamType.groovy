@@ -21,6 +21,7 @@ enum StreamType {
     STDIN((byte) 0),
     STDOUT((byte) 1),
     STDERR((byte) 2),
+    // Systemerr can sometimes occur. See https://github.com/moby/moby/pull/30922 for details.
     SYSTEMERR((byte) 3)
 
     private final byte streamTypeId
