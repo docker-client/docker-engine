@@ -1,11 +1,17 @@
 package de.gesellix.docker.engine
 
+import groovy.util.logging.Slf4j
+import okhttp3.Response
 import spock.lang.IgnoreIf
 import spock.lang.Requires
 import spock.lang.Specification
 
-import static de.gesellix.docker.engine.TestConstants.CONSTANTS
+import java.util.concurrent.CountDownLatch
 
+import static de.gesellix.docker.engine.TestConstants.CONSTANTS
+import static java.util.concurrent.TimeUnit.SECONDS
+
+@Slf4j
 @Requires({ LocalDocker.available() })
 class OkDockerClientIntegrationSpec extends Specification {
 
@@ -95,5 +101,94 @@ class OkDockerClientIntegrationSpec extends Specification {
                                        path  : "/info"])
         then:
         response.status.code == 200
+    }
+
+    def "attach (interactive)"() {
+        given:
+        def client = new OkDockerClient()
+
+        // pull image (ensure it exists locally)
+        client.post([path   : "/images/create",
+                     query  : [fromImage: CONSTANTS.imageRepo,
+                               tag      : CONSTANTS.imageTag],
+                     headers: [EncodedRegistryAuth: "."]])
+        // create container
+        def containerConfig = [
+                Tty      : true,
+                OpenStdin: true,
+                Image    : CONSTANTS.imageName,
+                Cmd      : ["/bin/sh", "-c", "read line && echo \"->\$line\""]
+        ]
+        String containerId = client.post([path              : "/containers/create".toString(),
+                                          query             : [name: ""],
+                                          body              : containerConfig,
+                                          requestContentType: "application/json"]).content.Id
+        // start container
+        client.post([path              : "/containers/${containerId}/start".toString(),
+                     requestContentType: "application/json"])
+        // inspect container
+        def multiplexStreams = !client.get([path: "/containers/${containerId}/json"]).content.Config.Tty
+
+        def content = "attach ${UUID.randomUUID()}"
+        def expectedOutput = "$content\r\n->$content\r\n"
+
+        def outputStream = new ByteArrayOutputStream() {
+
+            @Override
+            synchronized void write(byte[] b, int off, int len) {
+                log.info("write ${off}/${len} to ${b.length} bytes")
+                super.write(b, off, len)
+            }
+        }
+        def inputStream = new ByteArrayInputStream("$content\n".bytes) {
+
+            @Override
+            synchronized int read(byte[] b, int off, int len) {
+                log.info("read ${off}/${len} from ${b.length} bytes")
+                return super.read(b, off, len)
+            }
+        }
+
+        def onSinkClosed = new CountDownLatch(1)
+        def onSourceConsumed = new CountDownLatch(1)
+
+        def attachConfig = new AttachConfig()
+        attachConfig.streams.stdin = inputStream
+        attachConfig.streams.stdout = outputStream
+        attachConfig.onSinkClosed = { Response response ->
+            log.info("[attach (interactive)] sink closed \n${outputStream.toString()}")
+            onSinkClosed.countDown()
+        }
+        attachConfig.onSourceConsumed = {
+            if (outputStream.toByteArray() == expectedOutput.bytes) {
+                log.info("[attach (interactive)] fully consumed \n${outputStream.toString()}")
+                onSourceConsumed.countDown()
+            }
+            else {
+                log.info("[attach (interactive)] partially consumed \n${outputStream.toString()}")
+            }
+        }
+
+        when:
+//        def response =
+        client.post([path            : "/containers/${containerId}/attach".toString(),
+                     query           : [stream: 1, stdin: 1, stdout: 1, stderr: 1],
+                     attach          : attachConfig,
+                     multiplexStreams: multiplexStreams])
+        def sinkClosed = onSinkClosed.await(5, SECONDS)
+        def sourceConsumed = onSourceConsumed.await(5, SECONDS)
+
+        then:
+        sinkClosed
+        sourceConsumed
+        outputStream.size() > 0
+        outputStream.toByteArray() == expectedOutput.bytes
+
+        cleanup:
+        client.post([path : "/containers/${containerId}/stop".toString(),
+                     query: [t: 10]])
+        client.post([path: "/containers/${containerId}/wait".toString()])
+        client.delete([path : "/containers/${containerId}".toString(),
+                       query: [:]])
     }
 }

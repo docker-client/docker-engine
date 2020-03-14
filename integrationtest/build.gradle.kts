@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
     implementation(project(":engine"))
+    testImplementation("com.squareup.okhttp3:okhttp:4.4.0")
 
     testImplementation("org.slf4j:slf4j-api:1.7.30")
     testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
