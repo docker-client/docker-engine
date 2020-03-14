@@ -1,7 +1,7 @@
 package de.gesellix.docker.engine
 
 import de.gesellix.docker.client.filesocket.NamedPipeSocket
-import de.gesellix.docker.client.filesocket.NpipeSocketFactory
+import de.gesellix.docker.client.filesocket.NamedPipeSocketFactory
 import de.gesellix.docker.client.filesocket.UnixSocket
 import de.gesellix.docker.client.filesocket.UnixSocketFactory
 import de.gesellix.docker.client.filesocket.UnixSocketFactorySupport
@@ -49,7 +49,7 @@ class OkDockerClient implements EngineClient {
         if (new UnixSocketFactorySupport().supported) {
             socketFactories.unix = new UnixSocketFactory()
         }
-        socketFactories.npipe = new NpipeSocketFactory()
+        socketFactories.npipe = new NamedPipeSocketFactory()
         socketFactories.https = new SslSocketConfigFactory()
 
         this.dockerClientConfig = dockerClientConfig
@@ -198,7 +198,7 @@ class OkDockerClient implements EngineClient {
                     .build()
         }
         else if (protocol == 'npipe') {
-            def npipeSocketFactory = socketFactories[protocol] as NpipeSocketFactory
+            def npipeSocketFactory = socketFactories[protocol] as NamedPipeSocketFactory
             builder
                     .socketFactory(npipeSocketFactory)
                     .dns(npipeSocketFactory)
