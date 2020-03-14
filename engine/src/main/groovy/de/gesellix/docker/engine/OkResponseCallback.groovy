@@ -1,6 +1,5 @@
 package de.gesellix.docker.engine
 
-import de.gesellix.util.IOUtils
 import groovy.util.logging.Slf4j
 import okhttp3.Call
 import okhttp3.Callback
@@ -53,7 +52,7 @@ class OkResponseCallback implements Callback {
                 void run() {
                     try {
                         def bufferedSink = Okio.buffer(connectionProvider.sink)
-                        IOUtils.copy(stdinSource, bufferedSink.getBuffer())
+                        bufferedSink.writeAll(stdinSource)
                         bufferedSink.flush()
                         def done = new CountDownLatch(1)
                         delayed(100, {
@@ -93,7 +92,7 @@ class OkResponseCallback implements Callback {
                 @Override
                 void run() {
                     try {
-                        IOUtils.copy(connectionProvider.source, bufferedStdout.getBuffer())
+                        bufferedStdout.writeAll(connectionProvider.source)
                         bufferedStdout.flush()
                         def done = new CountDownLatch(1)
                         delayed(100, {
