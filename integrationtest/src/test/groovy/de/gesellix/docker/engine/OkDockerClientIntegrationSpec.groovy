@@ -117,7 +117,9 @@ class OkDockerClientIntegrationSpec extends Specification {
                 Tty      : true,
                 OpenStdin: true,
                 Image    : CONSTANTS.imageName,
-                Cmd      : ["/bin/sh", "-c", "read line && echo \"->\$line\""]
+                Cmd      : LocalDocker.isNativeWindows()
+                        ? ["cmd", "/V:ON", "/C", "set /p line= & echo #!line!#"]
+                        : ["/bin/sh", "-c", "read line && echo \"#\$line#\""]
         ]
         String containerId = client.post([path              : "/containers/create".toString(),
                                           query             : [name: ""],
@@ -130,7 +132,7 @@ class OkDockerClientIntegrationSpec extends Specification {
         def multiplexStreams = !client.get([path: "/containers/${containerId}/json"]).content.Config.Tty
 
         def content = "attach ${UUID.randomUUID()}"
-        def expectedOutput = "$content\r\n->$content\r\n"
+        def expectedOutput = "$content\r\n#$content#\r\n"
 
         def outputStream = new ByteArrayOutputStream() {
 
@@ -140,21 +142,14 @@ class OkDockerClientIntegrationSpec extends Specification {
                 super.write(b, off, len)
             }
         }
-        def inputStream = new ByteArrayInputStream("$content\n".bytes) {
-
-            @Override
-            synchronized int read(byte[] b, int off, int len) {
-                log.info("read ${off}/${len} from ${b.length} bytes")
-                return super.read(b, off, len)
-            }
-        }
+        def stdin = new PipedOutputStream()
 
         def onSinkClosed = new CountDownLatch(1)
         def onSinkWritten = new CountDownLatch(1)
         def onSourceConsumed = new CountDownLatch(1)
 
         def attachConfig = new AttachConfig()
-        attachConfig.streams.stdin = inputStream
+        attachConfig.streams.stdin = new PipedInputStream(stdin)
         attachConfig.streams.stdout = outputStream
         attachConfig.onSinkClosed = { Response response ->
             log.info("[attach (interactive)] sink closed \n${outputStream.toString()}")
@@ -173,12 +168,15 @@ class OkDockerClientIntegrationSpec extends Specification {
                 log.info("[attach (interactive)] partially consumed \n${outputStream.toString()}")
             }
         }
-
-        when:
         client.post([path            : "/containers/${containerId}/attach".toString(),
                      query           : [stream: 1, stdin: 1, stdout: 1, stderr: 1],
                      attach          : attachConfig,
                      multiplexStreams: multiplexStreams])
+
+        when:
+        stdin.write("$content\n".bytes)
+        stdin.flush()
+        stdin.close()
         def sourceConsumed = onSourceConsumed.await(5, SECONDS)
         def sinkWritten = onSinkWritten.await(5, SECONDS)
         def sinkClosed = onSinkClosed.await(5, SECONDS)
