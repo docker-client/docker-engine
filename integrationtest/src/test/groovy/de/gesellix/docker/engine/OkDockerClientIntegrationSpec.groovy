@@ -134,14 +134,7 @@ class OkDockerClientIntegrationSpec extends Specification {
         def content = "attach ${UUID.randomUUID()}"
         def expectedOutput = "$content\r\n#$content#\r\n"
 
-        def outputStream = new ByteArrayOutputStream() {
-
-            @Override
-            synchronized void write(byte[] b, int off, int len) {
-                log.info("write ${off}/${len} to ${b.length} bytes")
-                super.write(b, off, len)
-            }
-        }
+        def stdout = new ByteArrayOutputStream()
         def stdin = new PipedOutputStream()
 
         def onSinkClosed = new CountDownLatch(1)
@@ -150,22 +143,22 @@ class OkDockerClientIntegrationSpec extends Specification {
 
         def attachConfig = new AttachConfig()
         attachConfig.streams.stdin = new PipedInputStream(stdin)
-        attachConfig.streams.stdout = outputStream
+        attachConfig.streams.stdout = stdout
         attachConfig.onSinkClosed = { Response response ->
-            log.info("[attach (interactive)] sink closed \n${outputStream.toString()}")
+            log.info("[attach (interactive)] sink closed \n${stdout.toString()}")
             onSinkClosed.countDown()
         }
         attachConfig.onSinkWritten = { Response response ->
-            log.info("[attach (interactive)] sink written \n${outputStream.toString()}")
+            log.info("[attach (interactive)] sink written \n${stdout.toString()}")
             onSinkWritten.countDown()
         }
         attachConfig.onSourceConsumed = {
-            if (outputStream.toByteArray() == expectedOutput.bytes) {
-                log.info("[attach (interactive)] fully consumed \n${outputStream.toString()}")
+            if (stdout.toByteArray() == expectedOutput.bytes) {
+                log.info("[attach (interactive)] fully consumed \n${stdout.toString()}")
                 onSourceConsumed.countDown()
             }
             else {
-                log.info("[attach (interactive)] partially consumed \n${outputStream.toString()}")
+                log.info("[attach (interactive)] partially consumed \n${stdout.toString()}")
             }
         }
         client.post([path            : "/containers/${containerId}/attach".toString(),
@@ -185,8 +178,8 @@ class OkDockerClientIntegrationSpec extends Specification {
         sinkClosed
         sinkWritten
         sourceConsumed
-        outputStream.size() > 0
-        outputStream.toByteArray() == expectedOutput.bytes
+        stdout.size() > 0
+        stdout.toByteArray() == expectedOutput.bytes
 
         cleanup:
         client.post([path : "/containers/${containerId}/stop".toString(),
