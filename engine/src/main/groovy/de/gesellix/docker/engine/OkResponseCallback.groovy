@@ -17,6 +17,7 @@ class OkResponseCallback implements Callback {
     AttachConfig attachConfig
     Closure onResponse
     Closure onSinkClosed
+    Closure onSinkWritten
     Closure onSourceConsumed
 
     OkResponseCallback(ConnectionProvider connectionProvider, AttachConfig attachConfig) {
@@ -24,6 +25,7 @@ class OkResponseCallback implements Callback {
         this.attachConfig = attachConfig
         this.onResponse = attachConfig.onResponse
         this.onSinkClosed = attachConfig.onSinkClosed
+        this.onSinkWritten = attachConfig.onSinkWritten
         this.onSourceConsumed = attachConfig.onSourceConsumed
     }
 
@@ -54,6 +56,7 @@ class OkResponseCallback implements Callback {
                         def bufferedSink = Okio.buffer(connectionProvider.sink)
                         bufferedSink.writeAll(stdinSource)
                         bufferedSink.flush()
+                        onSinkWritten(response)
                         def done = new CountDownLatch(1)
                         delayed(100, {
                             try {
