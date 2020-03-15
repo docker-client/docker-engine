@@ -150,6 +150,7 @@ class OkDockerClientIntegrationSpec extends Specification {
         }
 
         def onSinkClosed = new CountDownLatch(1)
+        def onSinkWritten = new CountDownLatch(1)
         def onSourceConsumed = new CountDownLatch(1)
 
         def attachConfig = new AttachConfig()
@@ -158,6 +159,10 @@ class OkDockerClientIntegrationSpec extends Specification {
         attachConfig.onSinkClosed = { Response response ->
             log.info("[attach (interactive)] sink closed \n${outputStream.toString()}")
             onSinkClosed.countDown()
+        }
+        attachConfig.onSinkWritten = { Response response ->
+            log.info("[attach (interactive)] sink written \n${outputStream.toString()}")
+            onSinkWritten.countDown()
         }
         attachConfig.onSourceConsumed = {
             if (outputStream.toByteArray() == expectedOutput.bytes) {
@@ -170,16 +175,17 @@ class OkDockerClientIntegrationSpec extends Specification {
         }
 
         when:
-//        def response =
         client.post([path            : "/containers/${containerId}/attach".toString(),
                      query           : [stream: 1, stdin: 1, stdout: 1, stderr: 1],
                      attach          : attachConfig,
                      multiplexStreams: multiplexStreams])
-        def sinkClosed = onSinkClosed.await(5, SECONDS)
         def sourceConsumed = onSourceConsumed.await(5, SECONDS)
+        def sinkWritten = onSinkWritten.await(5, SECONDS)
+        def sinkClosed = onSinkClosed.await(5, SECONDS)
 
         then:
         sinkClosed
+        sinkWritten
         sourceConsumed
         outputStream.size() > 0
         outputStream.toByteArray() == expectedOutput.bytes

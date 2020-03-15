@@ -12,6 +12,8 @@ class AttachConfig {
 
     def onSinkClosed = { Response response -> }
 
+    def onSinkWritten = { Response response -> }
+
     def onSourceConsumed = {}
 
     static class Streams {
