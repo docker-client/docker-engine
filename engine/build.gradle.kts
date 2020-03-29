@@ -34,21 +34,52 @@ repositories {
 }
 
 dependencies {
-    implementation("org.codehaus.groovy:groovy:2.5.9")
-    implementation("org.codehaus.groovy:groovy-json:2.5.9")
+    constraints {
+        implementation("org.slf4j:slf4j-api") {
+            version {
+                strictly("1.7.30")
+            }
+        }
+        implementation("com.squareup.okio:okio") {
+            version {
+                strictly("2.5.0")
+            }
+        }
+        listOf("org.jetbrains.kotlin:kotlin-reflect",
+                "org.jetbrains.kotlin:kotlin-stdlib",
+                "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+                "org.jetbrains.kotlin:kotlin-test",
+                "org.jetbrains.kotlin:kotlin-stdlib-common").onEach {
+            implementation(it) {
+                version {
+                    strictly("1.3.71")
+                }
+            }
+        }
+        listOf("org.codehaus.groovy:groovy",
+                "org.codehaus.groovy:groovy-json").onEach {
+            implementation(it) {
+                version {
+                    strictly("2.5.9")
+                }
+            }
+        }
+    }
+    implementation("org.codehaus.groovy:groovy")
+    implementation("org.codehaus.groovy:groovy-json")
     implementation("com.squareup.moshi:moshi:1.9.2")
 
-    implementation("org.slf4j:slf4j-api:1.7.30")
+    implementation("org.slf4j:slf4j-api")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
 
-    implementation("com.squareup.okio:okio:2.4.3")
-    implementation("com.squareup.okhttp3:okhttp:4.4.0")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.4.0")
+    implementation("com.squareup.okio:okio")
+    implementation("com.squareup.okhttp3:okhttp:4.4.1")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.4.1")
 
     implementation("org.apache.commons:commons-compress:1.20")
 
-    implementation("de.gesellix:docker-filesocket:2020-03-14T20-59-02")
-    testImplementation("de.gesellix:testutil:2020-02-29T17-37-38")
+    implementation("de.gesellix:docker-filesocket:2020-03-29T11-55-26")
+    testImplementation("de.gesellix:testutil:2020-03-29T11-41-48")
 
     implementation("org.bouncycastle:bcpkix-jdk15on:1.64")
 
