@@ -24,10 +24,41 @@ repositories {
 }
 
 dependencies {
+    constraints {
+        implementation("org.slf4j:slf4j-api") {
+            version {
+                strictly("1.7.30")
+            }
+        }
+        implementation("com.squareup.okio:okio") {
+            version {
+                strictly("2.5.0")
+            }
+        }
+        listOf("org.jetbrains.kotlin:kotlin-reflect",
+                "org.jetbrains.kotlin:kotlin-stdlib",
+                "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+                "org.jetbrains.kotlin:kotlin-test",
+                "org.jetbrains.kotlin:kotlin-stdlib-common").onEach {
+            implementation(it) {
+                version {
+                    strictly("1.3.71")
+                }
+            }
+        }
+        listOf("org.codehaus.groovy:groovy",
+                "org.codehaus.groovy:groovy-json").onEach {
+            implementation(it) {
+                version {
+                    strictly("2.5.9")
+                }
+            }
+        }
+    }
     implementation(project(":engine"))
-    testImplementation("com.squareup.okhttp3:okhttp:4.4.0")
+    testImplementation("com.squareup.okhttp3:okhttp:4.4.1")
 
-    testImplementation("org.slf4j:slf4j-api:1.7.30")
+    testImplementation("org.slf4j:slf4j-api")
     testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
 
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
