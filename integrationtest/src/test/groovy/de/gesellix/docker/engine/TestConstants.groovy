@@ -56,13 +56,13 @@ class TestConstants {
                 versionDetails = [
                         ApiVersion   : { it == "1.40" },
                         Arch         : { it == "amd64" },
-                        BuildTime    : { it == "2020-01-24T20:08:11.000000000+00:00" },
-                        GitCommit    : { it == "ea84732a77" },
-                        GoVersion    : { it == "go1.12.14" },
+                        BuildTime    : { it == "2020-03-10T18:53:36.000000000+00:00" },
+                        GitCommit    : { it == "aa6a9891b0" },
+                        GoVersion    : { it == "go1.12.17" },
                         KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
                         MinAPIVersion: { it == "1.12" },
                         Os           : { it == "linux" },
-                        Version      : { it == "3.0.10+azure" }]
+                        Version      : { it == "3.0.11+azure" }]
             }
         }
         else if (LocalDocker.isNativeWindows()) {
