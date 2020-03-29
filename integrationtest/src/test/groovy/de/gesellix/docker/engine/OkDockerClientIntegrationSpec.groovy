@@ -113,6 +113,7 @@ class OkDockerClientIntegrationSpec extends Specification {
                                tag      : CONSTANTS.imageTag],
                      headers: [EncodedRegistryAuth: "."]])
         // create container
+        // docker run --rm -it gesellix/testimage:os-windows cmd /V:ON /C "set /p line= & echo #!line!#"
         def containerConfig = [
                 Tty      : true,
                 OpenStdin: true,
@@ -134,7 +135,7 @@ class OkDockerClientIntegrationSpec extends Specification {
         def content = "attach ${UUID.randomUUID()}"
         def expectedOutput = "$content\r\n#$content#\r\n"
 
-        def stdout = new ByteArrayOutputStream()
+        def stdout = new ByteArrayOutputStream(expectedOutput.length())
         def stdin = new PipedOutputStream()
 
         def onSinkClosed = new CountDownLatch(1)

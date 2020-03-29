@@ -58,7 +58,7 @@ class OkResponseCallback implements Callback {
                         bufferedSink.flush()
                         onSinkWritten(response)
                         def done = new CountDownLatch(1)
-                        delayed(1000, {
+                        delayed(100, {
                             try {
                                 bufferedSink.close()
                                 onSinkClosed(response)
