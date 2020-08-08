@@ -20,6 +20,7 @@ class OkDockerClientIntegrationSpec extends Specification {
     final static dockerHubEmail = "tobias@gesellix.de"
 
     def "should allow GET requests"() {
+        given:
         def client = new OkDockerClient()
         expect:
         client.get([path: "/_ping"]).content == "OK"
@@ -42,7 +43,7 @@ class OkDockerClientIntegrationSpec extends Specification {
         ]
     }
 
-    @IgnoreIf({ dockerHubPassword == "-yet-another-password-" })
+    @IgnoreIf({ OkDockerClientIntegrationSpec.dockerHubPassword == "-yet-another-password-" })
     def "should allow POST requests with body"() {
         given:
         def client = new OkDockerClient()

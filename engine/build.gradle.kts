@@ -42,7 +42,7 @@ dependencies {
         }
         implementation("com.squareup.okio:okio") {
             version {
-                strictly("2.5.0")
+                strictly("2.7.0")
             }
         }
         listOf("org.jetbrains.kotlin:kotlin-reflect",
@@ -52,7 +52,7 @@ dependencies {
                 "org.jetbrains.kotlin:kotlin-stdlib-common").onEach {
             implementation(it) {
                 version {
-                    strictly("1.3.71")
+                    strictly("1.3.72")
                 }
             }
         }
@@ -60,28 +60,28 @@ dependencies {
                 "org.codehaus.groovy:groovy-json").onEach {
             implementation(it) {
                 version {
-                    strictly("2.5.9")
+                    strictly("2.5.13")
                 }
             }
         }
     }
     implementation("org.codehaus.groovy:groovy")
     implementation("org.codehaus.groovy:groovy-json")
-    implementation("com.squareup.moshi:moshi:1.9.2")
+    implementation("com.squareup.moshi:moshi:1.9.3")
 
     implementation("org.slf4j:slf4j-api")
     testImplementation("ch.qos.logback:logback-classic:1.2.3")
 
     implementation("com.squareup.okio:okio")
-    implementation("com.squareup.okhttp3:okhttp:4.4.1")
-    testImplementation("com.squareup.okhttp3:mockwebserver:4.4.1")
+    implementation("com.squareup.okhttp3:okhttp:4.8.1")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.8.1")
 
     implementation("org.apache.commons:commons-compress:1.20")
 
-    implementation("de.gesellix:docker-filesocket:2020-03-29T11-55-26")
-    testImplementation("de.gesellix:testutil:2020-03-29T11-41-48")
+    implementation("de.gesellix:docker-filesocket:2020-08-08T11-13-22")
+    testImplementation("de.gesellix:testutil:2020-08-08T11-02-07")
 
-    implementation("org.bouncycastle:bcpkix-jdk15on:1.64")
+    implementation("org.bouncycastle:bcpkix-jdk15on:1.66")
 
     testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
     testImplementation("cglib:cglib-nodep:3.3.0")

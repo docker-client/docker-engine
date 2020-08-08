@@ -13,10 +13,10 @@ buildscript {
 }
 
 plugins {
-    id("com.github.ben-manes.versions") version "0.28.0"
-    id("com.jfrog.bintray") version "1.8.4" apply false
+    id("com.github.ben-manes.versions") version "0.29.0"
+    id("com.jfrog.bintray") version "1.8.5" apply false
     id("net.ossindex.audit") version "0.4.11"
-    id("io.freefair.github.package-registry-maven-publish") version "4.1.6" // apply false
+    id("io.freefair.github.package-registry-maven-publish") version "5.1.1" // apply false
 }
 
 val dependencyVersions = listOf(
@@ -42,7 +42,7 @@ rootProject.github {
 
 tasks {
     wrapper {
-        gradleVersion = "6.3"
+        gradleVersion = "6.5.1"
         distributionType = Wrapper.DistributionType.ALL
     }
 }
