@@ -2,6 +2,7 @@ package de.gesellix.docker.engine
 
 import groovy.util.logging.Slf4j
 import okhttp3.Response
+import okio.Okio
 import spock.lang.IgnoreIf
 import spock.lang.Requires
 import spock.lang.Specification
@@ -22,8 +23,13 @@ class OkDockerClientIntegrationSpec extends Specification {
     def "should allow GET requests"() {
         given:
         def client = new OkDockerClient()
-        expect:
-        client.get([path: "/_ping"]).content == "OK"
+
+        when:
+        def ping = client.get([path: "/_ping"])
+        def content = ping.content ?: Okio.buffer(Okio.source(client.get([path: "/_ping"]).stream)).readUtf8()
+
+        then:
+        content == "OK"
     }
 
     def "should allow POST requests"() {
