@@ -44,50 +44,50 @@ class TestConstants {
                 versionDetails = [
                         ApiVersion   : { it == "1.40" },
                         Arch         : { it == "amd64" },
-                        BuildTime    : { it == "11/13/2019 07:58:51" },
-                        GitCommit    : { it == "2ee0c57608" },
-                        GoVersion    : { it == "go1.12.12" },
+                        BuildTime    : { it == "06/26/2020 17:19:32" },
+                        GitCommit    : { it == "0da829ac52" },
+                        GoVersion    : { it == "go1.13.11" },
                         KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
                         MinAPIVersion: { it == "1.24" },
                         Os           : { it == "windows" },
-                        Version      : { it == "19.03.5" }]
+                        Version      : { it == "19.03.11" }]
             }
             else {
                 versionDetails = [
                         ApiVersion   : { it == "1.40" },
                         Arch         : { it == "amd64" },
-                        BuildTime    : { it == "2020-03-10T18:53:36.000000000+00:00" },
-                        GitCommit    : { it == "aa6a9891b0" },
-                        GoVersion    : { it == "go1.12.17" },
+                        BuildTime    : { it == "2018-03-12T00:00:00.000000000+00:00" },
+                        GitCommit    : { it == "9dc6525e6118a25fab2be322d1914740ea842495" },
+                        GoVersion    : { it == "go1.13.11" },
                         KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
                         MinAPIVersion: { it == "1.12" },
                         Os           : { it == "linux" },
-                        Version      : { it == "3.0.11+azure" }]
+                        Version      : { it == "19.03.12+azure" }]
             }
         }
         else if (LocalDocker.isNativeWindows()) {
             versionDetails = [
                     ApiVersion   : { it == "1.40" },
                     Arch         : { it == "amd64" },
-                    BuildTime    : { it == "2019-11-13T07:36:50.000000000+00:00" },
-                    GitCommit    : { it == "633a0ea" },
-                    GoVersion    : { it == "go1.12.12" },
+                    BuildTime    : { it == "2020-06-22T15:57:30.000000000+00:00" },
+                    GitCommit    : { it == "48a66213fe" },
+                    GoVersion    : { it == "go1.13.10" },
                     KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
                     MinAPIVersion: { it == "1.24" },
                     Os           : { it == "windows" },
-                    Version      : { it == "19.03.5" }]
+                    Version      : { it == "19.03.12" }]
         }
         else {
             versionDetails = [
                     ApiVersion   : { it == "1.40" },
                     Arch         : { it == "amd64" },
-                    BuildTime    : { it == "2019-11-13T07:29:19.000000000+00:00" },
-                    GitCommit    : { it == "633a0ea" },
-                    GoVersion    : { it == "go1.12.12" },
+                    BuildTime    : { it == "2020-06-22T15:49:27.000000000+00:00" },
+                    GitCommit    : { it == "48a66213fe" },
+                    GoVersion    : { it == "go1.13.10" },
                     KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}(-\\w+)?" },
                     MinAPIVersion: { it == "1.12" },
                     Os           : { it == "linux" },
-                    Version      : { it == "19.03.5" }]
+                    Version      : { it == "19.03.12" }]
         }
     }
 }
