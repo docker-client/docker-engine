@@ -32,7 +32,7 @@ dependencies {
         }
         implementation("com.squareup.okio:okio") {
             version {
-                strictly("2.5.0")
+                strictly("2.7.0")
             }
         }
         listOf("org.jetbrains.kotlin:kotlin-reflect",
@@ -42,7 +42,7 @@ dependencies {
                 "org.jetbrains.kotlin:kotlin-stdlib-common").onEach {
             implementation(it) {
                 version {
-                    strictly("1.3.71")
+                    strictly("1.3.72")
                 }
             }
         }
@@ -50,13 +50,13 @@ dependencies {
                 "org.codehaus.groovy:groovy-json").onEach {
             implementation(it) {
                 version {
-                    strictly("2.5.9")
+                    strictly("2.5.13")
                 }
             }
         }
     }
     implementation(project(":engine"))
-    testImplementation("com.squareup.okhttp3:okhttp:4.4.1")
+    testImplementation("com.squareup.okhttp3:okhttp:4.8.1")
 
     testImplementation("org.slf4j:slf4j-api")
     testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
