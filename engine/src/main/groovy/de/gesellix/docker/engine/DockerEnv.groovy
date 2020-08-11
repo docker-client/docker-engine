@@ -10,9 +10,9 @@ class DockerEnv {
 
     int defaultTlsPort = 2376
 
-    String tlsVerify = System.getProperty("docker.tls.verify", System.env.DOCKER_TLS_VERIFY as String)
+    String tlsVerify = System.getProperty("docker.tls.verify", System.getenv("DOCKER_TLS_VERIFY"))
 
-    String certPath = System.getProperty("docker.cert.path", System.env.DOCKER_CERT_PATH as String)
+    String certPath = System.getProperty("docker.cert.path", System.getenv("DOCKER_CERT_PATH"))
 
     String defaultCertPath = new File(System.properties["user.home"] as String, ".docker").absolutePath
 
@@ -26,13 +26,13 @@ class DockerEnv {
 
     File dockerConfigFile = null
 
-    String apiVersion = System.getProperty("docker.api.version", System.env.DOCKER_API_VERSION as String)
+    String apiVersion = System.getProperty("docker.api.version", System.getenv("DOCKER_API_VERSION"))
 
-    String tmpdir = System.getProperty("docker.tmpdir", System.env.DOCKER_TMPDIR as String)
+    String tmpdir = System.getProperty("docker.tmpdir", System.getenv("DOCKER_TMPDIR"))
 
-    String dockerContentTrust = System.getProperty("docker.content.trust", System.env.DOCKER_CONTENT_TRUST as String)
+    String dockerContentTrust = System.getProperty("docker.content.trust", System.getenv("DOCKER_CONTENT_TRUST"))
 
-    String contentTrustServer = System.getProperty("docker.content.trust.server", System.env.DOCKER_CONTENT_TRUST_SERVER as String)
+    String contentTrustServer = System.getProperty("docker.content.trust.server", System.getenv("DOCKER_CONTENT_TRUST_SERVER"))
 
     String officialNotaryServer = "https://notary.docker.io"
 
@@ -41,7 +41,7 @@ class DockerEnv {
     }
 
     static String getDockerHostOrDefault() {
-        String configuredDockerHost = System.getProperty("docker.host", System.env.DOCKER_HOST as String)
+        String configuredDockerHost = System.getProperty("docker.host", System.getenv("DOCKER_HOST"))
         if (configuredDockerHost) {
             return configuredDockerHost
         }
@@ -65,7 +65,7 @@ class DockerEnv {
 
     File getDockerConfigFile() {
         if (dockerConfigFile == null) {
-            String dockerConfig = System.getProperty("docker.config", System.env.DOCKER_CONFIG as String)
+            String dockerConfig = System.getProperty("docker.config", System.getenv("DOCKER_CONFIG"))
             if (dockerConfig) {
                 this.dockerConfigFile = new File(dockerConfig, 'config.json')
             }

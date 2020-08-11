@@ -35,7 +35,7 @@ import static java.net.Proxy.Type.HTTP
 @Slf4j
 class OkDockerClientSpec extends Specification {
 
-    @IgnoreIf({ System.env.DOCKER_HOST })
+    @IgnoreIf({ System.getenv("DOCKER_HOST") })
     "getProtocolAndHost should fallback to unix:///var/run/docker.sock (npipe on Windows)"() {
         given:
         def client = new OkDockerClient()
@@ -49,7 +49,7 @@ class OkDockerClientSpec extends Specification {
         client.dockerClientConfig.port == -1
     }
 
-    @IgnoreIf({ System.env.DOCKER_HOST })
+    @IgnoreIf({ System.getenv("DOCKER_HOST") })
     "getProtocolAndHost should use to docker.host system property when set"() {
         given:
         def oldDockerHost = System.setProperty("docker.host", "http://127.0.0.1:2375")

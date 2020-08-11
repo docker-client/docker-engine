@@ -25,7 +25,7 @@ class TestConstants {
         }
         imageName = "$imageRepo:$imageTag"
 
-        if (System.env.TRAVIS) {
+        if (System.getenv("TRAVIS")) {
             // TODO consider checking the Docker api version instead of "TRAVIS"
             versionDetails = [
                     ApiVersion   : { it == "1.32" },
@@ -38,7 +38,7 @@ class TestConstants {
                     Os           : { it == "linux" },
                     Version      : { it == "17.09.0-ce" }]
         }
-        else if (System.env.GITHUB_ACTOR) {
+        else if (System.getenv("GITHUB_ACTOR")) {
             // TODO consider checking the Docker api version instead of "GITHUB_ACTOR"
             if (LocalDocker.isNativeWindows()) {
                 versionDetails = [
