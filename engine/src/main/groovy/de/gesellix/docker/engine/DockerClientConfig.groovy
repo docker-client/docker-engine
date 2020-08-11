@@ -30,7 +30,7 @@ class DockerClientConfig {
         }
         this.env = env
 
-        def dockerClientConfig = getActualConfig(env)
+        Map dockerClientConfig = getActualConfig(env)
         this.scheme = dockerClientConfig.protocol
         this.host = dockerClientConfig.host
         this.port = dockerClientConfig.port

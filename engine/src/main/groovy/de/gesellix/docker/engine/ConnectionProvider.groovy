@@ -26,7 +26,7 @@ class ConnectionProvider implements Interceptor {
         }
         sink = connection.sink
 
-        def response = chain.proceed(chain.request())
+        Response response = chain.proceed(chain.request())
         return response
     }
 }
