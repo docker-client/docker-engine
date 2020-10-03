@@ -27,22 +27,34 @@ dependencies {
     constraints {
         implementation("org.slf4j:slf4j-api") {
             version {
-                strictly("1.7.30")
+                strictly("[1.7,1.8)")
+                prefer("1.7.30")
+            }
+        }
+        listOf("com.squareup.okhttp3:mockwebserver",
+                "com.squareup.okhttp3:okhttp").onEach {
+            implementation(it) {
+                version {
+                    strictly("[4,5)")
+                    prefer("4.9.0")
+                }
             }
         }
         implementation("com.squareup.okio:okio") {
             version {
-                strictly("2.7.0")
+                strictly("[2.5,3)")
+                prefer("2.8.0")
             }
         }
         listOf("org.jetbrains.kotlin:kotlin-reflect",
                 "org.jetbrains.kotlin:kotlin-stdlib",
                 "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
-                "org.jetbrains.kotlin:kotlin-test",
-                "org.jetbrains.kotlin:kotlin-stdlib-common").onEach {
+                "org.jetbrains.kotlin:kotlin-stdlib-common",
+                "org.jetbrains.kotlin:kotlin-test").onEach {
             implementation(it) {
                 version {
-                    strictly("1.3.72")
+                    strictly("[1.3,1.5)")
+                    prefer("1.3.72")
                 }
             }
         }
@@ -50,13 +62,14 @@ dependencies {
                 "org.codehaus.groovy:groovy-json").onEach {
             implementation(it) {
                 version {
-                    strictly("2.5.13")
+                    strictly("[2.5,3)")
+                    prefer("2.5.13")
                 }
             }
         }
     }
     implementation(project(":engine"))
-    testImplementation("com.squareup.okhttp3:okhttp:4.8.1")
+    testImplementation("com.squareup.okhttp3:okhttp")
 
     testImplementation("org.slf4j:slf4j-api")
     testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
