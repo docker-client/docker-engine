@@ -42,7 +42,7 @@ rootProject.github {
 
 tasks {
     wrapper {
-        gradleVersion = "6.5.1"
+        gradleVersion = "6.6.1"
         distributionType = Wrapper.DistributionType.ALL
     }
 }
