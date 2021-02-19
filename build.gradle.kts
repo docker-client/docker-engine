@@ -4,45 +4,73 @@ import java.util.*
 rootProject.extra.set("artifactVersion", SimpleDateFormat("yyyy-MM-dd\'T\'HH-mm-ss").format(Date()))
 
 buildscript {
-    repositories {
-        mavenLocal()
-        jcenter()
-        gradlePluginPortal()
-        mavenCentral()
-    }
+  repositories {
+    gradlePluginPortal()
+    mavenCentral()
+  }
 }
 
 plugins {
-    id("com.github.ben-manes.versions") version "0.33.0"
-    id("com.jfrog.bintray") version "1.8.5" apply false
-    id("net.ossindex.audit") version "0.4.11"
-    id("io.freefair.github.package-registry-maven-publish") version "5.2.1" // apply false
+  id("maven-publish")
+  id("com.github.ben-manes.versions") version "0.36.0"
+  id("net.ossindex.audit") version "0.4.11"
+  id("io.freefair.maven-central.validate-poms") version "5.3.0"
+  id("io.github.gradle-nexus.publish-plugin") version "1.0.0"
 }
 
 val dependencyVersions = listOf(
-        "junit:junit:4.13"
+  "junit:junit:4.13"
 )
 
+val dependencyGroupVersions = mapOf<String, String>()
+
 subprojects {
-    configurations.all {
-        resolutionStrategy {
-            failOnVersionConflict()
-            force(dependencyVersions)
+  configurations.all {
+    resolutionStrategy {
+      failOnVersionConflict()
+      force(dependencyVersions)
+      eachDependency {
+        val forcedVersion = dependencyGroupVersions[requested.group]
+        if (forcedVersion != null) {
+          useVersion(forcedVersion)
         }
+      }
     }
+  }
 }
 
 fun findProperty(s: String) = project.findProperty(s) as String?
-
-rootProject.github {
-    slug.set("${project.property("github.package-registry.owner")}/${project.property("github.package-registry.repository")}")
-    username.set(System.getenv("GITHUB_ACTOR") ?: findProperty("github.package-registry.username"))
-    token.set(System.getenv("GITHUB_TOKEN") ?: findProperty("github.package-registry.password"))
-}
 
 tasks {
   wrapper {
     gradleVersion = "6.8.2"
     distributionType = Wrapper.DistributionType.ALL
+  }
+}
+
+publishing {
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url = uri("https://maven.pkg.github.com/${property("github.package-registry.owner")}/${property("github.package-registry.repository")}")
+      credentials {
+        username = System.getenv("GITHUB_ACTOR") ?: findProperty("github.package-registry.username")
+        password = System.getenv("GITHUB_TOKEN") ?: findProperty("github.package-registry.password")
+      }
+    }
+  }
+}
+
+val isSnapshot = project.version == "unspecified"
+nexusPublishing {
+  repositories {
+    if (!isSnapshot) {
+      sonatype {
+        // 'sonatype' is pre-configured for Sonatype Nexus (OSSRH) which is used for The Central Repository
+        stagingProfileId.set(System.getenv("SONATYPE_STAGING_PROFILE_ID") ?: findProperty("sonatype.staging.profile.id")) //can reduce execution time by even 10 seconds
+        username.set(System.getenv("SONATYPE_USERNAME") ?: findProperty("sonatype.username"))
+        password.set(System.getenv("SONATYPE_PASSWORD") ?: findProperty("sonatype.password"))
+      }
+    }
   }
 }
