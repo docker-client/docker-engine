@@ -125,6 +125,16 @@ val isSnapshot = project.version == "unspecified"
 val artifactVersion = if (!isSnapshot) project.version as String else SimpleDateFormat("yyyy-MM-dd\'T\'HH-mm-ss").format(Date())!!
 val publicationName = "dockerEngine"
 publishing {
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url = uri("https://maven.pkg.github.com/${property("github.package-registry.owner")}/${property("github.package-registry.repository")}")
+      credentials {
+        username = System.getenv("GITHUB_ACTOR") ?: findProperty("github.package-registry.username")
+        password = System.getenv("GITHUB_TOKEN") ?: findProperty("github.package-registry.password")
+      }
+    }
+  }
   publications {
     register(publicationName, MavenPublication::class) {
       pom {
