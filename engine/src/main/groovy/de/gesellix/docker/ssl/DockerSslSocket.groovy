@@ -5,6 +5,6 @@ import javax.net.ssl.X509TrustManager
 
 class DockerSslSocket {
 
-    SSLSocketFactory sslSocketFactory
-    X509TrustManager trustManager
+  SSLSocketFactory sslSocketFactory
+  X509TrustManager trustManager
 }

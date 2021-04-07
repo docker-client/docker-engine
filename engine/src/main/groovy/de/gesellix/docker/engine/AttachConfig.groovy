@@ -4,22 +4,22 @@ import okhttp3.Response
 
 class AttachConfig {
 
-    Streams streams = new Streams(stdin: null, stdout: System.out, stderr: System.err)
+  Streams streams = new Streams(stdin: null, stdout: System.out, stderr: System.err)
 
-    def onFailure = { Exception e -> }
+  def onFailure = { Exception e -> }
 
-    def onResponse = { Response response -> }
+  def onResponse = { Response response -> }
 
-    def onSinkClosed = { Response response -> }
+  def onSinkClosed = { Response response -> }
 
-    def onSinkWritten = { Response response -> }
+  def onSinkWritten = { Response response -> }
 
-    def onSourceConsumed = {}
+  def onSourceConsumed = {}
 
-    static class Streams {
+  static class Streams {
 
-        InputStream stdin = null
-        OutputStream stdout = System.out
-        OutputStream stderr = System.err
-    }
+    InputStream stdin = null
+    OutputStream stdout = System.out
+    OutputStream stderr = System.err
+  }
 }
