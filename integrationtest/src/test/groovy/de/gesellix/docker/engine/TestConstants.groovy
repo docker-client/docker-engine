@@ -29,10 +29,10 @@ class TestConstants {
             // TODO consider checking the Docker api version instead of "GITHUB_ACTOR"
             if (LocalDocker.isNativeWindows()) {
                 versionDetails = [
-                        ApiVersion   : { it == "1.40" },
+                        ApiVersion   : { it == "1.41" },
                         Arch         : { it == "amd64" },
-                        BuildTime    : { it == "12/17/2020 19:29:00" },
-                        GitCommit    : { it == "57e3a05525" },
+                        BuildTime    : { it == "03/11/2021 13:23:32" },
+                        GitCommit    : { it == "1e08f21e79" },
                         GoVersion    : { it == "go1.13.15" },
                         KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
                         MinAPIVersion: { it == "1.24" },
@@ -43,8 +43,8 @@ class TestConstants {
                 versionDetails = [
                         ApiVersion   : { it == "1.41" },
                         Arch         : { it == "amd64" },
-                        BuildTime    : { it == "2021-01-28T21:33:12.000000000+00:00" },
-                        GitCommit    : { it == "46229ca1d815cfd4b50eb377ac75ad8300e13a85" },
+                        BuildTime    : { it == "2021-02-25T06:27:18.000000000+00:00" },
+                        GitCommit    : { it == "363e9a88a11be517d9e8c65c998ff56f774eb4dc" },
                         GoVersion    : { it == "go1.13.15" },
                         KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
                         MinAPIVersion: { it == "1.12" },
@@ -68,8 +68,8 @@ class TestConstants {
             versionDetails = [
                     ApiVersion   : { it == "1.41" },
                     Arch         : { it == "amd64" },
-                    BuildTime    : { it == "2020-12-28T16:15:28.000000000+00:00" },
-                    GitCommit    : { it == "8891c58" },
+                    BuildTime    : { it == "2021-03-02T20:15:47.000000000+00:00" },
+                    GitCommit    : { it == "363e9a8" },
                     GoVersion    : { it == "go1.13.15" },
                     KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
                     MinAPIVersion: { it == "1.12" },
