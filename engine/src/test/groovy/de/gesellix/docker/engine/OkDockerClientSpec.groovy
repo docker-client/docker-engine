@@ -213,12 +213,15 @@ class OkDockerClientSpec extends Specification {
   def "head request uses the HEAD method"() {
     given:
     def recordedCall = [:]
-    def client = new OkDockerClient()
-    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
-    client.metaClass.request = { Map config ->
-      recordedCall['method'] = config.method
-      return null
+    def client = new OkDockerClient() {
+
+      @Override
+      EngineResponse request(Map<String, Object> requestConfig) {
+        recordedCall['method'] = requestConfig.method
+        return null
+      }
     }
+    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
     when:
     client.head([path: "/foo"])
     then:
@@ -228,12 +231,15 @@ class OkDockerClientSpec extends Specification {
   def "get request uses the GET method"() {
     given:
     def recordedCall = [:]
-    def client = new OkDockerClient()
-    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
-    client.metaClass.request = { Map config ->
-      recordedCall['method'] = config.method
-      return null
+    def client = new OkDockerClient() {
+
+      @Override
+      EngineResponse request(Map<String, Object> requestConfig) {
+        recordedCall['method'] = requestConfig.method
+        return null
+      }
     }
+    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
     when:
     client.get([path: "/foo"])
     then:
@@ -243,12 +249,15 @@ class OkDockerClientSpec extends Specification {
   def "put request uses the PUT method"() {
     given:
     def recordedCall = [:]
-    def client = new OkDockerClient()
-    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
-    client.metaClass.request = { Map config ->
-      recordedCall['method'] = config.method
-      return null
+    def client = new OkDockerClient() {
+
+      @Override
+      EngineResponse request(Map<String, Object> requestConfig) {
+        recordedCall['method'] = requestConfig.method
+        return null
+      }
     }
+    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
     when:
     client.put([path: "/foo"])
     then:
@@ -258,12 +267,15 @@ class OkDockerClientSpec extends Specification {
   def "post request uses the POST method"() {
     given:
     def recordedCall = [:]
-    def client = new OkDockerClient()
-    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
-    client.metaClass.request = { Map config ->
-      recordedCall['method'] = config.method
-      return null
+    def client = new OkDockerClient() {
+
+      @Override
+      EngineResponse request(Map<String, Object> requestConfig) {
+        recordedCall['method'] = requestConfig.method
+        return null
+      }
     }
+    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
     when:
     client.post([path: "/foo"])
     then:
@@ -273,12 +285,15 @@ class OkDockerClientSpec extends Specification {
   def "delete request uses the DELETE method"() {
     given:
     def recordedCall = [:]
-    def client = new OkDockerClient()
-    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
-    client.metaClass.request = { Map config ->
-      recordedCall['method'] = config.method
-      return null
+    def client = new OkDockerClient() {
+
+      @Override
+      EngineResponse request(Map<String, Object> requestConfig) {
+        recordedCall['method'] = requestConfig.method
+        return null
+      }
     }
+    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
     when:
     client.delete([path: "/foo"])
     then:
@@ -316,7 +331,7 @@ class OkDockerClientSpec extends Specification {
     def hasVerified = false
     Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
       if (chain.connection()?.route()?.proxy()?.type() != DIRECT) {
-        throw new AssertionError("got ${chain.connection()?.route()?.proxy()}")
+        throw new RuntimeException("got ${chain.connection()?.route()?.proxy()}")
       }
       hasVerified = true
       true
@@ -357,7 +372,7 @@ class OkDockerClientSpec extends Specification {
     Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
       def actualProxy = chain.connection()?.route()?.proxy()
       if (actualProxy != proxy) {
-        throw new AssertionError("got ${actualProxy}")
+        throw new RuntimeException("got ${actualProxy}")
       }
       hasVerified = true
       true
@@ -399,8 +414,8 @@ class OkDockerClientSpec extends Specification {
       def expectedUrl = serverUrl.newBuilder()
           .encodedPath("/a-resource")
           .build()
-      if (!expectedUrl.equals(chain.request().url())) {
-        throw new AssertionError("expected ${expectedUrl}, got ${chain.request().url()}")
+      if (expectedUrl != chain.request().url()) {
+        throw new RuntimeException("expected ${expectedUrl}, got ${chain.request().url()}")
       }
       hasVerified = true
       true
@@ -441,8 +456,8 @@ class OkDockerClientSpec extends Specification {
       def expectedUrl = serverUrl.newBuilder()
           .encodedPath("/v1.23/a-resource")
           .build()
-      if (!expectedUrl.equals(chain.request().url())) {
-        throw new AssertionError("expected ${expectedUrl}, got ${chain.request().url()}")
+      if (expectedUrl != chain.request().url()) {
+        throw new RuntimeException("expected ${expectedUrl}, got ${chain.request().url()}")
       }
       hasVerified = true
       true
@@ -485,8 +500,8 @@ class OkDockerClientSpec extends Specification {
           .encodedPath("/a-resource")
           .encodedQuery("baz=la%2Fla&answer=42")
           .build()
-      if (!expectedUrl.equals(chain.request().url())) {
-        throw new AssertionError("expected ${expectedUrl}, got ${chain.request().url()}")
+      if (expectedUrl != chain.request().url()) {
+        throw new RuntimeException("expected ${expectedUrl}, got ${chain.request().url()}")
       }
       hasVerified = true
       true
@@ -587,7 +602,7 @@ class OkDockerClientSpec extends Specification {
     def hasVerified = false
     Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
       if (chain.connection()?.socket() instanceof SSLSocket) {
-        throw new AssertionError("didn't expect a SSLSocket, got ${chain.connection()?.socket()}")
+        throw new RuntimeException("didn't expect a SSLSocket, got ${chain.connection()?.socket()}")
       }
       hasVerified = true
       true
@@ -629,7 +644,7 @@ class OkDockerClientSpec extends Specification {
     def hasVerified = false
     Closure<Boolean> verifyResponse = { Response res, Interceptor.Chain chain ->
       if (!(chain.connection()?.socket() instanceof SSLSocket)) {
-        throw new AssertionError("expected a SSLSocket, got ${chain.connection()?.socket()}")
+        throw new RuntimeException("expected a SSLSocket, got ${chain.connection()?.socket()}")
       }
       hasVerified = true
       true

@@ -137,7 +137,7 @@ class OkDockerClientIntegrationSpec extends Specification {
     client.post([path              : "/containers/${containerId}/start".toString(),
                  requestContentType: "application/json"])
     // inspect container
-    def multiplexStreams = !client.get([path: "/containers/${containerId}/json"]).content.Config.Tty
+    def multiplexStreams = !client.get([path: "/containers/${containerId}/json".toString()]).content.Config.Tty
 
     def content = "attach ${UUID.randomUUID()}"
     def expectedOutput = "$content\r\n#$content#\r\n"
