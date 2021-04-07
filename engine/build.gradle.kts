@@ -68,7 +68,7 @@ dependencies {
   implementation("org.codehaus.groovy:groovy")
   implementation("org.codehaus.groovy:groovy-json")
 
-  implementation("com.squareup.moshi:moshi:1.10.0")
+  implementation("com.squareup.moshi:moshi:1.12.0")
 
   implementation("org.slf4j:slf4j-api")
   testImplementation("ch.qos.logback:logback-classic:1.2.3")
