@@ -19,7 +19,7 @@ plugins {
 }
 
 val dependencyVersions = listOf(
-  "junit:junit:4.13"
+  "junit:junit:4.13.2"
 )
 
 val dependencyGroupVersions = mapOf<String, String>()
