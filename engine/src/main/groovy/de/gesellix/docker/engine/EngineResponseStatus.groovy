@@ -7,7 +7,7 @@ import groovy.transform.ToString
 @ToString(includeNames = true)
 class EngineResponseStatus {
 
-    String text
-    int code
-    boolean success
+  String text
+  int code
+  boolean success
 }

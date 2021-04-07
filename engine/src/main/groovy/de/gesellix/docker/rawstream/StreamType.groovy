@@ -18,29 +18,29 @@ package de.gesellix.docker.rawstream
  */
 enum StreamType {
 
-    STDIN((byte) 0),
-    STDOUT((byte) 1),
-    STDERR((byte) 2),
-    // Systemerr can sometimes occur. See https://github.com/moby/moby/pull/30922 for details.
-    SYSTEMERR((byte) 3)
+  STDIN((byte) 0),
+  STDOUT((byte) 1),
+  STDERR((byte) 2),
+  // Systemerr can sometimes occur. See https://github.com/moby/moby/pull/30922 for details.
+  SYSTEMERR((byte) 3)
 
-    private final byte streamTypeId
+  private final byte streamTypeId
 
-    StreamType(streamTypeId) {
-        this.streamTypeId = streamTypeId
+  StreamType(streamTypeId) {
+    this.streamTypeId = streamTypeId
+  }
+
+  static valueOf(byte b) {
+    def value = values().find {
+      return it.streamTypeId == b
     }
-
-    static valueOf(byte b) {
-        def value = values().find {
-            return it.streamTypeId == b
-        }
-        if (!value) {
-            throw new IllegalArgumentException("no enum value for ${b} found.")
-        }
-        return value
+    if (!value) {
+      throw new IllegalArgumentException("no enum value for ${b} found.")
     }
+    return value
+  }
 
-    byte getStreamTypeId() {
-        return streamTypeId
-    }
+  byte getStreamTypeId() {
+    return streamTypeId
+  }
 }
