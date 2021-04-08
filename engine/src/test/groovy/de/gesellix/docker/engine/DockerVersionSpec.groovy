@@ -19,7 +19,7 @@ class DockerVersionSpec extends Specification {
   }
 
   @Unroll
-  def "compare #v1 with #2"() {
+  def "compare #v1 with #v2"() {
     expect:
     parseDockerVersion(v1) <=> parseDockerVersion(v2) == result
     where:
