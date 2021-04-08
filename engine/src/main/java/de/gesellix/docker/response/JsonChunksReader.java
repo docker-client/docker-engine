@@ -2,6 +2,7 @@ package de.gesellix.docker.response;
 
 import com.squareup.moshi.JsonReader;
 import com.squareup.moshi.Moshi;
+import de.gesellix.docker.json.CustomObjectAdapterFactory;
 import okio.Okio;
 import okio.Source;
 

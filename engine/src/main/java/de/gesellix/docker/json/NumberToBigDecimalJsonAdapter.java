@@ -1,4 +1,4 @@
-package de.gesellix.docker.response;
+package de.gesellix.docker.json;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.JsonReader;
@@ -17,16 +17,22 @@ public class NumberToBigDecimalJsonAdapter extends JsonAdapter<Object> {
 
   @Override
   public Object fromJson(JsonReader reader) throws IOException {
-    if (!reader.peek().equals(JsonReader.Token.NUMBER)) {
+    if (reader.peek().equals(JsonReader.Token.NUMBER)) {
+      // allows Integer or Long values instead of strictly using Double as value type.
+      return new BigDecimal(reader.nextString());
+    }
+    else {
       return delegate.fromJson(reader);
     }
-
-    // allows Integer or Long values instead of strictly using Double as value type.
-    return new BigDecimal(reader.nextString());
   }
 
   @Override
-  public void toJson(JsonWriter writer, Object value) {
-    throw new UnsupportedOperationException("not implemented");
+  public void toJson(JsonWriter writer, Object value) throws IOException {
+    if (value instanceof Number) {
+      writer.jsonValue(value);
+    }
+    else {
+      delegate.toJson(writer, value);
+    }
   }
 }
