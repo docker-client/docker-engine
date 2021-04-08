@@ -46,16 +46,15 @@ public class RawInputStream extends FilterInputStream {
       return IOUtils.copy(super.in, actualOutputStream);
     }
 
-    int sum = 0;
-    long count;
+    long sum = 0;
+    int count;
     while (EOF != (count = copyFrame(stdout, stderr))) {
       sum += count;
     }
-
     return sum;
   }
 
-  public long copyFrame(OutputStream stdout, OutputStream stderr) throws IOException {
+  public int copyFrame(OutputStream stdout, OutputStream stderr) throws IOException {
     ByteArrayOutputStream systemerr = new ByteArrayOutputStream();
 
     Map<StreamType, OutputStream> outputStreamsByStreamType = new LinkedHashMap<>();
@@ -72,7 +71,7 @@ public class RawInputStream extends FilterInputStream {
     int bytesToRead = parsedHeader.getFrameSize();
     final int DEFAULT_BUFFER_SIZE = 1024 * 4;
     byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-    long count = 0;
+    int count = 0;
     int n;
     while (EOF != (n = super.read(buffer, 0, Math.min(DEFAULT_BUFFER_SIZE, bytesToRead)))) {
       OutputStream outputStream = outputStreamsByStreamType.get(parsedHeader.getStreamType());
