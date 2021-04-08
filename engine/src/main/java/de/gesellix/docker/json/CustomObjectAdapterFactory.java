@@ -1,4 +1,4 @@
-package de.gesellix.docker.response;
+package de.gesellix.docker.json;
 
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;

@@ -1,12 +1,12 @@
 package de.gesellix.docker.engine;
 
-import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import de.gesellix.docker.client.filesocket.NamedPipeSocket;
 import de.gesellix.docker.client.filesocket.NamedPipeSocketFactory;
 import de.gesellix.docker.client.filesocket.UnixSocket;
 import de.gesellix.docker.client.filesocket.UnixSocketFactory;
 import de.gesellix.docker.client.filesocket.UnixSocketFactorySupport;
+import de.gesellix.docker.json.CustomObjectAdapterFactory;
 import de.gesellix.docker.rawstream.RawInputStream;
 import de.gesellix.docker.response.JsonContentHandler;
 import de.gesellix.docker.ssl.DockerSslSocket;
@@ -57,7 +57,7 @@ public class OkDockerClient implements EngineClient {
   private final DockerClientConfig dockerClientConfig;
   private Proxy proxy;
 
-  private final JsonAdapter<Map> jsonMapAdapter;
+  private final Moshi moshi;
 
   public OkDockerClient() {
     this(new DockerClientConfig());
@@ -81,7 +81,9 @@ public class OkDockerClient implements EngineClient {
     this.dockerClientConfig = dockerClientConfig;
     this.proxy = proxy;
 
-    this.jsonMapAdapter = new Moshi.Builder().build().adapter(Map.class);
+    this.moshi = new Moshi.Builder()
+        .add(new CustomObjectAdapterFactory())
+        .build();
   }
 
   @Override
@@ -313,7 +315,7 @@ public class OkDockerClient implements EngineClient {
     if (body != null) {
       switch (contentType) {
         case "application/json":
-          requestBody = RequestBody.create(jsonMapAdapter.toJson((Map) body), MediaType.parse(contentType));
+          requestBody = RequestBody.create(moshi.adapter(Map.class).toJson((Map) body), MediaType.parse(contentType));
           break;
         case "application/octet-stream":
         default:
