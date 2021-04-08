@@ -161,7 +161,7 @@ class OkDockerClientIntegrationSpec extends Specification {
       onSinkWritten.countDown()
     }
     attachConfig.onSourceConsumed = {
-      if (stdout.toByteArray() == expectedOutput.bytes) {
+      if (stdout.toString() == expectedOutput) {
         log.info("[attach (interactive)] fully consumed \n${stdout.toString()}")
         onSourceConsumed.countDown()
       }
