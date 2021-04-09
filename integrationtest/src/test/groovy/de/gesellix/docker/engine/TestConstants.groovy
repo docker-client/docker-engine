@@ -31,7 +31,7 @@ class TestConstants {
         versionDetails = [
             ApiVersion   : { it == "1.41" },
             Arch         : { it == "amd64" },
-            BuildTime    : { it == "03/11/2021 13:23:32" },
+            BuildTime    : { it =~ "03/11/2021 \\w+" },
             GitCommit    : { it == "1e08f21e79" },
             GoVersion    : { it == "go1.13.15" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
@@ -43,7 +43,7 @@ class TestConstants {
         versionDetails = [
             ApiVersion   : { it == "1.41" },
             Arch         : { it == "amd64" },
-            BuildTime    : { it == "2021-02-25T06:27:18.000000000+00:00" },
+            BuildTime    : { it =~ "2021-02-25T\\w+" },
             GitCommit    : { it == "363e9a88a11be517d9e8c65c998ff56f774eb4dc" },
             GoVersion    : { it == "go1.13.15" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
@@ -56,7 +56,7 @@ class TestConstants {
       versionDetails = [
           ApiVersion   : { it == "1.40" },
           Arch         : { it == "amd64" },
-          BuildTime    : { it == "2020-09-16T17:14:20.000000000+00:00" },
+          BuildTime    : { it =~ "2021-09-16T\\w+" },
           GitCommit    : { it == "4484c46d9d" },
           GoVersion    : { it == "go1.13.15" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
@@ -68,7 +68,7 @@ class TestConstants {
       versionDetails = [
           ApiVersion   : { it == "1.41" },
           Arch         : { it == "amd64" },
-          BuildTime    : { it == "2021-03-02T20:15:47.000000000+00:00" },
+          BuildTime    : { it =~ "2021-03-02T\\w+" },
           GitCommit    : { it == "363e9a8" },
           GoVersion    : { it == "go1.13.15" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
