@@ -15,7 +15,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class OkResponseCallback implements Callback {
@@ -24,18 +23,10 @@ public class OkResponseCallback implements Callback {
 
   private final ConnectionProvider connectionProvider;
   private final AttachConfig attachConfig;
-  private final Function<Response, ?> onResponse;
-  private final Function<Response, ?> onSinkClosed;
-  private final Function<Response, ?> onSinkWritten;
-  private final Supplier<?> onSourceConsumed;
 
   public OkResponseCallback(ConnectionProvider connectionProvider, AttachConfig attachConfig) {
     this.connectionProvider = connectionProvider;
     this.attachConfig = attachConfig;
-    this.onResponse = attachConfig.getCallbacks().getOnResponse();
-    this.onSinkClosed = attachConfig.getCallbacks().getOnSinkClosed();
-    this.onSinkWritten = attachConfig.getCallbacks().getOnSinkWritten();
-    this.onSourceConsumed = attachConfig.getCallbacks().getOnSourceConsumed();
   }
 
   @Override
@@ -62,12 +53,12 @@ public class OkResponseCallback implements Callback {
           final BufferedSink bufferedSink = Okio.buffer(getConnectionProvider().getSink());
           bufferedSink.writeAll(stdinSource);
           bufferedSink.flush();
-          onSinkWritten.apply(response);
+          attachConfig.onSinkWritten(response);
           CountDownLatch done = new CountDownLatch(1);
           delayed(100, "writer", () -> {
             try {
               bufferedSink.close();
-              onSinkClosed.apply(response);
+              attachConfig.onSinkClosed(response);
             }
             catch (Exception e) {
               log.warn("error", e);
@@ -102,7 +93,7 @@ public class OkResponseCallback implements Callback {
           bufferedStdout.flush();
           CountDownLatch done = new CountDownLatch(1);
           delayed(100, "reader", () -> {
-            onSourceConsumed.get();
+            attachConfig.onSourceConsumed();
             return null;
           }, done);
           done.await(5, TimeUnit.SECONDS);
@@ -125,7 +116,7 @@ public class OkResponseCallback implements Callback {
       log.debug("no stdout.");
     }
 
-    onResponse.apply(response);
+    attachConfig.onResponse(response);
   }
 
   public static void delayed(long delay, String name, final Supplier<?> action, final CountDownLatch done) {

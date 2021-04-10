@@ -24,7 +24,7 @@ public class ConnectionProvider implements Interceptor {
     // attention: this connection is *per request*, so sink and source might be overwritten
     Connection connection = chain.connection();
     if (connection == null) {
-      throw new IllegalStateException("Connection is null. This one should only be used in a network interceptor, not in an application interceptor.");
+      throw new IllegalStateException("Connection is null. This one should only be used as a network interceptor, not as application interceptor.");
     }
 
     if (source != null) {
