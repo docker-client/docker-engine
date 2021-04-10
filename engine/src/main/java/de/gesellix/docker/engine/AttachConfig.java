@@ -22,10 +22,6 @@ public class AttachConfig {
     return streams;
   }
 
-  public Callbacks getCallbacks() {
-    return callbacks;
-  }
-
   public Object onFailure(Exception e) {
     return callbacks.onFailure.apply(e);
   }
@@ -40,7 +36,7 @@ public class AttachConfig {
    */
   @Deprecated
   public void setOnFailure(Closure<?> onFailure) {
-    callbacks.onFailure = onFailure::call;
+    setOnFailure(onFailure::call);
   }
 
   public Object onResponse(Response r) {
@@ -57,7 +53,7 @@ public class AttachConfig {
    */
   @Deprecated
   public void setOnResponse(Closure<?> onResponse) {
-    callbacks.onResponse = onResponse::call;
+    setOnResponse(onResponse::call);
   }
 
   public Object onSinkClosed(Response r) {
@@ -74,7 +70,7 @@ public class AttachConfig {
    */
   @Deprecated
   public void setOnSinkClosed(Closure<?> onSinkClosed) {
-    callbacks.onSinkClosed = onSinkClosed::call;
+    setOnSinkClosed(onSinkClosed::call);
   }
 
   public Object onSinkWritten(Response r) {
@@ -91,7 +87,7 @@ public class AttachConfig {
    */
   @Deprecated
   public void setOnSinkWritten(Closure<?> onSinkWritten) {
-    callbacks.onSinkWritten = onSinkWritten::call;
+    setOnSinkWritten(onSinkWritten::call);
   }
 
   public Object onSourceConsumed() {
@@ -108,10 +104,10 @@ public class AttachConfig {
    */
   @Deprecated
   public void setOnSourceConsumed(Closure<?> onSourceConsumed) {
-    callbacks.onSourceConsumed = () -> {
+    setOnSourceConsumed(() -> {
       onSourceConsumed.call();
       return null;
-    };
+    });
   }
 
   public static class Streams {
@@ -158,45 +154,5 @@ public class AttachConfig {
     private Function<Response, ?> onSinkClosed = (Response r) -> null;
     private Function<Response, ?> onSinkWritten = (Response r) -> null;
     private Supplier<?> onSourceConsumed = () -> null;
-
-    public Function<Exception, ?> getOnFailure() {
-      return onFailure;
-    }
-
-    public void setOnFailure(Function<Exception, ?> onFailure) {
-      this.onFailure = onFailure;
-    }
-
-    public Function<Response, ?> getOnResponse() {
-      return onResponse;
-    }
-
-    public void setOnResponse(Function<Response, ?> onResponse) {
-      this.onResponse = onResponse;
-    }
-
-    public Function<Response, ?> getOnSinkClosed() {
-      return onSinkClosed;
-    }
-
-    public void setOnSinkClosed(Function<Response, ?> onSinkClosed) {
-      this.onSinkClosed = onSinkClosed;
-    }
-
-    public Function<Response, ?> getOnSinkWritten() {
-      return onSinkWritten;
-    }
-
-    public void setOnSinkWritten(Function<Response, ?> onSinkWritten) {
-      this.onSinkWritten = onSinkWritten;
-    }
-
-    public Supplier<?> getOnSourceConsumed() {
-      return onSourceConsumed;
-    }
-
-    public void setOnSourceConsumed(Supplier<?> onSourceConsumed) {
-      this.onSourceConsumed = onSourceConsumed;
-    }
   }
 }
