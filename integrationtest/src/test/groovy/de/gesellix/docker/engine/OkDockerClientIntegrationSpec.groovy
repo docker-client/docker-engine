@@ -122,10 +122,17 @@ class OkDockerClientIntegrationSpec extends Specification {
     // create container
     // docker run --rm -it gesellix/testimage:os-windows cmd /V:ON /C "set /p line= & echo #!line!#"
     def containerConfig = [
-        Tty      : true,
-        OpenStdin: true,
-        Image    : CONSTANTS.imageName,
-        Cmd      : LocalDocker.isNativeWindows()
+        HostConfig  : [
+            AutoRemove: true
+        ],
+        AttachStdin : true,
+        AttachStdout: true,
+        AttachStderr: true,
+        Tty         : true,
+        OpenStdin   : true,
+        StdinOnce   : true,
+        Image       : CONSTANTS.imageName,
+        Cmd         : LocalDocker.isNativeWindows()
             ? ["cmd", "/V:ON", "/C", "set /p line= & echo #!line!#"]
             : ["/bin/sh", "-c", "read line && echo \"#\$line#\""]
     ]
@@ -136,10 +143,14 @@ class OkDockerClientIntegrationSpec extends Specification {
     // start container
     client.post([path              : "/containers/${containerId}/start".toString(),
                  requestContentType: "application/json"])
+    // resize container TTY
+    client.post([path : "/containers/${containerId}/attach/resize".toString(),
+                 query: [h: 46, w: 158]])
     // inspect container
     def multiplexStreams = !client.get([path: "/containers/${containerId}/json".toString()]).content.Config.Tty
 
     def content = "attach ${UUID.randomUUID()}"
+    println "content (length ${content.length()}): $content"
     def expectedOutput = "$content\r\n#$content#\r\n"
 
     def stdout = new ByteArrayOutputStream(expectedOutput.length())
@@ -176,6 +187,7 @@ class OkDockerClientIntegrationSpec extends Specification {
 
     when:
     stdin.write("$content\n".bytes)
+    println "ttttt - written"
     stdin.flush()
     stdin.close()
     def sourceConsumed = onSourceConsumed.await(5, SECONDS)
