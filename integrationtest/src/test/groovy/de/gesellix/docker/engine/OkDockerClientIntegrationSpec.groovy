@@ -126,10 +126,17 @@ class OkDockerClientIntegrationSpec extends Specification {
                  query: [fromImage: CONSTANTS.imageName]])
     // create container
     def containerConfig = [
-        Tty       : tty,
-        OpenStdin : openStdin,
-        Image     : CONSTANTS.imageName,
-        Entrypoint: ["/cat"]
+        HostConfig  : [
+            AutoRemove: true
+        ],
+        AttachStdin : true,
+        AttachStdout: true,
+        AttachStderr: true,
+        Tty         : tty,
+        OpenStdin   : openStdin,
+        StdinOnce   : true,
+        Image       : CONSTANTS.imageName,
+        Entrypoint  : ["/cat"]
     ]
     String containerId = client.post([path              : "/containers/create".toString(),
                                       query             : [name: ""],
@@ -139,12 +146,13 @@ class OkDockerClientIntegrationSpec extends Specification {
     client.post([path              : "/containers/${containerId}/start".toString(),
                  requestContentType: "application/json"])
     // resize container TTY
-//    client.post([path : "/containers/${containerId}/attach/resize".toString(),
-//                 query: [h: 46, w: 158]])
+    client.post([path : "/containers/${containerId}/attach/resize".toString(),
+                 query: [h: 46, w: 158]])
     // inspect container
 //    boolean multiplexStreams = !client.get([path: "/containers/${containerId}/json".toString()]).content.Config.Tty
 
     String content = "attach ${UUID.randomUUID()}"
+    println "content (length ${content.length()}): $content"
     String expectedOutput = containerConfig.Tty ? "$content\r\n$content\r\n" : "$content\n"
 
     def stdout = new ByteArrayOutputStream(expectedOutput.length())
@@ -185,6 +193,7 @@ class OkDockerClientIntegrationSpec extends Specification {
 
     when:
     stdin.write("$content\n".bytes)
+    println "ttttt - written"
     stdin.flush()
     stdin.close()
     boolean sinkWritten = onSinkWritten.await(5, SECONDS)
