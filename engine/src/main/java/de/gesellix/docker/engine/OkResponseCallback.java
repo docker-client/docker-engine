@@ -3,19 +3,19 @@ package de.gesellix.docker.engine;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import okio.BufferedSink;
+import okio.Buffer;
 import okio.Okio;
+import okio.Pipe;
+import okio.Sink;
 import okio.Source;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class OkResponseCallback implements Callback {
 
@@ -40,38 +40,47 @@ public class OkResponseCallback implements Callback {
     attachConfig.onFailure(e);
   }
 
+  /** Reads all bytes from {@code source} and writes them to {@code sink}. */
+  private Long readAll(Source source, Sink sink) throws IOException {
+    long result = 0L;
+//    Okio.buffer(sink).writeAll(source);
+    Buffer buffer = new Buffer();
+    for (long count; (count = source.read(buffer, 8192)) != -1L; result += count) {
+      sink.write(buffer, count);
+    }
+    return result;
+  }
+
+  /** Calls {@link #readAll} on a background thread. */
+  private Future<Long> readAllAsync(final Source source, final Sink sink) {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    try {
+      return executor.submit(() -> readAll(source, sink));
+    }
+    finally {
+      executor.shutdown();
+    }
+  }
+
   @Override
   public void onResponse(@NotNull final Call call, @NotNull final Response response) throws IOException {
     TcpUpgradeVerificator.ensureTcpUpgrade(response);
 
     if (attachConfig.getStreams().getStdin() != null) {
-      // pass input from the client via stdin and pass it to the output stream
-      // running it in an own thread allows the client to gain back control
-      final Source stdinSource = Okio.source(attachConfig.getStreams().getStdin());
+      // client's stdin -> socket
       Thread writer = new Thread(() -> {
+        Pipe p = new Pipe(8192);
         try {
-          final BufferedSink bufferedSink = Okio.buffer(getConnectionProvider().getSink());
-          bufferedSink.writeAll(stdinSource);
-          bufferedSink.flush();
-          attachConfig.onSinkWritten(response);
-          CountDownLatch done = new CountDownLatch(1);
-          delayed(100, "writer", () -> {
-            try {
-              bufferedSink.close();
-              attachConfig.onSinkClosed(response);
-            }
-            catch (Exception e) {
-              log.warn("error", e);
-            }
-            return null;
-          }, done);
-          done.await(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
-          log.debug("stdin->sink interrupted", e);
-          Thread.currentThread().interrupt();
+          Future<Long> futureSink = readAllAsync(p.source(), getConnectionProvider().getSink());
+          Future<Long> futureSource = readAllAsync(Okio.source(attachConfig.getStreams().getStdin()), p.sink());
+          Long read = futureSource.get();
+          p.sink().close();
+          attachConfig.onStdInConsumed(response);
+          Long written = futureSink.get();
+          attachConfig.onSinkClosed(response);
         }
         catch (Exception e) {
+          log.warn("error", e);
           onFailure(e);
         }
         finally {
@@ -86,23 +95,19 @@ public class OkResponseCallback implements Callback {
     }
 
     if (attachConfig.getStreams().getStdout() != null) {
-      final BufferedSink bufferedStdout = Okio.buffer(Okio.sink(attachConfig.getStreams().getStdout()));
+      // client's stdout <- socket
       Thread reader = new Thread(() -> {
+        Pipe p = new Pipe(8192);
         try {
-          bufferedStdout.writeAll(getConnectionProvider().getSource());
-          bufferedStdout.flush();
-          CountDownLatch done = new CountDownLatch(1);
-          delayed(100, "reader", () -> {
-            attachConfig.onSourceConsumed();
-            return null;
-          }, done);
-          done.await(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
-          log.debug("source->stdout interrupted", e);
-          Thread.currentThread().interrupt();
+          Future<Long> futureSink = readAllAsync(p.source(), Okio.sink(attachConfig.getStreams().getStdout()));
+          Future<Long> futureSource = readAllAsync(getConnectionProvider().getSource(), p.sink());
+          Long read = futureSource.get();
+          attachConfig.onStdOutConsumed();
+          p.sink().close();
+          Long written = futureSink.get();
         }
         catch (Exception e) {
+          log.warn("error", e);
           onFailure(e);
         }
         finally {
@@ -117,22 +122,6 @@ public class OkResponseCallback implements Callback {
     }
 
     attachConfig.onResponse(response);
-  }
-
-  public static void delayed(long delay, String name, final Supplier<?> action, final CountDownLatch done) {
-    new Timer(true).schedule(new TimerTask() {
-      @Override
-      public void run() {
-        Thread.currentThread().setName("Delayed " + name + " action (" + Thread.currentThread().getName() + ")");
-        try {
-          action.get();
-        }
-        finally {
-          done.countDown();
-          cancel();
-        }
-      }
-    }, delay);
   }
 
   public ConnectionProvider getConnectionProvider() {

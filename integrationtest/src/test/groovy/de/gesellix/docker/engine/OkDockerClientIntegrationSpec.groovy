@@ -145,16 +145,15 @@ class OkDockerClientIntegrationSpec extends Specification {
     def stdout = new ByteArrayOutputStream(expectedOutput.length())
     def stdin = new PipedOutputStream()
 
-    def onSinkClosed = new CountDownLatch(1)
     def onSinkWritten = new CountDownLatch(1)
     def onSourceConsumed = new CountDownLatch(1)
 
+    Response okResponse = null
     def attachConfig = new AttachConfig()
     attachConfig.streams.stdin = new PipedInputStream(stdin)
     attachConfig.streams.stdout = stdout
-    attachConfig.onSinkClosed = { Response response ->
-      log.info("[attach (interactive)] sink closed \n${stdout.toString()}")
-      onSinkClosed.countDown()
+    attachConfig.onResponse = { Response res ->
+      okResponse = res
     }
     attachConfig.onSinkWritten = { Response response ->
       log.info("[attach (interactive)] sink written \n${stdout.toString()}")
@@ -178,12 +177,11 @@ class OkDockerClientIntegrationSpec extends Specification {
     stdin.write("$content\n".bytes)
     stdin.flush()
     stdin.close()
+//    okResponse?.close()
     def sourceConsumed = onSourceConsumed.await(5, SECONDS)
     def sinkWritten = onSinkWritten.await(5, SECONDS)
-    def sinkClosed = onSinkClosed.await(5, SECONDS)
 
     then:
-    sinkClosed
     sinkWritten
     sourceConsumed
     stdout.size() > 0

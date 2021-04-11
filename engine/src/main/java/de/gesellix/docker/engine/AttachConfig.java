@@ -56,25 +56,37 @@ public class AttachConfig {
     setOnResponse(onResponse::call);
   }
 
+  /**
+   * @deprecated Internal use only. Will eventually be removed.
+   */
+  @Deprecated
   public Object onSinkClosed(Response r) {
     return callbacks.onSinkClosed.apply(r);
   }
 
+  /**
+   * @deprecated Internal use only. Will eventually be removed.
+   */
+  @Deprecated
   public void setOnSinkClosed(Function<Response, ?> onSinkClosed) {
     callbacks.onSinkClosed = onSinkClosed;
   }
 
   /**
    * @see #setOnSinkClosed(Function)
-   * @deprecated Will be removed after migration from Groovy to plain Java
+   * @deprecated Internal use only. Will eventually be removed.
    */
   @Deprecated
   public void setOnSinkClosed(Closure<?> onSinkClosed) {
     setOnSinkClosed(onSinkClosed::call);
   }
 
-  public Object onSinkWritten(Response r) {
+  public Object onStdInConsumed(Response r) {
     return callbacks.onSinkWritten.apply(r);
+  }
+
+  public Object onSinkWritten(Response r) {
+    return onStdInConsumed(r);
   }
 
   public void setOnSinkWritten(Function<Response, ?> onSinkWritten) {
@@ -90,8 +102,12 @@ public class AttachConfig {
     setOnSinkWritten(onSinkWritten::call);
   }
 
-  public Object onSourceConsumed() {
+  public Object onStdOutConsumed() {
     return callbacks.onSourceConsumed.get();
+  }
+
+  public Object onSourceConsumed() {
+    return onStdOutConsumed();
   }
 
   public void setOnSourceConsumed(Supplier<?> onSourceConsumed) {
@@ -151,6 +167,10 @@ public class AttachConfig {
 
     private Function<Exception, ?> onFailure = (Exception e) -> null;
     private Function<Response, ?> onResponse = (Response r) -> null;
+    /**
+     * @deprecated Internal use only. Will eventually be removed.
+     */
+    @Deprecated
     private Function<Response, ?> onSinkClosed = (Response r) -> null;
     private Function<Response, ?> onSinkWritten = (Response r) -> null;
     private Supplier<?> onSourceConsumed = () -> null;
