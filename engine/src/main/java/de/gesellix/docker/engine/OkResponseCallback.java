@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 
 public class OkResponseCallback implements Callback {
 
@@ -45,7 +46,7 @@ public class OkResponseCallback implements Callback {
     long result = 0L;
 //    Okio.buffer(sink).writeAll(source);
     Buffer buffer = new Buffer();
-    for (long count; (count = source.read(buffer, 8192)) != -1L; result += count) {
+    for (long count; (count = source.read(buffer, 1024)) != -1L; result += count) {
       sink.write(buffer, count);
     }
     return result;
@@ -62,31 +63,39 @@ public class OkResponseCallback implements Callback {
     }
   }
 
+  private Thread transfer(Source source, Sink sink, BiConsumer<Long, Long> onFinish) {
+    return new Thread(() -> {
+      Pipe p = new Pipe(1024);
+      try {
+        Future<Long> futureSink = readAllAsync(p.source(), sink);
+        Future<Long> futureSource = readAllAsync(source, p.sink());
+        Long read = futureSource.get();
+        p.sink().flush();
+        p.sink().close();
+        Long written = futureSink.get();
+        onFinish.accept(read, written);
+      }
+      catch (Exception e) {
+        log.warn("error", e);
+        onFailure(e);
+      }
+    });
+  }
+
   @Override
   public void onResponse(@NotNull final Call call, @NotNull final Response response) throws IOException {
     TcpUpgradeVerificator.ensureTcpUpgrade(response);
 
     if (attachConfig.getStreams().getStdin() != null) {
       // client's stdin -> socket
-      Thread writer = new Thread(() -> {
-        Pipe p = new Pipe(8192);
-        try {
-          Future<Long> futureSink = readAllAsync(p.source(), getConnectionProvider().getSink());
-          Future<Long> futureSource = readAllAsync(Okio.source(attachConfig.getStreams().getStdin()), p.sink());
-          Long read = futureSource.get();
-          p.sink().close();
-          attachConfig.onStdInConsumed(response);
-          Long written = futureSink.get();
-          attachConfig.onSinkClosed(response);
-        }
-        catch (Exception e) {
-          log.warn("error", e);
-          onFailure(e);
-        }
-        finally {
-          log.trace("writer finished");
-        }
-      });
+      Thread writer = transfer(
+          Okio.source(attachConfig.getStreams().getStdin()),
+          connectionProvider.getSink(),
+          (read, written) -> {
+            log.warn("read {}, written {}", read, written);
+            attachConfig.onStdInConsumed(response);
+            attachConfig.onSinkClosed(response);
+          });
       writer.setName("stdin-writer " + call.request().url().encodedPath());
       writer.start();
     }
@@ -96,24 +105,13 @@ public class OkResponseCallback implements Callback {
 
     if (attachConfig.getStreams().getStdout() != null) {
       // client's stdout <- socket
-      Thread reader = new Thread(() -> {
-        Pipe p = new Pipe(8192);
-        try {
-          Future<Long> futureSink = readAllAsync(p.source(), Okio.sink(attachConfig.getStreams().getStdout()));
-          Future<Long> futureSource = readAllAsync(getConnectionProvider().getSource(), p.sink());
-          Long read = futureSource.get();
-          attachConfig.onStdOutConsumed();
-          p.sink().close();
-          Long written = futureSink.get();
-        }
-        catch (Exception e) {
-          log.warn("error", e);
-          onFailure(e);
-        }
-        finally {
-          log.trace("reader finished");
-        }
-      });
+      Thread reader = transfer(
+          connectionProvider.getSource(),
+          Okio.sink(attachConfig.getStreams().getStdout()),
+          (read, written) -> {
+            log.warn("read {}, written {}", read, written);
+            attachConfig.onStdOutConsumed();
+          });
       reader.setName("stdout-reader " + call.request().url().encodedPath());
       reader.start();
     }
@@ -122,9 +120,5 @@ public class OkResponseCallback implements Callback {
     }
 
     attachConfig.onResponse(response);
-  }
-
-  public ConnectionProvider getConnectionProvider() {
-    return connectionProvider;
   }
 }
