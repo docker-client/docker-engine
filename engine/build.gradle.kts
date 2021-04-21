@@ -79,7 +79,7 @@ dependencies {
   implementation("org.apache.commons:commons-compress:1.20")
 
   implementation("de.gesellix:docker-filesocket:2021-04-10T11-43-12")
-  testImplementation("de.gesellix:testutil:2021-04-10T10-28-15")
+  testImplementation("de.gesellix:testutil:2021-04-21T23-29-14")
 
   implementation("org.bouncycastle:bcpkix-jdk15on:1.68")
 
