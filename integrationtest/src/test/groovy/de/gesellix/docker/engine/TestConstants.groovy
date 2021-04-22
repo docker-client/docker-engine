@@ -31,8 +31,8 @@ class TestConstants {
         versionDetails = [
             ApiVersion   : { it == "1.41" },
             Arch         : { it == "amd64" },
-            BuildTime    : { it =~ "03/11/2021 \\w+" },
-            GitCommit    : { it == "1e08f21e79" },
+            BuildTime    : { it =~ "04/12/2021 \\w+" },
+            GitCommit    : { it == "b24528647a" },
             GoVersion    : { it == "go1.13.15" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.24" },
@@ -43,8 +43,8 @@ class TestConstants {
         versionDetails = [
             ApiVersion   : { it == "1.41" },
             Arch         : { it == "amd64" },
-            BuildTime    : { it =~ "2021-02-25T\\w+" },
-            GitCommit    : { it == "363e9a88a11be517d9e8c65c998ff56f774eb4dc" },
+            BuildTime    : { it =~ "2021-04-09T\\w+" },
+            GitCommit    : { it == "8728dd246c3ab53105434eef8ffe997b6fd14dc6" },
             GoVersion    : { it == "go1.13.15" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.12" },
