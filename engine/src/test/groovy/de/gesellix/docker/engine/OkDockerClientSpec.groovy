@@ -28,6 +28,12 @@ import javax.net.ssl.SSLSocket
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+import static de.gesellix.docker.engine.RequestMethod.DELETE
+import static de.gesellix.docker.engine.RequestMethod.GET
+import static de.gesellix.docker.engine.RequestMethod.HEAD
+import static de.gesellix.docker.engine.RequestMethod.OPTIONS
+import static de.gesellix.docker.engine.RequestMethod.POST
+import static de.gesellix.docker.engine.RequestMethod.PUT
 import static de.gesellix.docker.rawstream.StreamType.STDOUT
 import static java.net.Proxy.Type.DIRECT
 import static java.net.Proxy.Type.HTTP
@@ -159,21 +165,21 @@ class OkDockerClientSpec extends Specification {
     "application/vnd.docker.raw-stream" | "utf-8"
   }
 
-  def "queryToString"() {
+  @Unroll
+  def "queryToString #parameters"() {
     def client = new OkDockerClient()
     client.dockerClientConfig.apply(new DockerEnv(
         dockerHost: "https://127.0.0.1:2376"))
     expect:
     client.queryToString(parameters) == query
     where:
-    parameters                           | query
-    null                                 | ""
-    [:]                                  | ""
-    [param1: "value-1"]                  | "param1=value-1"
-    ["p 1": "v 1"]                       | "p+1=v+1"
-    [param1: "v 1", p2: "v-2"]           | "param1=v+1&p2=v-2"
-    [params: ["v 1", "v-2"]]             | "params=v+1&params=v-2"
-    [params: ["a 1", "a-2"] as String[]] | "params=a+1&params=a-2"
+    parameters                     | query
+    null                           | ""
+    [:]                            | ""
+    [param1: ["value-1"]]          | "param1=value-1"
+    ["p 1": ["v 1"]]               | "p+1=v+1"
+    [param1: ["v 1"], p2: ["v-2"]] | "param1=v+1&p2=v-2"
+    [params: ["v 1", "v-2"]]       | "params=v+1&params=v-2"
   }
 
   @Unroll
@@ -182,12 +188,12 @@ class OkDockerClientSpec extends Specification {
     client.dockerClientConfig.apply(new DockerEnv(
         dockerHost: "https://127.0.0.1:2376"))
     when:
-    client.request(requestConfig as Map)
+    client.request(requestConfig)
     then:
     def ex = thrown(RuntimeException)
     ex.message == "bad request config"
     where:
-    requestConfig << [null, [:], ["foo": "bar"]]
+    requestConfig << [null, new EngineRequest(OPTIONS, null)]
   }
 
   @Unroll
@@ -216,7 +222,7 @@ class OkDockerClientSpec extends Specification {
     def client = new OkDockerClient() {
 
       @Override
-      EngineResponse request(Map<String, Object> requestConfig) {
+      EngineResponse request(EngineRequest requestConfig) {
         recordedCall['method'] = requestConfig.method
         return null
       }
@@ -225,7 +231,7 @@ class OkDockerClientSpec extends Specification {
     when:
     client.head([path: "/foo"])
     then:
-    recordedCall['method'] == "HEAD"
+    recordedCall['method'] == HEAD
   }
 
   def "get request uses the GET method"() {
@@ -234,7 +240,7 @@ class OkDockerClientSpec extends Specification {
     def client = new OkDockerClient() {
 
       @Override
-      EngineResponse request(Map<String, Object> requestConfig) {
+      EngineResponse request(EngineRequest requestConfig) {
         recordedCall['method'] = requestConfig.method
         return null
       }
@@ -243,7 +249,7 @@ class OkDockerClientSpec extends Specification {
     when:
     client.get([path: "/foo"])
     then:
-    recordedCall['method'] == "GET"
+    recordedCall['method'] == GET
   }
 
   def "put request uses the PUT method"() {
@@ -252,7 +258,7 @@ class OkDockerClientSpec extends Specification {
     def client = new OkDockerClient() {
 
       @Override
-      EngineResponse request(Map<String, Object> requestConfig) {
+      EngineResponse request(EngineRequest requestConfig) {
         recordedCall['method'] = requestConfig.method
         return null
       }
@@ -261,7 +267,7 @@ class OkDockerClientSpec extends Specification {
     when:
     client.put([path: "/foo"])
     then:
-    recordedCall['method'] == "PUT"
+    recordedCall['method'] == PUT
   }
 
   def "post request uses the POST method"() {
@@ -270,7 +276,7 @@ class OkDockerClientSpec extends Specification {
     def client = new OkDockerClient() {
 
       @Override
-      EngineResponse request(Map<String, Object> requestConfig) {
+      EngineResponse request(EngineRequest requestConfig) {
         recordedCall['method'] = requestConfig.method
         return null
       }
@@ -279,7 +285,7 @@ class OkDockerClientSpec extends Specification {
     when:
     client.post([path: "/foo"])
     then:
-    recordedCall['method'] == "POST"
+    recordedCall['method'] == POST
   }
 
   def "delete request uses the DELETE method"() {
@@ -288,7 +294,7 @@ class OkDockerClientSpec extends Specification {
     def client = new OkDockerClient() {
 
       @Override
-      EngineResponse request(Map<String, Object> requestConfig) {
+      EngineResponse request(EngineRequest requestConfig) {
         recordedCall['method'] = requestConfig.method
         return null
       }
@@ -297,7 +303,7 @@ class OkDockerClientSpec extends Specification {
     when:
     client.delete([path: "/foo"])
     then:
-    recordedCall['method'] == "DELETE"
+    recordedCall['method'] == DELETE
   }
 
   def "webSocket prepares a websocket call"() {
@@ -348,8 +354,7 @@ class OkDockerClientSpec extends Specification {
     client.dockerClientConfig.apply(new DockerEnv(dockerHost: mockWebServer.url("/").toString()))
 
     when:
-    def response = client.request([method: "OPTIONS",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
     then:
     response.status.success
     and:
@@ -391,8 +396,7 @@ class OkDockerClientSpec extends Specification {
         dockerHost: "http://any.thi.ng:4711"))
 
     when:
-    def response = client.request([method: "OPTIONS",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
     then:
     response.status.success
     and:
@@ -433,8 +437,7 @@ class OkDockerClientSpec extends Specification {
         dockerHost: mockWebServer.url("/").toString()))
 
     when:
-    def response = client.request([method: "OPTIONS",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
     then:
     response.status.success
     and:
@@ -475,9 +478,8 @@ class OkDockerClientSpec extends Specification {
         dockerHost: mockWebServer.url("/").toString()))
 
     when:
-    def response = client.request([method    : "OPTIONS",
-                                   path      : "/a-resource",
-                                   apiVersion: "v1.23"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
+                                      .tap { apiVersion = "v1.23" })
     then:
     response.status.success
     and:
@@ -519,9 +521,8 @@ class OkDockerClientSpec extends Specification {
         dockerHost: mockWebServer.url("/").toString()))
 
     when:
-    def response = client.request([method: "OPTIONS",
-                                   path  : "/a-resource",
-                                   query : [baz: "la/la", answer: 42]])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
+                                      .tap { query = [baz: ["la/la"], answer: ["42"]] })
     then:
     response.status.success
     and:
@@ -572,16 +573,16 @@ class OkDockerClientSpec extends Specification {
     def onResponse = {
       latch.countDown()
     }
-    client.request([
-        method : "OPTIONS",
-        path   : "/a-resource",
-        attach : new AttachConfig(onResponse: onResponse),
-        headers: [
-            "header-a"  : "header-a-value",
-            "Upgrade"   : "tcp",
-            "Connection": "Upgrade"
-        ]
-    ])
+
+    client.request(new EngineRequest(OPTIONS, "/a-resource")
+                       .tap {
+                         attach = new AttachConfig(onResponse: onResponse)
+                         headers = [
+                             "header-a"  : "header-a-value",
+                             "Upgrade"   : "tcp",
+                             "Connection": "Upgrade"
+                         ]
+                       })
     then:
     latch.await(10, TimeUnit.SECONDS)
     and:
@@ -620,8 +621,7 @@ class OkDockerClientSpec extends Specification {
         dockerHost: mockWebServer.url("/").toString()))
 
     when:
-    def response = client.request([method: "OPTIONS",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
     then:
     response.status.success
     and:
@@ -664,8 +664,7 @@ class OkDockerClientSpec extends Specification {
         tlsVerify: "1"))
 
     when:
-    def response = client.request([method: "OPTIONS",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
 
     then:
     response.status.success
@@ -700,8 +699,7 @@ class OkDockerClientSpec extends Specification {
     client.dockerClientConfig.apply(new DockerEnv(dockerHost: "http://127.0.0.1:2375"))
 
     when:
-    def response = client.request([method: "OPTIONS",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
 
     then:
     response.status == expectedStatus
@@ -732,8 +730,7 @@ class OkDockerClientSpec extends Specification {
     client.dockerClientConfig.apply(new DockerEnv(dockerHost: "http://127.0.0.1:2375"))
 
     when:
-    def response = client.request([method: "HEADER",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
 
     then:
     response.headers['Content-Type'] == "text/plain; charset=utf-8"
@@ -762,8 +759,7 @@ class OkDockerClientSpec extends Specification {
     client.dockerClientConfig.apply(new DockerEnv(dockerHost: "http://127.0.0.1:2375"))
 
     when:
-    def response = client.request([method: "HEADER",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
 
     then:
     response.stream == null
@@ -788,9 +784,8 @@ class OkDockerClientSpec extends Specification {
     def stdout = new ByteArrayOutputStream()
 
     when:
-    def response = client.request([method: "HEADER",
-                                   path  : "/a-resource",
-                                   stdout: stdout])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
+                                      .tap { it.stdout = stdout })
 
     then:
     stdout.toByteArray() == "holy ship".bytes
@@ -814,8 +809,7 @@ class OkDockerClientSpec extends Specification {
     client.dockerClientConfig.apply(new DockerEnv(dockerHost: "http://127.0.0.1:2375"))
 
     when:
-    def response = client.request([method: "HEADER",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
 
     then:
     response.stream.available() == "holy ship".length()
@@ -839,8 +833,7 @@ class OkDockerClientSpec extends Specification {
     client.dockerClientConfig.apply(new DockerEnv(dockerHost: "http://127.0.0.1:2375"))
 
     when:
-    def response = client.request([method: "HEADER",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
 
     then:
     response.stream.available() == "holy ship".length()
@@ -865,9 +858,8 @@ class OkDockerClientSpec extends Specification {
     def stdout = new ByteArrayOutputStream()
 
     when:
-    def response = client.request([method: "HEADER",
-                                   path  : "/a-resource",
-                                   stdout: stdout])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
+                                      .tap { it.stdout = stdout })
 
     then:
     stdout.toByteArray() == "holy ship".bytes
@@ -891,8 +883,7 @@ class OkDockerClientSpec extends Specification {
     client.dockerClientConfig.apply(new DockerEnv(dockerHost: "http://127.0.0.1:2375"))
 
     when:
-    def response = client.request([method: "HEADER",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
 
     then:
     response.stream == null
@@ -918,8 +909,7 @@ class OkDockerClientSpec extends Specification {
     client.dockerClientConfig.apply(new DockerEnv(dockerHost: "http://127.0.0.1:2375"))
 
     when:
-    def response = client.request([method: "HEADER",
-                                   path  : "/a-resource"])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
 
     then:
     response.stream instanceof RawInputStream
@@ -955,9 +945,8 @@ class OkDockerClientSpec extends Specification {
     def stdout = new ByteArrayOutputStream()
 
     when:
-    def response = client.request([method: "HEADER",
-                                   path  : "/a-resource",
-                                   stdout: stdout])
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
+                                      .tap { it.stdout = stdout })
 
     then:
     stdout.toByteArray() == actualText.bytes

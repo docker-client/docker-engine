@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface EngineClient {
 
+  EngineResponse request(EngineRequest requestConfig);
+
   EngineResponse head(Map<String, Object> requestConfig);
 
   EngineResponse get(Map<String, Object> requestConfig);
