@@ -9,6 +9,7 @@ import spock.lang.Specification
 
 import java.util.concurrent.CountDownLatch
 
+import static de.gesellix.docker.engine.RequestMethod.GET
 import static de.gesellix.docker.engine.TestConstants.CONSTANTS
 import static java.util.concurrent.TimeUnit.SECONDS
 
@@ -94,8 +95,7 @@ class OkDockerClientIntegrationSpec extends Specification {
   def "should support unix socket connections (Linux native or Docker for Mac)"() {
     def client = new OkDockerClient("unix:///var/run/docker.sock")
     when:
-    def response = client.request([method: "GET",
-                                   path  : "/info"])
+    def response = client.request(new EngineRequest(GET, "/info"))
     then:
     response.status.code == 200
   }
@@ -104,8 +104,7 @@ class OkDockerClientIntegrationSpec extends Specification {
   def "should support named pipe socket connections (Docker for Windows)"() {
     def client = new OkDockerClient("npipe:////./pipe/docker_engine")
     when:
-    def response = client.request([method: "GET",
-                                   path  : "/info"])
+    def response = client.request(new EngineRequest(GET, "/info"))
     then:
     response.status.code == 200
   }
