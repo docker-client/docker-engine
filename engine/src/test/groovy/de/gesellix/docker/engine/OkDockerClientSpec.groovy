@@ -1041,7 +1041,18 @@ class OkDockerClientSpec extends Specification {
       def whitelist = ["localhost",
                        "127.0.0.1",
                        "stratum.antpool.com"]
-      return host in whitelist || host.endsWith(".internal")
+      def isWindows = System.properties['os.name'].toLowerCase().contains('windows')
+      def hosts = isWindows ? new File("${System.getenv("SystemRoot")}\\System32\\drivers\\etc\\hosts") : new File("/etc/hosts")
+      if (hosts.isFile()) {
+        whitelist.addAll(hosts.readLines()
+                             .grep({ it.startsWith("127.0.0.1 ") })
+                             .collect({ it.substring("127.0.0.1 ".length()).toLowerCase() }))
+      }
+      def isAllowed = host.toLowerCase() in whitelist || host.endsWith(".internal")
+      if (!isAllowed) {
+        println("$host not in $whitelist")
+      }
+      return isAllowed
     }
   }
 }
