@@ -129,7 +129,7 @@ public class OkDockerClient implements EngineClient {
     Request.Builder requestBuilder = prepareRequest(new Request.Builder(), engineRequest);
     Request request = requestBuilder.build();
 
-    OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), engineRequest.timeout);
+    OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), engineRequest.getTimeout());
     OkHttpClient client = newClient(clientBuilder);
 
     return client.newWebSocket(request, listener);
@@ -141,22 +141,22 @@ public class OkDockerClient implements EngineClient {
 
     // https://docs.docker.com/engine/reference/api/docker_remote_api_v1.24/#attach-to-a-container
     AttachConfig attachConfig = null;
-    if (config.attach != null) {
-      Map<String, String> headers = config.headers;
+    if (config.getAttach() != null) {
+      Map<String, String> headers = config.getHeaders();
       if (headers == null) {
         headers = new HashMap<>();
       }
-      config.headers = headers;
+      config.setHeaders(headers);
       headers.put("Upgrade", "tcp");
       headers.put("Connection", "Upgrade");
-      attachConfig = config.attach;
+      attachConfig = config.getAttach();
     }
 //        boolean multiplexStreams = config.multiplexStreams
 
     Request.Builder requestBuilder = prepareRequest(new Request.Builder(), config);
     final Request request = requestBuilder.build();
 
-    OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), config.timeout);
+    OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), config.getTimeout());
     OkResponseCallback responseCallback = null;
     if (attachConfig != null) {
       ConnectionProvider connectionProvider = new ConnectionProvider();
@@ -195,22 +195,22 @@ public class OkDockerClient implements EngineClient {
   }
 
   private Request.Builder prepareRequest(final Request.Builder builder, final EngineRequest config) {
-    String method = config.method.name();
-    String contentType = config.requestContentType;
-    Map<String, String> additionalHeaders = config.headers;
-    Object body = config.body;
+    String method = config.getMethod().name();
+    String contentType = config.getContentType();
+    Map<String, String> additionalHeaders = config.getHeaders();
+    Object body = config.getBody();
 
     String protocol = dockerClientConfig.getScheme();
     String host = dockerClientConfig.getHost();
     int port = dockerClientConfig.getPort();
 
-    String path = config.path;
-    if (config.apiVersion != null) {
-      path = config.apiVersion + "/" + path;
+    String path = config.getPath();
+    if (config.getApiVersion() != null) {
+      path = config.getApiVersion() + "/" + path;
     }
     String queryAsString;
-    if (config.query != null) {
-      queryAsString = queryToString(config.query);
+    if (config.getQuery() != null) {
+      queryAsString = queryToString(config.getQuery());
     }
     else {
       queryAsString = "";
@@ -351,9 +351,9 @@ public class OkDockerClient implements EngineClient {
     switch (mimeType) {
       case "application/vnd.docker.raw-stream":
         InputStream rawStream = new RawInputStream(httpResponse.body().byteStream());
-        if (config.stdout != null) {
+        if (config.getStdout() != null) {
           log.debug("redirecting to stdout.");
-          IOUtils.copy(rawStream, config.stdout);
+          IOUtils.copy(rawStream, config.getStdout());
           response.setStream(null);
         }
         else {
@@ -361,7 +361,7 @@ public class OkDockerClient implements EngineClient {
         }
         break;
       case "application/json":
-        if (config.async) {
+        if (config.isAsync()) {
           consumeResponseBody(response, httpResponse.body().source(), config);
         }
         else {
@@ -377,8 +377,8 @@ public class OkDockerClient implements EngineClient {
       case "application/octet-stream":
         InputStream octet = httpResponse.body().byteStream();
         log.debug("passing through via `response.stream`.");
-        if (config.stdout != null) {
-          IOUtils.copy(octet, config.stdout);
+        if (config.getStdout() != null) {
+          IOUtils.copy(octet, config.getStdout());
           response.setStream(null);
         }
         else {
@@ -387,9 +387,9 @@ public class OkDockerClient implements EngineClient {
         break;
       case "application/x-tar":
         if (response.getStream() != null) {
-          if (config.stdout != null) {
+          if (config.getStdout() != null) {
             log.debug("redirecting to stdout.");
-            IOUtils.copy(response.getStream(), config.stdout);
+            IOUtils.copy(response.getStream(), config.getStdout());
             response.setStream(null);
           }
           else {
@@ -403,8 +403,8 @@ public class OkDockerClient implements EngineClient {
         if (body.contentLength() == -1) {
           InputStream stream = body.byteStream();
           log.debug("passing through via `response.stream`.");
-          if (config.stdout != null) {
-            IOUtils.copy(stream, config.stdout);
+          if (config.getStdout() != null) {
+            IOUtils.copy(stream, config.getStdout());
             response.setStream(null);
           }
           else {
@@ -459,12 +459,12 @@ public class OkDockerClient implements EngineClient {
 
   private void consumeResponseBody(EngineResponse response, Object content, EngineRequest config) throws IOException {
     if (content instanceof Source) {
-      if (config.async) {
+      if (config.isAsync()) {
         response.setStream(Okio.buffer((Source) content).inputStream());
       }
-      else if (config.stdout != null) {
+      else if (config.getStdout() != null) {
         response.setStream(null);
-        Okio.buffer(Okio.sink(config.stdout)).writeAll((Source) content);
+        Okio.buffer(Okio.sink(config.getStdout())).writeAll((Source) content);
       }
       else if (response.getContentLength() != null && Integer.parseInt(response.getContentLength()) >= 0) {
         response.setStream(null);
@@ -475,11 +475,11 @@ public class OkDockerClient implements EngineClient {
       }
     }
     else if (content instanceof InputStream) {
-      if (config.async) {
+      if (config.isAsync()) {
         response.setStream((InputStream) content);
       }
-      else if (config.stdout != null) {
-        IOUtils.copy((InputStream) content, config.stdout);
+      else if (config.getStdout() != null) {
+        IOUtils.copy((InputStream) content, config.getStdout());
         response.setStream(null);
       }
       else if (response.getContentLength() != null && Integer.parseInt(response.getContentLength()) >= 0) {
@@ -512,29 +512,29 @@ public class OkDockerClient implements EngineClient {
     config.put("method", method.name());
 
     EngineRequest engineRequest = new EngineRequest(method, (String) config.get("path"));
-    engineRequest.timeout = config.get("timeout") == null ? 0 : (Integer) config.get("timeout");
-    engineRequest.headers = (Map<String, String>) config.get("headers");
+    engineRequest.setTimeout(config.get("timeout") == null ? 0 : (Integer) config.get("timeout"));
+    engineRequest.setHeaders((Map<String, String>) config.get("headers"));
     Map<String, Object> query = (Map<String, Object>) config.get("query");
-    engineRequest.query = coerceValuesToListOfString(query);
+    engineRequest.setQuery(coerceValuesToListOfString(query));
 
-    engineRequest.requestContentType = (String) config.get("requestContentType");
-    engineRequest.body = config.get("body");
+    engineRequest.setContentType((String) config.get("requestContentType"));
+    engineRequest.setBody(config.get("body"));
 
-    engineRequest.async = config.get("async") != null && (Boolean) config.get("async");
-    engineRequest.attach = (AttachConfig) config.get("attach");
-    engineRequest.stdout = (OutputStream) config.get("stdout");
+    engineRequest.setAsync(config.get("async") != null && (Boolean) config.get("async"));
+    engineRequest.setAttach((AttachConfig) config.get("attach"));
+    engineRequest.setStdout((OutputStream) config.get("stdout"));
 
-    engineRequest.apiVersion = (String) config.get("apiVersion");
+    engineRequest.setApiVersion((String) config.get("apiVersion"));
     return engineRequest;
   }
 
   private EngineRequest ensureValidRequestConfig(final EngineRequest config) {
-    if (config == null || config.path == null) {
+    if (config == null || config.getPath() == null) {
       log.error("bad request config: " + config);
       throw new IllegalArgumentException("bad request config");
     }
-    if ((config.path).startsWith("/")) {
-      config.path = config.path.substring("/".length());
+    if ((config.getPath()).startsWith("/")) {
+      config.setPath(config.getPath().substring("/".length()));
     }
     return config;
   }
