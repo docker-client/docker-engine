@@ -14,36 +14,12 @@ package de.gesellix.docker.engine.model
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-/**
- * Configuration for a container that is portable between hosts
- * @param hostname The hostname to use for the container, as a valid RFC 1123 hostname.
- * @param domainname The domain name to use for the container.
- * @param user The user that commands are run as inside the container.
- * @param attachStdin Whether to attach to `stdin`.
- * @param attachStdout Whether to attach to `stdout`.
- * @param attachStderr Whether to attach to `stderr`.
- * @param exposedPorts An object mapping ports to an empty object in the form:  `{\"<port>/<tcp|udp|sctp>\": {}}`
- * @param tty Attach standard streams to a TTY, including `stdin` if it is not closed.
- * @param openStdin Open `stdin`
- * @param stdinOnce Close `stdin` after one attached client disconnects
- * @param env A list of environment variables to set inside the container in the form `[\"VAR=value\", ...]`. A variable without `=` is removed from the environment, rather than to have an empty value.
- * @param cmd Command to run specified as a string or an array of strings.
- * @param healthcheck
- * @param argsEscaped Command is already escaped (Windows only)
- * @param image The name of the image to use when creating the container/
- * @param volumes An object mapping mount point paths inside the container to empty objects.
- * @param workingDir The working directory for commands to run in.
- * @param entrypoint The entry point for the container as a string or an array of strings.  If the array consists of exactly one empty string (`[\"\"]`) then the entry point is reset to system default (i.e., the entry point used by docker when there is no `ENTRYPOINT` instruction in the `Dockerfile`).
- * @param networkDisabled Disable networking for the container.
- * @param macAddress MAC address of the container.
- * @param onBuild `ONBUILD` metadata that were defined in the image's `Dockerfile`.
- * @param labels User-defined key/value metadata.
- * @param stopSignal Signal to stop a container as a string or unsigned integer.
- * @param stopTimeout Timeout to stop a container in seconds.
- * @param shell Shell for when `RUN`, `CMD`, and `ENTRYPOINT` uses a shell.
- */
+// Merged from:
+// - ContainerConfig (embedded)
+// - HostConfig
+// - NetworkingConfig
 @JsonClass(generateAdapter = true)
-data class ContainerConfig(
+data class ContainerCreateRequest(
   /* The hostname to use for the container, as a valid RFC 1123 hostname. */
   @Json(name = "Hostname")
   val hostname: kotlin.String? = null,
@@ -117,6 +93,10 @@ data class ContainerConfig(
   val stopTimeout: kotlin.Int? = null,
   /* Shell for when `RUN`, `CMD`, and `ENTRYPOINT` uses a shell.  */
   @Json(name = "Shell")
-  val shell: kotlin.collections.List<kotlin.String>? = null
+  val shell: kotlin.collections.List<kotlin.String>? = null,
+  @Json(name = "HostConfig")
+  val hostConfig: HostConfig? = null,
+  @Json(name = "NetworkingConfig")
+  val networkingConfig: NetworkingConfig? = null,
 )
 
