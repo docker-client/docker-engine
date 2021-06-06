@@ -60,7 +60,7 @@ dependencies {
       implementation(it) {
         version {
           strictly("[2.5,)")
-          prefer("2.5.13")
+          prefer("2.5.14")
         }
       }
     }
@@ -83,7 +83,7 @@ dependencies {
 
   implementation("org.bouncycastle:bcpkix-jdk15on:1.68")
 
-  testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
+  testImplementation("org.spockframework:spock-core:2.0-groovy-2.5")
   testImplementation("cglib:cglib-nodep:3.3.0")
 }
 
@@ -94,7 +94,7 @@ java {
 
 tasks {
   withType(Test::class.java) {
-    useJUnit()
+    useJUnitPlatform()
 
     // minimal way of providing a special environment variable for the EnvFileParserTest
     environment("A_KNOWN_VARIABLE", "my value")

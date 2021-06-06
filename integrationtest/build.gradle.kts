@@ -59,7 +59,7 @@ dependencies {
       implementation(it) {
         version {
           strictly("[2.5,3)")
-          prefer("2.5.13")
+          prefer("2.5.14")
         }
       }
     }
@@ -70,13 +70,13 @@ dependencies {
   testImplementation("org.slf4j:slf4j-api")
   testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
 
-  testImplementation("org.spockframework:spock-core:1.3-groovy-2.5")
+  testImplementation("org.spockframework:spock-core:2.0-groovy-2.5")
   testImplementation("cglib:cglib-nodep:3.3.0")
 }
 tasks.check.get().shouldRunAfter(project(":engine").tasks.check)
 
 tasks {
   withType(Test::class.java) {
-    useJUnit()
+    useJUnitPlatform()
   }
 }
