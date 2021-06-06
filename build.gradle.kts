@@ -3,13 +3,6 @@ import java.util.*
 
 rootProject.extra.set("artifactVersion", SimpleDateFormat("yyyy-MM-dd\'T\'HH-mm-ss").format(Date()))
 
-buildscript {
-  repositories {
-    gradlePluginPortal()
-    mavenCentral()
-  }
-}
-
 plugins {
   id("maven-publish")
   id("com.github.ben-manes.versions") version "0.39.0"
@@ -19,7 +12,7 @@ plugins {
 }
 
 val dependencyVersions = listOf(
-  "junit:junit:4.13.2"
+  "org.jetbrains:annotations:20.1.0"
 )
 
 val dependencyGroupVersions = mapOf<String, String>()
