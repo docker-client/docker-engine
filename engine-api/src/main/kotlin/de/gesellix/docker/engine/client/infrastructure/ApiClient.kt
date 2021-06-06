@@ -1,25 +1,10 @@
 package de.gesellix.docker.engine.client.infrastructure
 
-import de.gesellix.docker.client.filesocket.NamedPipeSocket
-import de.gesellix.docker.client.filesocket.NamedPipeSocketFactory
-import de.gesellix.docker.client.filesocket.UnixSocket
-import de.gesellix.docker.client.filesocket.UnixSocketFactory
-import de.gesellix.docker.client.filesocket.UnixSocketFactorySupport
-import de.gesellix.docker.engine.DockerClientConfig
-import de.gesellix.docker.engine.EngineClient
-import de.gesellix.docker.engine.EngineRequest
-import de.gesellix.docker.engine.OkDockerClient
-import de.gesellix.docker.engine.RequestMethod.DELETE
-import de.gesellix.docker.engine.RequestMethod.GET
-import de.gesellix.docker.engine.RequestMethod.HEAD
-import de.gesellix.docker.engine.RequestMethod.OPTIONS
-import de.gesellix.docker.engine.RequestMethod.PATCH
-import de.gesellix.docker.engine.RequestMethod.POST
-import de.gesellix.docker.engine.RequestMethod.PUT
-import de.gesellix.docker.engine.RequestMethod.valueOf
-import de.gesellix.docker.ssl.SslSocketConfigFactory
-import okhttp3.HttpUrl
+import okhttp3.FormBody
+import okhttp3.Headers
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -29,31 +14,31 @@ import okhttp3.ResponseBody
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
+import java.net.URLConnection
 import java.nio.file.Files
-import java.util.concurrent.TimeUnit
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.OffsetTime
+import java.util.*
 
-open class ApiClient(val baseUrl: String, val dockerClientConfig: DockerClientConfig = DockerClientConfig()) {
+open class ApiClient(val baseUrl: String) {
   companion object {
 
     protected const val ContentType = "Content-Type"
     protected const val Accept = "Accept"
     protected const val Authorization = "Authorization"
-    protected const val TextPlainMediaType = "text/plain"
     protected const val JsonMediaType = "application/json"
-    protected const val OctetStreamMediaType = "application/octet-stream"
+    protected const val FormDataMediaType = "multipart/form-data"
+    protected const val FormUrlEncMediaType = "application/x-www-form-urlencoded"
+    protected const val XmlMediaType = "application/xml"
 
     val apiKey: MutableMap<String, String> = mutableMapOf()
     val apiKeyPrefix: MutableMap<String, String> = mutableMapOf()
     var username: String? = null
     var password: String? = null
     var accessToken: String? = null
-
-    val socketFactories: MutableMap<String, (OkHttpClient.Builder) -> OkHttpClient.Builder> = mutableMapOf()
-
-    @JvmStatic
-    val engineClient: EngineClient by lazy {
-      OkDockerClient()
-    }
 
     @JvmStatic
     val client: OkHttpClient by lazy {
@@ -64,29 +49,64 @@ open class ApiClient(val baseUrl: String, val dockerClientConfig: DockerClientCo
     val builder: OkHttpClient.Builder = OkHttpClient.Builder()
   }
 
+  /**
+   * Guess Content-Type header from the given file (defaults to "application/octet-stream").
+   *
+   * @param file The given file
+   * @return The guessed Content-Type
+   */
+  protected fun guessContentTypeFromFile(file: File): String {
+    val contentType = URLConnection.guessContentTypeFromName(file.name)
+    return contentType ?: "application/octet-stream"
+  }
+
   protected inline fun <reified T> requestBody(content: T, mediaType: String = JsonMediaType): RequestBody =
     when {
       content is File -> content.asRequestBody(
         mediaType.toMediaTypeOrNull()
       )
+      mediaType == FormDataMediaType -> {
+        MultipartBody.Builder()
+          .setType(MultipartBody.FORM)
+          .apply {
+            // content's type *must* be Map<String, Any?>
+            @Suppress("UNCHECKED_CAST")
+            (content as Map<String, Any?>).forEach { (key, value) ->
+              if (value is File) {
+                val partHeaders = Headers.headersOf(
+                  "Content-Disposition",
+                  "form-data; name=\"$key\"; filename=\"${value.name}\""
+                )
+                val fileMediaType = guessContentTypeFromFile(value).toMediaTypeOrNull()
+                addPart(partHeaders, value.asRequestBody(fileMediaType))
+              } else {
+                val partHeaders = Headers.headersOf(
+                  "Content-Disposition",
+                  "form-data; name=\"$key\""
+                )
+                addPart(
+                  partHeaders,
+                  parameterToString(value).toRequestBody(null)
+                )
+              }
+            }
+          }.build()
+      }
+      mediaType == FormUrlEncMediaType -> {
+        FormBody.Builder().apply {
+          // content's type *must* be Map<String, Any?>
+          @Suppress("UNCHECKED_CAST")
+          (content as Map<String, Any?>).forEach { (key, value) ->
+            add(key, parameterToString(value))
+          }
+        }.build()
+      }
       mediaType == JsonMediaType -> Serializer.moshi.adapter(T::class.java).toJson(content).toRequestBody(
         mediaType.toMediaTypeOrNull()
       )
-//      var  source: Source?= body as InputStream?. source ()
-//      var  buffer: BufferedSource?= source.buffer()
-//      try {
-//        requestBody = RequestBody.create(buffer.readByteArray(), parse.parse(contentType))
-//      } catch (e: IOException) {
-//        OkDockerClient.log.error("Failed to read request body", e)
-//        throw RuntimeException("Failed to read request body", e)
-//      }
-// See https://github.com/square/okhttp/pull/3912 for a possible implementation
-// Would we have issues with non-closed InputStreams?
-// More details/examples:
-// - https://github.com/minio/minio-java/issues/924
-// - https://github.com/square/okhttp/issues/2424
-//      mediaType == OctetStreamMediaType && content is InputStream -> RequestBody.create(content.source().buffer(), mediaType.toMediaTypeOrNull())
-      else -> throw UnsupportedOperationException("requestBody only supports JSON body and File body, not $mediaType.")
+      mediaType == XmlMediaType -> throw UnsupportedOperationException("xml not currently supported.")
+      // TODO: this should be extended with other serializers
+      else -> throw UnsupportedOperationException("requestBody currently only supports JSON body and File body.")
     }
 
   protected inline fun <reified T : Any?> responseBody(body: ResponseBody?, mediaType: String? = JsonMediaType): T? {
@@ -94,12 +114,12 @@ open class ApiClient(val baseUrl: String, val dockerClientConfig: DockerClientCo
       return null
     }
     val bodyContent = body.string()
-//    if (bodyContent.isEmpty()) {
-//      return null
-//    }
+    if (bodyContent.isEmpty()) {
+      return null
+    }
     if (T::class.java == File::class.java) {
       // return tempfile
-      val f = Files.createTempFile("tmp.de.gesellix.docker.client", null).toFile()
+      val f = Files.createTempFile("tmp.org.openapitools.client", null).toFile()
       f.deleteOnExit()
       val out = BufferedWriter(FileWriter(f))
       out.write(bodyContent)
@@ -108,33 +128,15 @@ open class ApiClient(val baseUrl: String, val dockerClientConfig: DockerClientCo
     }
     return when (mediaType) {
       JsonMediaType -> Serializer.moshi.adapter(T::class.java).fromJson(bodyContent)
-      TextPlainMediaType -> bodyContent as T
-      else -> throw UnsupportedOperationException("responseBody currently only supports JSON body, not $mediaType.")
+      else -> throw UnsupportedOperationException("responseBody currently only supports JSON body.")
     }
   }
 
   protected inline fun <reified T : Any?> request(requestConfig: RequestConfig): ApiInfrastructureResponse<T?> {
-    return request<T>(EngineRequest(valueOf(requestConfig.method.name), requestConfig.path).also {
-      it.headers = requestConfig.headers
-      it.query = requestConfig.query
-      it.body = requestConfig.body
-    })
-  }
-
-  protected inline fun <reified T : Any?> request(requestConfig: EngineRequest): ApiInfrastructureResponse<T?> {
-    val httpUrl = buildHttpUrl().build()
-
-    val pathWithOptionalApiVersion = when {
-      requestConfig.apiVersion != null -> {
-        requestConfig.apiVersion + "/" + requestConfig.path
-      }
-      else -> {
-        requestConfig.path
-      }
-    }
+    val httpUrl = baseUrl.toHttpUrlOrNull() ?: throw IllegalStateException("baseUrl is invalid.")
 
     val url = httpUrl.newBuilder()
-      .addPathSegments(pathWithOptionalApiVersion.trimStart('/'))
+      .addPathSegments(requestConfig.path.trimStart('/'))
       .apply {
         requestConfig.query.forEach { query ->
           query.value.forEach { queryValue ->
@@ -164,27 +166,18 @@ open class ApiClient(val baseUrl: String, val dockerClientConfig: DockerClientCo
     val contentType = (headers[ContentType] as String).substringBefore(";").toLowerCase()
 
     val request = when (requestConfig.method) {
-      DELETE -> Request.Builder().url(url).delete(requestBody(requestConfig.body, contentType))
-      GET -> Request.Builder().url(url)
-      HEAD -> Request.Builder().url(url).head()
-      PATCH -> Request.Builder().url(url).patch(requestBody(requestConfig.body, contentType))
-      PUT -> Request.Builder().url(url).put(requestBody(requestConfig.body, contentType))
-      POST -> Request.Builder().url(url).post(requestBody(requestConfig.body, contentType))
-      OPTIONS -> Request.Builder().url(url).method("OPTIONS", null)
-      null -> throw kotlin.IllegalStateException("Request method is null")
+      RequestMethod.DELETE -> Request.Builder().url(url).delete(requestBody(requestConfig.body, contentType))
+      RequestMethod.GET -> Request.Builder().url(url)
+      RequestMethod.HEAD -> Request.Builder().url(url).head()
+      RequestMethod.PATCH -> Request.Builder().url(url).patch(requestBody(requestConfig.body, contentType))
+      RequestMethod.PUT -> Request.Builder().url(url).put(requestBody(requestConfig.body, contentType))
+      RequestMethod.POST -> Request.Builder().url(url).post(requestBody(requestConfig.body, contentType))
+      RequestMethod.OPTIONS -> Request.Builder().url(url).method("OPTIONS", null)
     }.apply {
       headers.forEach { header -> addHeader(header.key, header.value) }
     }.build()
 
-//    val engineResponse = engineClient.request(requestConfig)
-    val actualClient = buildHttpClient(client.newBuilder())
-//      .proxy(proxy) // TODO
-      // do we need to disable the timeout for streaming?
-      .connectTimeout(requestConfig.timeout.toLong(), TimeUnit.MILLISECONDS)
-      .readTimeout(requestConfig.timeout.toLong(), TimeUnit.MILLISECONDS)
-      .build()
-
-    val response = actualClient.newCall(request).execute()
+    val response = client.newCall(request).execute()
     val accept = response.header(ContentType)?.substringBefore(";")?.toLowerCase()
 
     // TODO: handle specific mapping types. e.g. Map<int, Class<?>>
@@ -218,52 +211,33 @@ open class ApiClient(val baseUrl: String, val dockerClientConfig: DockerClientCo
     }
   }
 
-  open fun buildHttpUrl(): HttpUrl.Builder {
-//    baseUrl.toHttpUrlOrNull() ?: throw IllegalStateException("baseUrl is invalid.")
-    return when (dockerClientConfig.scheme) {
-      "unix" -> HttpUrl.Builder()
-        .scheme("http")
-        .host(UnixSocket().encodeHostname(dockerClientConfig.host))
-      //                    .port(/not/allowed/for/unix/socket/)
-      "npipe" -> HttpUrl.Builder()
-        .scheme("http")
-        .host(NamedPipeSocket().encodeHostname(dockerClientConfig.host))
-      //                    .port(/not/allowed/for/npipe/socket/)
-      else -> HttpUrl.Builder()
-        .scheme(dockerClientConfig.scheme)
-        .host(dockerClientConfig.host)
-        .port(dockerClientConfig.port)
-    }
-  }
-
-  open fun buildHttpClient(builder: OkHttpClient.Builder): OkHttpClient.Builder {
-    val protocol = dockerClientConfig.scheme
-    val foo = socketFactories[protocol]
-    if (foo != null) {
-      return foo(builder)
-    }
-    throw IllegalStateException("$protocol socket not supported.")
-  }
-
-  init {
-    if (UnixSocketFactorySupport().isSupported) {
-      socketFactories["unix"] = { builder ->
-        val factory = UnixSocketFactory()
-        builder
-          .socketFactory(factory)
-          .dns(factory)
+  protected fun parameterToString(value: Any?): String {
+    when (value) {
+      null -> {
+        return ""
+      }
+      is Array<*> -> {
+        return toMultiValue(value, "csv").toString()
+      }
+      is Iterable<*> -> {
+        return toMultiValue(value, "csv").toString()
+      }
+      is OffsetDateTime, is OffsetTime, is LocalDateTime, is LocalDate, is LocalTime, is Date -> {
+        return parseDateToQueryString<Any>(value)
+      }
+      else -> {
+        return value.toString()
       }
     }
-    socketFactories["npipe"] = { builder ->
-      val factory = NamedPipeSocketFactory()
-      builder
-        .socketFactory(factory)
-        .dns(factory)
-    }
-    socketFactories["https"] = { builder ->
-      val dockerSslSocket = SslSocketConfigFactory().createDockerSslSocket(dockerClientConfig.certPath)
-      builder
-        .sslSocketFactory(dockerSslSocket.sslSocketFactory, dockerSslSocket.trustManager)
-    }
+  }
+
+  protected inline fun <reified T : Any> parseDateToQueryString(value: T): String {
+    /*
+    .replace("\"", "") converts the json object string to an actual string for the query parameter.
+    The moshi or gson adapter allows a more generic solution instead of trying to use a native
+    formatter. It also easily allows to provide a simple way to define a custom date format pattern
+    inside a gson/moshi adapter.
+    */
+    return Serializer.moshi.adapter(T::class.java).toJson(value).replace("\"", "")
   }
 }
