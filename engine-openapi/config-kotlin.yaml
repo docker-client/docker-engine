@@ -1,0 +1,14 @@
+inputSpec: https://docs.docker.com/engine/api/v1.41.yaml
+additionalProperties:
+  hideGenerationTimestamp: true
+generatorName: kotlin
+packageName: de.gesellix.docker.engine.client
+invokerPackage: de.gesellix.docker.engine.invoker
+apiPackage: de.gesellix.docker.engine.api
+modelPackage: de.gesellix.docker.engine.model
+groupId: de.gesellix
+artifactId: docker-api-model
+artifactVersion: 1.41
+outputDir: engine-api
+dateLibrary: java8
+moshiCodeGen: true
