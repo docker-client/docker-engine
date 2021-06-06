@@ -70,7 +70,7 @@ dependencies {
   testImplementation("org.slf4j:slf4j-api")
   testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
 
-  testImplementation("org.spockframework:spock-core:2.0-groovy-2.5")
+  testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
   testImplementation("cglib:cglib-nodep:3.3.0")
 }
 tasks.check.get().shouldRunAfter(project(":engine").tasks.check)
