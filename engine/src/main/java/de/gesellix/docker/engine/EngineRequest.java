@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class EngineRequest {
 
@@ -114,5 +115,20 @@ public class EngineRequest {
 
   public void setApiVersion(String apiVersion) {
     this.apiVersion = apiVersion;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) { return true; }
+    if (o == null || getClass() != o.getClass()) { return false; }
+    EngineRequest that = (EngineRequest) o;
+    return timeout == that.timeout && async == that.async && method == that.method && Objects.equals(path, that.path) && Objects.equals(headers, that.headers) &&
+           Objects.equals(query, that.query) && Objects.equals(contentType, that.contentType) && Objects.equals(body, that.body) &&
+           Objects.equals(attach, that.attach) && Objects.equals(stdout, that.stdout) && Objects.equals(apiVersion, that.apiVersion);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(method, path, headers, query, contentType, body, timeout, async, attach, stdout, apiVersion);
   }
 }
