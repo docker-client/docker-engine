@@ -11,12 +11,58 @@ plugins {
   id("net.ossindex.audit")
   id("io.freefair.maven-central.validate-poms")
   id("org.openapi.generator")
+  id("org.jlleitschuh.gradle.ktlint")
 }
 
 openApiGenerate {
   inputSpec.set(file("./docker-engine-api-v1.41.yaml").absolutePath)
   configFile.set(file("./openapi-generator-config.yaml").absolutePath)
   outputDir.set(file(".").absolutePath)
+}
+val openApiGenerateCleanup by tasks.register("openApiGenerateCleanup") {
+  dependsOn(tasks.openApiGenerate)
+  doLast {
+    listOf(
+      "build.gradle",
+      "gradlew",
+      "gradlew.bat",
+      "settings.gradle"
+    ).onEach {
+      file(it).delete()
+    }
+    listOf(
+      "gradle",
+      "src/main/kotlin/de/gesellix/docker/engine/api",
+      "src/main/kotlin/de/gesellix/docker/engine/client"
+    ).onEach {
+      file(it).deleteRecursively()
+    }
+  }
+}
+tasks.runKtlintFormatOverKotlinScripts.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanup)
+tasks.ktlintKotlinScriptFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanup)
+tasks.ktlintMainSourceSetFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanup)
+tasks.ktlintFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanup)
+val updateApiModelSources by tasks.register("updateApiModelSources") {
+  group = "openapi tools"
+  dependsOn(tasks.ktlintFormat)
+  doLast {
+    listOf(
+      "build.gradle",
+      "gradlew",
+      "gradlew.bat",
+      "settings.gradle"
+    ).onEach {
+      file(it).delete()
+    }
+    listOf(
+      "gradle",
+      "src/main/kotlin/de/gesellix/docker/engine/api",
+      "src/main/kotlin/de/gesellix/docker/engine/client"
+    ).onEach {
+      file(it).deleteRecursively()
+    }
+  }
 }
 
 repositories {

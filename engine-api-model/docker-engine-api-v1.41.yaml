@@ -3140,7 +3140,7 @@ definitions:
               [hosts(5)](http://man7.org/linux/man-pages/man5/hosts.5.html)
               man page:
 
-                  IP_address canonical_hostname [aliases...]
+                  IP_address canonical_hostname [aliases]
             items:
               type: "string"
           DNSConfig:
