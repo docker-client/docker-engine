@@ -4,7 +4,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**type** | **kotlin.String** |  |
+**type** | **kotlin.String** |  | 
 
 
 

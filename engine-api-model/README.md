@@ -1,5 +1,23 @@
 # de.gesellix.docker.engine.client - Kotlin client library for Docker Engine API
 
+## Generate/update api sources
+
+The config from `openapi-generator-config.yaml` will be used via Gradle plugin:
+
+```shell
+./gradlew clean updateApiModelSource publishToMavenLocal -x signDockerApiModelPublication -x signDockerEnginePublication
+ ```
+
+Using the official OpenApi generator works like below. Please note that some customizations
+from the Gradle build script will be missing:
+
+```shell
+docker run --rm -it \
+  -v "${PWD}:/local" -w /local \
+  openapitools/openapi-generator-cli generate \
+  -c openapi-generator-config.yaml
+```
+
 ## Requires
 
 * Kotlin 1.4.30
@@ -145,6 +163,9 @@ Class | Method | HTTP request | Description
  - [de.gesellix.docker.engine.model.ContainerInspectResponse](docs/ContainerInspectResponse.md)
  - [de.gesellix.docker.engine.model.ContainerPruneResponse](docs/ContainerPruneResponse.md)
  - [de.gesellix.docker.engine.model.ContainerState](docs/ContainerState.md)
+ - [de.gesellix.docker.engine.model.ContainerSummary](docs/ContainerSummary.md)
+ - [de.gesellix.docker.engine.model.ContainerSummaryHostConfig](docs/ContainerSummaryHostConfig.md)
+ - [de.gesellix.docker.engine.model.ContainerSummaryNetworkSettings](docs/ContainerSummaryNetworkSettings.md)
  - [de.gesellix.docker.engine.model.ContainerTopResponse](docs/ContainerTopResponse.md)
  - [de.gesellix.docker.engine.model.ContainerUpdateResponse](docs/ContainerUpdateResponse.md)
  - [de.gesellix.docker.engine.model.ContainerWaitResponse](docs/ContainerWaitResponse.md)
