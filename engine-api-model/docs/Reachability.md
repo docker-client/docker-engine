@@ -4,11 +4,11 @@
 ## Enum
 
 
-    * `unknown` (value: `"unknown"`)
+    * `Unknown` (value: `"unknown"`)
 
-    * `unreachable` (value: `"unreachable"`)
+    * `Unreachable` (value: `"unreachable"`)
 
-    * `reachable` (value: `"reachable"`)
+    * `Reachable` (value: `"reachable"`)
 
 
 

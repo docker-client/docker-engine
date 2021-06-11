@@ -113,4 +113,3 @@ data class ContainerUpdateRequest(
   @Json(name = "RestartPolicy")
   val restartPolicy: RestartPolicy? = null,
 )
-

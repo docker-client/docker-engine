@@ -4,17 +4,17 @@
 ## Enum
 
 
-    * `eMPTY` (value: `""`)
+    * `EMPTY` (value: `""`)
 
-    * `inactive` (value: `"inactive"`)
+    * `Inactive` (value: `"inactive"`)
 
-    * `pending` (value: `"pending"`)
+    * `Pending` (value: `"pending"`)
 
-    * `active` (value: `"active"`)
+    * `Active` (value: `"active"`)
 
-    * `error` (value: `"error"`)
+    * `Error` (value: `"error"`)
 
-    * `locked` (value: `"locked"`)
+    * `Locked` (value: `"locked"`)
 
 
 

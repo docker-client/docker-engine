@@ -21,7 +21,7 @@ Name | Type | Description | Notes
 **stopSignal** | **kotlin.String** | Signal to stop the container. |  [optional]
 **stopGracePeriod** | **kotlin.Long** | Amount of time to wait for the container to terminate before forcefully killing it.  |  [optional]
 **healthCheck** | [**HealthConfig**](HealthConfig.md) |  |  [optional]
-**hosts** | **kotlin.collections.List&lt;kotlin.String&gt;** | A list of hostname/IP mappings to add to the container&#39;s &#x60;hosts&#x60; file. The format of extra hosts is specified in the [hosts(5)](http://man7.org/linux/man-pages/man5/hosts.5.html) man page:      IP_address canonical_hostname [aliases...]  |  [optional]
+**hosts** | **kotlin.collections.List&lt;kotlin.String&gt;** | A list of hostname/IP mappings to add to the container&#39;s &#x60;hosts&#x60; file. The format of extra hosts is specified in the [hosts(5)](http://man7.org/linux/man-pages/man5/hosts.5.html) man page:      IP_address canonical_hostname [aliases]  |  [optional]
 **dnSConfig** | [**TaskSpecContainerSpecDNSConfig**](TaskSpecContainerSpecDNSConfig.md) |  |  [optional]
 **secrets** | [**kotlin.collections.List&lt;TaskSpecContainerSpecSecrets&gt;**](TaskSpecContainerSpecSecrets.md) | Secrets contains references to zero or more secrets that will be exposed to the service.  |  [optional]
 **configs** | [**kotlin.collections.List&lt;TaskSpecContainerSpecConfigs&gt;**](TaskSpecContainerSpecConfigs.md) | Configs contains references to zero or more configs that will be exposed to the service.  |  [optional]

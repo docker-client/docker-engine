@@ -94,4 +94,3 @@ data class ContainerCreateRequest(
   @Json(name = "NetworkingConfig")
   val networkingConfig: NetworkingConfig? = null,
 )
-

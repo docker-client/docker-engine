@@ -14,6 +14,9 @@ docs/ContainerCreateResponse.md
 docs/ContainerInspectResponse.md
 docs/ContainerPruneResponse.md
 docs/ContainerState.md
+docs/ContainerSummary.md
+docs/ContainerSummaryHostConfig.md
+docs/ContainerSummaryNetworkSettings.md
 docs/ContainerTopResponse.md
 docs/ContainerUpdateResponse.md
 docs/ContainerWaitResponse.md
@@ -197,6 +200,9 @@ src/main/kotlin/de/gesellix/docker/engine/model/ContainerCreateResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ContainerInspectResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ContainerPruneResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ContainerState.kt
+src/main/kotlin/de/gesellix/docker/engine/model/ContainerSummary.kt
+src/main/kotlin/de/gesellix/docker/engine/model/ContainerSummaryHostConfig.kt
+src/main/kotlin/de/gesellix/docker/engine/model/ContainerSummaryNetworkSettings.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ContainerTopResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ContainerUpdateResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ContainerWaitResponse.kt

@@ -4,7 +4,7 @@
 ## Properties
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**bridge** | **kotlin.String** | Name of the network&#39;a bridge (for example, &#x60;docker0&#x60;). |  [optional]
+**bridge** | **kotlin.String** | Name of the network&#39;s bridge (for example, &#x60;docker0&#x60;). |  [optional]
 **sandboxID** | **kotlin.String** | SandboxID uniquely represents a container&#39;s network stack. |  [optional]
 **hairpinMode** | **kotlin.Boolean** | Indicates if hairpin NAT should be enabled on the virtual interface.  |  [optional]
 **linkLocalIPv6Address** | **kotlin.String** | IPv6 unicast address using the link-local prefix. |  [optional]

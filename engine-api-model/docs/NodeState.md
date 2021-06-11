@@ -4,13 +4,13 @@
 ## Enum
 
 
-    * `unknown` (value: `"unknown"`)
+    * `Unknown` (value: `"unknown"`)
 
-    * `down` (value: `"down"`)
+    * `Down` (value: `"down"`)
 
-    * `ready` (value: `"ready"`)
+    * `Ready` (value: `"ready"`)
 
-    * `disconnected` (value: `"disconnected"`)
+    * `Disconnected` (value: `"disconnected"`)
 
 
 

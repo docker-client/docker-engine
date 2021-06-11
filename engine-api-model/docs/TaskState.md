@@ -4,35 +4,35 @@
 ## Enum
 
 
-    * `new` (value: `"new"`)
+    * `New` (value: `"new"`)
 
-    * `allocated` (value: `"allocated"`)
+    * `Allocated` (value: `"allocated"`)
 
-    * `pending` (value: `"pending"`)
+    * `Pending` (value: `"pending"`)
 
-    * `assigned` (value: `"assigned"`)
+    * `Assigned` (value: `"assigned"`)
 
-    * `accepted` (value: `"accepted"`)
+    * `Accepted` (value: `"accepted"`)
 
-    * `preparing` (value: `"preparing"`)
+    * `Preparing` (value: `"preparing"`)
 
-    * `ready` (value: `"ready"`)
+    * `Ready` (value: `"ready"`)
 
-    * `starting` (value: `"starting"`)
+    * `Starting` (value: `"starting"`)
 
-    * `running` (value: `"running"`)
+    * `Running` (value: `"running"`)
 
-    * `complete` (value: `"complete"`)
+    * `Complete` (value: `"complete"`)
 
-    * `shutdown` (value: `"shutdown"`)
+    * `Shutdown` (value: `"shutdown"`)
 
-    * `failed` (value: `"failed"`)
+    * `Failed` (value: `"failed"`)
 
-    * `rejected` (value: `"rejected"`)
+    * `Rejected` (value: `"rejected"`)
 
-    * `remove` (value: `"remove"`)
+    * `Remove` (value: `"remove"`)
 
-    * `orphaned` (value: `"orphaned"`)
+    * `Orphaned` (value: `"orphaned"`)
 
 
 

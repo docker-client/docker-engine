@@ -1616,7 +1616,7 @@ definitions:
           type: "string"
       RepoDigests:
         type: "array"
-        x-nullable: false
+        x-nullable: true
         items:
           type: "string"
       Created:
@@ -1633,7 +1633,7 @@ definitions:
         x-nullable: false
       Labels:
         type: "object"
-        x-nullable: false
+        x-nullable: true
         additionalProperties:
           type: "string"
       Containers:
@@ -1706,7 +1706,7 @@ definitions:
       Labels:
         type: "object"
         description: "User-defined key/value metadata."
-        x-nullable: false
+        x-nullable: true
         additionalProperties:
           type: "string"
       Scope:
@@ -1719,6 +1719,7 @@ definitions:
         enum: ["local", "global"]
       Options:
         type: "object"
+        x-nullable: true
         description: |
           The driver specific options used when creating the volume.
         additionalProperties:
@@ -4022,73 +4023,71 @@ definitions:
       Warning: "unable to pin image doesnotexist:latest to digest: image library/doesnotexist:latest not found"
 
   ContainerSummary:
-    type: "array"
-    items:
-      type: "object"
-      properties:
-        Id:
-          description: "The ID of this container"
+    type: "object"
+    properties:
+      Id:
+        description: "The ID of this container"
+        type: "string"
+        x-go-name: "ID"
+      Names:
+        description: "The names that this container has been given"
+        type: "array"
+        items:
           type: "string"
-          x-go-name: "ID"
-        Names:
-          description: "The names that this container has been given"
-          type: "array"
-          items:
+      Image:
+        description: "The name of the image used when creating this container"
+        type: "string"
+      ImageID:
+        description: "The ID of the image that this container was created from"
+        type: "string"
+      Command:
+        description: "Command to run when starting the container"
+        type: "string"
+      Created:
+        description: "When the container was created"
+        type: "integer"
+        format: "int64"
+      Ports:
+        description: "The ports exposed by this container"
+        type: "array"
+        items:
+          $ref: "#/definitions/Port"
+      SizeRw:
+        description: "The size of files that have been created or changed by this container"
+        type: "integer"
+        format: "int64"
+      SizeRootFs:
+        description: "The total size of all the files in this container"
+        type: "integer"
+        format: "int64"
+      Labels:
+        description: "User-defined key/value metadata."
+        type: "object"
+        additionalProperties:
+          type: "string"
+      State:
+        description: "The state of this container (e.g. `Exited`)"
+        type: "string"
+      Status:
+        description: "Additional human-readable status of this container (e.g. `Exit 0`)"
+        type: "string"
+      HostConfig:
+        type: "object"
+        properties:
+          NetworkMode:
             type: "string"
-        Image:
-          description: "The name of the image used when creating this container"
-          type: "string"
-        ImageID:
-          description: "The ID of the image that this container was created from"
-          type: "string"
-        Command:
-          description: "Command to run when starting the container"
-          type: "string"
-        Created:
-          description: "When the container was created"
-          type: "integer"
-          format: "int64"
-        Ports:
-          description: "The ports exposed by this container"
-          type: "array"
-          items:
-            $ref: "#/definitions/Port"
-        SizeRw:
-          description: "The size of files that have been created or changed by this container"
-          type: "integer"
-          format: "int64"
-        SizeRootFs:
-          description: "The total size of all the files in this container"
-          type: "integer"
-          format: "int64"
-        Labels:
-          description: "User-defined key/value metadata."
-          type: "object"
-          additionalProperties:
-            type: "string"
-        State:
-          description: "The state of this container (e.g. `Exited`)"
-          type: "string"
-        Status:
-          description: "Additional human-readable status of this container (e.g. `Exit 0`)"
-          type: "string"
-        HostConfig:
-          type: "object"
-          properties:
-            NetworkMode:
-              type: "string"
-        NetworkSettings:
-          description: "A summary of the container's network settings"
-          type: "object"
-          properties:
-            Networks:
-              type: "object"
-              additionalProperties:
-                $ref: "#/definitions/EndpointSettings"
-        Mounts:
-          type: "array"
-          items:
-            $ref: "#/definitions/Mount"
+      NetworkSettings:
+        description: "A summary of the container's network settings"
+        type: "object"
+        properties:
+          Networks:
+            type: "object"
+            additionalProperties:
+              $ref: "#/definitions/EndpointSettings"
+      Mounts:
+        type: "array"
+        items:
+          $ref: "#/definitions/Mount"
 
   Driver:
     description: "Driver represents a driver (network, logging, secrets)."
