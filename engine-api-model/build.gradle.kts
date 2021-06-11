@@ -10,6 +10,13 @@ plugins {
   id("com.github.ben-manes.versions")
   id("net.ossindex.audit")
   id("io.freefair.maven-central.validate-poms")
+  id("org.openapi.generator")
+}
+
+openApiGenerate {
+  inputSpec.set(file("./docker-engine-api-v1.41.yaml").absolutePath)
+  configFile.set(file("./openapi-generator-config.yaml").absolutePath)
+  outputDir.set(file(".").absolutePath)
 }
 
 repositories {

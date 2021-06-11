@@ -302,10 +302,10 @@ data class SystemInfo(
     Default("default"),
 
     @Json(name = "hyperv")
-    Hhyperv("hyperv"),
+    Hyperv("hyperv"),
 
     @Json(name = "process")
-    Pprocess("process");
+    Process("process");
   }
 }
 
