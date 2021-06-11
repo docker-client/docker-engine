@@ -1,4 +1,4 @@
-# org.openapitools.client - Kotlin client library for Docker Engine API
+# de.gesellix.docker.engine.client - Kotlin client library for Docker Engine API
 
 ## Requires
 

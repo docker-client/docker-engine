@@ -136,7 +136,7 @@ data class TaskSpecContainerSpec(
     Default("default"),
 
     @Json(name = "process")
-    Pprocess("process"),
+    Process("process"),
 
     @Json(name = "hyperv")
     Hyperv("hyperv");

@@ -16,7 +16,7 @@ import com.squareup.moshi.JsonClass
 
 /**
  * NetworkSettings exposes the network settings in the API
- * @param bridge Name of the network'a bridge (for example, `docker0`).
+ * @param bridge Name of the network's bridge (for example, `docker0`).
  * @param sandboxID SandboxID uniquely represents a container's network stack.
  * @param hairpinMode Indicates if hairpin NAT should be enabled on the virtual interface.
  * @param linkLocalIPv6Address IPv6 unicast address using the link-local prefix.
@@ -37,7 +37,7 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 data class NetworkSettings(
-  /* Name of the network'a bridge (for example, `docker0`). */
+  /* Name of the network's bridge (for example, `docker0`). */
   @Json(name = "Bridge")
   val bridge: kotlin.String? = null,
   /* SandboxID uniquely represents a container's network stack. */
