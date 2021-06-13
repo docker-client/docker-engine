@@ -2,9 +2,9 @@ package de.gesellix.docker.response;
 
 import java.io.IOException;
 
-public interface Reader {
+public interface Reader<T> {
 
-  Object readNext() throws IOException;
+  T readNext(Class<T> type) throws IOException;
 
   boolean hasNext() throws IOException;
 }

@@ -25,9 +25,9 @@ public class JsonContentHandler {
 
   private Object readJsonObject(Source source) throws IOException {
     List<Object> parsed = new ArrayList<>();
-    JsonChunksReader reader = new JsonChunksReader(source);
+    JsonChunksReader<Object> reader = new JsonChunksReader<>(source);
     while (reader.hasNext()) {
-      parsed.add(reader.readNext());
+      parsed.add(reader.readNext(Object.class));
     }
 
     if (parsed.size() == 1) {

@@ -6,7 +6,7 @@ import okio.Source;
 
 import java.io.IOException;
 
-public class LineReader implements Reader {
+public class LineReader implements Reader<String> {
 
   private final BufferedSource buffer;
 
@@ -15,7 +15,7 @@ public class LineReader implements Reader {
   }
 
   @Override
-  public Object readNext() throws IOException {
+  public String readNext(Class<String> type) throws IOException {
     return buffer.readUtf8Line();
   }
 

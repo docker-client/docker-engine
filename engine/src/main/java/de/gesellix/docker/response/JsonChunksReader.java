@@ -8,24 +8,27 @@ import okio.Source;
 
 import java.io.IOException;
 
-public class JsonChunksReader implements Reader {
+public class JsonChunksReader<T> implements Reader<T> {
 
   private final JsonReader reader;
   private final Moshi moshi;
 
   public JsonChunksReader(Source source) {
-    moshi = new Moshi.Builder().add(new CustomObjectAdapterFactory()).build();
-    reader = JsonReader.of(Okio.buffer(source));
+    this(source, new Moshi.Builder().add(new CustomObjectAdapterFactory()).build());
+  }
 
+  public JsonChunksReader(Source source, Moshi moshi) {
+    this.moshi = moshi;
+    this.reader = JsonReader.of(Okio.buffer(source));
     // For transfer-encoding: chunked:
     // allows repeated `readNext` calls to consume
     // a complete stream of JSON chunks (delimited or not).
-    reader.setLenient(true);
+    this.reader.setLenient(true);
   }
 
   @Override
-  public Object readNext() throws IOException {
-    return moshi.adapter(Object.class).fromJson(reader);
+  public T readNext(Class<T> type) throws IOException {
+    return moshi.adapter(type).fromJson(reader);
 //    return reader.readJsonValue();
   }
 
