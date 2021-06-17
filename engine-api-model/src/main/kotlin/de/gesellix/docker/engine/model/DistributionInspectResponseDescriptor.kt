@@ -19,16 +19,16 @@ import com.squareup.moshi.JsonClass
  * @param mediaType
  * @param size
  * @param digest
- * @param urLs
+ * @param urls
  */
 @JsonClass(generateAdapter = true)
 data class DistributionInspectResponseDescriptor(
-  @Json(name = "MediaType")
+  @Json(name = "mediaType")
   val mediaType: kotlin.String? = null,
-  @Json(name = "Size")
+  @Json(name = "size")
   val size: kotlin.Long? = null,
-  @Json(name = "Digest")
+  @Json(name = "digest")
   val digest: kotlin.String? = null,
-  @Json(name = "URLs")
-  val urLs: kotlin.collections.List<kotlin.String>? = null
+  @Json(name = "urls")
+  val urls: kotlin.collections.List<kotlin.String>? = null
 )

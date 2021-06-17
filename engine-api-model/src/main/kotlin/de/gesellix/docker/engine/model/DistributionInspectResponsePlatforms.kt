@@ -17,7 +17,7 @@ import com.squareup.moshi.JsonClass
 /**
  *
  * @param architecture
- * @param OS
+ * @param os
  * @param osVersion
  * @param osFeatures
  * @param variant
@@ -25,15 +25,15 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 data class DistributionInspectResponsePlatforms(
-  @Json(name = "Architecture")
+  @Json(name = "architecture")
   val architecture: kotlin.String? = null,
-  @Json(name = "OS")
-  val OS: kotlin.String? = null,
-  @Json(name = "OSVersion")
+  @Json(name = "os")
+  val os: kotlin.String? = null,
+  @Json(name = "os.version")
   val osVersion: kotlin.String? = null,
-  @Json(name = "OSFeatures")
+  @Json(name = "os.features")
   val osFeatures: kotlin.collections.List<kotlin.String>? = null,
-  @Json(name = "Variant")
+  @Json(name = "variant")
   val variant: kotlin.String? = null,
   @Json(name = "Features")
   val features: kotlin.collections.List<kotlin.String>? = null
