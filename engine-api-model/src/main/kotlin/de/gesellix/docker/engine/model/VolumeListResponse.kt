@@ -26,5 +26,5 @@ data class VolumeListResponse(
   val volumes: kotlin.collections.List<Volume>,
   /* Warnings that occurred when fetching the list of volumes.  */
   @Json(name = "Warnings")
-  val warnings: kotlin.collections.List<kotlin.String>
+  val warnings: kotlin.collections.List<kotlin.String>?
 )

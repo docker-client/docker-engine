@@ -8722,7 +8722,7 @@ paths:
                   $ref: "#/definitions/Volume"
               Warnings:
                 type: "array"
-                x-nullable: false
+                x-nullable: true
                 description: |
                   Warnings that occurred when fetching the list of volumes.
                 items:
