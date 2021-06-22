@@ -46,23 +46,6 @@ tasks.ktlintFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanup
 val updateApiModelSources by tasks.register("updateApiModelSources") {
   group = "openapi tools"
   dependsOn(tasks.ktlintFormat)
-  doLast {
-    listOf(
-      "build.gradle",
-      "gradlew",
-      "gradlew.bat",
-      "settings.gradle"
-    ).onEach {
-      file(it).delete()
-    }
-    listOf(
-      "gradle",
-      "src/main/kotlin/de/gesellix/docker/engine/api",
-      "src/main/kotlin/de/gesellix/docker/engine/client"
-    ).onEach {
-      file(it).deleteRecursively()
-    }
-  }
 }
 
 repositories {
