@@ -1,5 +1,5 @@
 
-# InlineObject6
+# SwarmJoinRequest
 
 ## Properties
 Name | Type | Description | Notes

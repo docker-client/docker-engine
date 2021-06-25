@@ -61,9 +61,6 @@ docs/InlineObject1.md
 docs/InlineObject2.md
 docs/InlineObject3.md
 docs/InlineObject4.md
-docs/InlineObject5.md
-docs/InlineObject6.md
-docs/InlineObject7.md
 docs/InlineResponse400.md
 docs/JoinTokens.md
 docs/Limit.md
@@ -137,6 +134,8 @@ docs/ServiceUpdateStatus.md
 docs/Swarm.md
 docs/SwarmAllOf.md
 docs/SwarmInfo.md
+docs/SwarmInitRequest.md
+docs/SwarmJoinRequest.md
 docs/SwarmSpec.md
 docs/SwarmSpecCAConfig.md
 docs/SwarmSpecCAConfigExternalCAs.md
@@ -146,6 +145,7 @@ docs/SwarmSpecOrchestration.md
 docs/SwarmSpecRaft.md
 docs/SwarmSpecTaskDefaults.md
 docs/SwarmSpecTaskDefaultsLogDriver.md
+docs/SwarmUnlockRequest.md
 docs/SystemAuthResponse.md
 docs/SystemDataUsageResponse.md
 docs/SystemEventsResponse.md
@@ -247,9 +247,6 @@ src/main/kotlin/de/gesellix/docker/engine/model/InlineObject1.kt
 src/main/kotlin/de/gesellix/docker/engine/model/InlineObject2.kt
 src/main/kotlin/de/gesellix/docker/engine/model/InlineObject3.kt
 src/main/kotlin/de/gesellix/docker/engine/model/InlineObject4.kt
-src/main/kotlin/de/gesellix/docker/engine/model/InlineObject5.kt
-src/main/kotlin/de/gesellix/docker/engine/model/InlineObject6.kt
-src/main/kotlin/de/gesellix/docker/engine/model/InlineObject7.kt
 src/main/kotlin/de/gesellix/docker/engine/model/InlineResponse400.kt
 src/main/kotlin/de/gesellix/docker/engine/model/JoinTokens.kt
 src/main/kotlin/de/gesellix/docker/engine/model/Limit.kt
@@ -323,6 +320,8 @@ src/main/kotlin/de/gesellix/docker/engine/model/ServiceUpdateStatus.kt
 src/main/kotlin/de/gesellix/docker/engine/model/Swarm.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SwarmAllOf.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SwarmInfo.kt
+src/main/kotlin/de/gesellix/docker/engine/model/SwarmInitRequest.kt
+src/main/kotlin/de/gesellix/docker/engine/model/SwarmJoinRequest.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SwarmSpec.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SwarmSpecCAConfig.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SwarmSpecCAConfigExternalCAs.kt
@@ -332,6 +331,7 @@ src/main/kotlin/de/gesellix/docker/engine/model/SwarmSpecOrchestration.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SwarmSpecRaft.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SwarmSpecTaskDefaults.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SwarmSpecTaskDefaultsLogDriver.kt
+src/main/kotlin/de/gesellix/docker/engine/model/SwarmUnlockRequest.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SystemAuthResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SystemDataUsageResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SystemEventsResponse.kt

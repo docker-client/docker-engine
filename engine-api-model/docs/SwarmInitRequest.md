@@ -1,5 +1,5 @@
 
-# InlineObject5
+# SwarmInitRequest
 
 ## Properties
 Name | Type | Description | Notes
