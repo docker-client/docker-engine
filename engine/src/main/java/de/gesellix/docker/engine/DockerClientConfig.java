@@ -67,12 +67,10 @@ public class DockerClientConfig {
         URL candidateURL = new URL(dockerHost.replaceFirst("^" + oldProtocol + "://", "https://"));
         TlsConfig tlsConfig = getTlsConfig(candidateURL, env);
         if (tlsConfig.getTlsVerify()) {
-          log.debug("assume 'https'");
           protocol = "https";
           result.put("certPath", tlsConfig.getCertPath());
         }
         else {
-          log.debug("assume 'http'");
           protocol = "http";
           result.put("certPath", null);
         }
@@ -83,7 +81,6 @@ public class DockerClientConfig {
         result.put("port", String.valueOf(tcpUrl.getPort()));
         break;
       case "unix":
-        log.debug("is 'unix'");
         String dockerUnixSocket = dockerHost.replaceFirst("unix://", "");
         result.put("protocol", "unix");
         result.put("host", dockerUnixSocket);
@@ -91,7 +88,6 @@ public class DockerClientConfig {
         result.put("certPath", null);
         break;
       case "npipe":
-        log.debug("is 'named pipe'");
         String dockerNamedPipe = dockerHost.replaceFirst("npipe://", "");
         result.put("protocol", "npipe");
         result.put("host", dockerNamedPipe);
