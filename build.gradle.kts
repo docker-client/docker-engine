@@ -11,7 +11,7 @@ plugins {
   id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
   id("org.jetbrains.kotlin.jvm") version "1.4.31" apply false
   id("org.jetbrains.kotlin.kapt") version "1.4.31" apply false
-  id("org.openapi.generator") version "5.1.1" apply false
+  id("org.openapi.generator") version "5.2.0" apply false
   id("org.jlleitschuh.gradle.ktlint") version "10.1.0" apply false
 }
 
