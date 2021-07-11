@@ -34,7 +34,7 @@ data class ImageSummary(
   @Json(name = "ParentId")
   val parentId: kotlin.String,
   @Json(name = "RepoTags")
-  val repoTags: kotlin.collections.List<kotlin.String>,
+  val repoTags: kotlin.collections.List<kotlin.String>?,
   @Json(name = "RepoDigests")
   val repoDigests: kotlin.collections.List<kotlin.String>?,
   @Json(name = "Created")

@@ -1613,7 +1613,7 @@ definitions:
         x-nullable: false
       RepoTags:
         type: "array"
-        x-nullable: false
+        x-nullable: true
         items:
           type: "string"
       RepoDigests:
