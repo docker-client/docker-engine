@@ -51,21 +51,31 @@ public class OkResponseCallback implements Callback {
       Thread writer = new Thread(() -> {
         try {
           final BufferedSink bufferedSink = Okio.buffer(getConnectionProvider().getSink());
-          bufferedSink.writeAll(stdinSource);
+          long written = bufferedSink.writeAll(stdinSource);
+          log.warn("xxxxx - writer - written " + written);
           bufferedSink.flush();
+          log.warn("xxxxx - writer - flushed");
           attachConfig.onSinkWritten(response);
+          log.warn("xxxxx - writer - onSinkWritten");
           CountDownLatch done = new CountDownLatch(1);
           delayed(100, "writer", () -> {
+            log.warn("xxxxx - writer - delayed");
             try {
               bufferedSink.close();
+              log.warn("xxxxx - writer - delayed closed");
               attachConfig.onSinkClosed(response);
+              log.warn("xxxxx - writer - delayed onSinkClosed");
             }
             catch (Exception e) {
               log.warn("error", e);
             }
+            log.warn("xxxxx - writer - delayed return");
             return null;
           }, done);
-          done.await(5, TimeUnit.SECONDS);
+          boolean inTime = done.await(5, TimeUnit.SECONDS);
+          if (!inTime) {
+            log.warn("xxxxx - writer - done timeout");
+          }
         }
         catch (InterruptedException e) {
           log.debug("stdin->sink interrupted", e);
@@ -89,14 +99,22 @@ public class OkResponseCallback implements Callback {
       final BufferedSink bufferedStdout = Okio.buffer(Okio.sink(attachConfig.getStreams().getStdout()));
       Thread reader = new Thread(() -> {
         try {
+          log.warn("xxxxx - reader - writeAll -> " + getConnectionProvider().getSource());
           bufferedStdout.writeAll(getConnectionProvider().getSource());
+          log.warn("xxxxx - reader - flush");
           bufferedStdout.flush();
+          log.warn("xxxxx - reader - flushed");
           CountDownLatch done = new CountDownLatch(1);
           delayed(100, "reader", () -> {
+            log.warn("xxxxx - reader - delay ...");
             attachConfig.onSourceConsumed();
+            log.warn("xxxxx - reader - delay onSourceConsumed");
             return null;
           }, done);
-          done.await(5, TimeUnit.SECONDS);
+          boolean inTime = done.await(5, TimeUnit.SECONDS);
+          if (!inTime) {
+            log.warn("xxxxx - reader - done timeout");
+          }
         }
         catch (InterruptedException e) {
           log.debug("source->stdout interrupted", e);
@@ -127,8 +145,14 @@ public class OkResponseCallback implements Callback {
         try {
           action.get();
         }
+        catch (Exception e) {
+          log.warn("xxxxx - delayed - error", e);
+          throw e;
+        }
         finally {
+          log.warn("xxxxx - delayed - done");
           done.countDown();
+          log.warn("xxxxx - delayed - cancel");
           cancel();
         }
       }
