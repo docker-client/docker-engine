@@ -5272,7 +5272,9 @@ paths:
         200:
           description: "no error"
           schema:
-            $ref: "#/definitions/ContainerSummary"
+            type: "array"
+            items:
+              $ref: "#/definitions/ContainerSummary"
           examples:
             application/json:
               - Id: "8dfafdbc3a40"
