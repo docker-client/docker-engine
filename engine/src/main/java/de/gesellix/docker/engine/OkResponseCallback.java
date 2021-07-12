@@ -3,19 +3,20 @@ package de.gesellix.docker.engine;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-import okio.BufferedSink;
+import okio.Buffer;
 import okio.Okio;
+import okio.Pipe;
+import okio.Sink;
 import okio.Source;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 
 public class OkResponseCallback implements Callback {
 
@@ -40,44 +41,61 @@ public class OkResponseCallback implements Callback {
     attachConfig.onFailure(e);
   }
 
+  /** Reads all bytes from {@code source} and writes them to {@code sink}. */
+  private Long readAll(Source source, Sink sink) throws IOException {
+    long result = 0L;
+//    Okio.buffer(sink).writeAll(source);
+    Buffer buffer = new Buffer();
+    for (long count; (count = source.read(buffer, 1024)) != -1L; result += count) {
+      sink.write(buffer, count);
+    }
+    return result;
+  }
+
+  /** Calls {@link #readAll} on a background thread. */
+  private Future<Long> readAllAsync(final Source source, final Sink sink) {
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    try {
+      return executor.submit(() -> readAll(source, sink));
+    }
+    finally {
+      executor.shutdown();
+    }
+  }
+
+  private Thread transfer(Source source, Sink sink, BiConsumer<Long, Long> onFinish) {
+    return new Thread(() -> {
+      Pipe p = new Pipe(1024);
+      try {
+        Future<Long> futureSink = readAllAsync(p.source(), sink);
+        Future<Long> futureSource = readAllAsync(source, p.sink());
+        Long read = futureSource.get();
+        p.sink().flush();
+        p.sink().close();
+        Long written = futureSink.get();
+        onFinish.accept(read, written);
+      }
+      catch (Exception e) {
+        log.warn("error", e);
+        onFailure(e);
+      }
+    });
+  }
+
   @Override
   public void onResponse(@NotNull final Call call, @NotNull final Response response) throws IOException {
     TcpUpgradeVerificator.ensureTcpUpgrade(response);
 
     if (attachConfig.getStreams().getStdin() != null) {
-      // pass input from the client via stdin and pass it to the output stream
-      // running it in an own thread allows the client to gain back control
-      final Source stdinSource = Okio.source(attachConfig.getStreams().getStdin());
-      Thread writer = new Thread(() -> {
-        try {
-          final BufferedSink bufferedSink = Okio.buffer(getConnectionProvider().getSink());
-          bufferedSink.writeAll(stdinSource);
-          bufferedSink.flush();
-          attachConfig.onSinkWritten(response);
-          CountDownLatch done = new CountDownLatch(1);
-          delayed(100, "writer", () -> {
-            try {
-              bufferedSink.close();
-              attachConfig.onSinkClosed(response);
-            }
-            catch (Exception e) {
-              log.warn("error", e);
-            }
-            return null;
-          }, done);
-          done.await(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
-          log.debug("stdin->sink interrupted", e);
-          Thread.currentThread().interrupt();
-        }
-        catch (Exception e) {
-          onFailure(e);
-        }
-        finally {
-          log.trace("writer finished");
-        }
-      });
+      // client's stdin -> socket
+      Thread writer = transfer(
+          Okio.source(attachConfig.getStreams().getStdin()),
+          connectionProvider.getSink(),
+          (read, written) -> {
+            log.warn("read {}, written {}", read, written);
+            attachConfig.onStdInConsumed(response);
+            attachConfig.onSinkClosed(response);
+          });
       writer.setName("stdin-writer " + call.request().url().encodedPath());
       writer.start();
     }
@@ -86,29 +104,14 @@ public class OkResponseCallback implements Callback {
     }
 
     if (attachConfig.getStreams().getStdout() != null) {
-      final BufferedSink bufferedStdout = Okio.buffer(Okio.sink(attachConfig.getStreams().getStdout()));
-      Thread reader = new Thread(() -> {
-        try {
-          bufferedStdout.writeAll(getConnectionProvider().getSource());
-          bufferedStdout.flush();
-          CountDownLatch done = new CountDownLatch(1);
-          delayed(100, "reader", () -> {
-            attachConfig.onSourceConsumed();
-            return null;
-          }, done);
-          done.await(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
-          log.debug("source->stdout interrupted", e);
-          Thread.currentThread().interrupt();
-        }
-        catch (Exception e) {
-          onFailure(e);
-        }
-        finally {
-          log.trace("reader finished");
-        }
-      });
+      // client's stdout <- socket
+      Thread reader = transfer(
+          connectionProvider.getSource(),
+          Okio.sink(attachConfig.getStreams().getStdout()),
+          (read, written) -> {
+            log.warn("read {}, written {}", read, written);
+            attachConfig.onStdOutConsumed();
+          });
       reader.setName("stdout-reader " + call.request().url().encodedPath());
       reader.start();
     }
@@ -117,25 +120,5 @@ public class OkResponseCallback implements Callback {
     }
 
     attachConfig.onResponse(response);
-  }
-
-  public static void delayed(long delay, String name, final Supplier<?> action, final CountDownLatch done) {
-    new Timer(true).schedule(new TimerTask() {
-      @Override
-      public void run() {
-        Thread.currentThread().setName("Delayed " + name + " action (" + Thread.currentThread().getName() + ")");
-        try {
-          action.get();
-        }
-        finally {
-          done.countDown();
-          cancel();
-        }
-      }
-    }, delay);
-  }
-
-  public ConnectionProvider getConnectionProvider() {
-    return connectionProvider;
   }
 }
