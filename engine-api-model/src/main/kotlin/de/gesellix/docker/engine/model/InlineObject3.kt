@@ -16,14 +16,15 @@ import com.squareup.moshi.JsonClass
 
 /**
  *
- * @param container The ID or name of the container to connect to the network.
- * @param endpointConfig
+ * @param container The ID or name of the container to disconnect from the network.
+ * @param force Force the container to disconnect from the network.
  */
 @JsonClass(generateAdapter = true)
 data class InlineObject3(
-  /* The ID or name of the container to connect to the network. */
+  /* The ID or name of the container to disconnect from the network.  */
   @Json(name = "Container")
   val container: kotlin.String? = null,
-  @Json(name = "EndpointConfig")
-  val endpointConfig: EndpointSettings? = null
+  /* Force the container to disconnect from the network.  */
+  @Json(name = "Force")
+  val force: kotlin.Boolean? = null
 )

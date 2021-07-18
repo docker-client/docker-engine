@@ -23,7 +23,7 @@ import com.squareup.moshi.JsonClass
  * @param driver
  * @param enableIPv6
  * @param IPAM
- * @param internal
+ * @param `internal`
  * @param attachable
  * @param ingress
  * @param containers
@@ -47,7 +47,7 @@ data class Network(
   @Json(name = "IPAM")
   val IPAM: IPAM? = null,
   @Json(name = "Internal")
-  val internal: kotlin.Boolean? = null,
+  val `internal`: kotlin.Boolean? = null,
   @Json(name = "Attachable")
   val attachable: kotlin.Boolean? = null,
   @Json(name = "Ingress")

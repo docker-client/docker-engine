@@ -11,7 +11,7 @@ Name | Type | Description | Notes
 **driver** | **kotlin.String** |  |  [optional]
 **enableIPv6** | **kotlin.Boolean** |  |  [optional]
 **IPAM** | [**IPAM**](IPAM.md) |  |  [optional]
-**internal** | **kotlin.Boolean** |  |  [optional]
+**&#x60;internal&#x60;** | **kotlin.Boolean** |  |  [optional]
 **attachable** | **kotlin.Boolean** |  |  [optional]
 **ingress** | **kotlin.Boolean** |  |  [optional]
 **containers** | [**kotlin.collections.Map&lt;kotlin.String, NetworkContainer&gt;**](NetworkContainer.md) |  |  [optional]
