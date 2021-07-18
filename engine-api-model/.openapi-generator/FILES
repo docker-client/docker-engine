@@ -38,6 +38,7 @@ docs/ErrorDetail.md
 docs/ErrorResponse.md
 docs/ExecConfig.md
 docs/ExecInspectResponse.md
+docs/ExecStartConfig.md
 docs/GraphDriverData.md
 docs/Health.md
 docs/HealthConfig.md
@@ -60,7 +61,6 @@ docs/IndexInfo.md
 docs/InlineObject.md
 docs/InlineObject1.md
 docs/InlineObject2.md
-docs/InlineObject3.md
 docs/InlineResponse400.md
 docs/JoinTokens.md
 docs/Limit.md
@@ -224,6 +224,7 @@ src/main/kotlin/de/gesellix/docker/engine/model/ErrorDetail.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ErrorResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ExecConfig.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ExecInspectResponse.kt
+src/main/kotlin/de/gesellix/docker/engine/model/ExecStartConfig.kt
 src/main/kotlin/de/gesellix/docker/engine/model/GraphDriverData.kt
 src/main/kotlin/de/gesellix/docker/engine/model/Health.kt
 src/main/kotlin/de/gesellix/docker/engine/model/HealthConfig.kt
@@ -246,7 +247,6 @@ src/main/kotlin/de/gesellix/docker/engine/model/IndexInfo.kt
 src/main/kotlin/de/gesellix/docker/engine/model/InlineObject.kt
 src/main/kotlin/de/gesellix/docker/engine/model/InlineObject1.kt
 src/main/kotlin/de/gesellix/docker/engine/model/InlineObject2.kt
-src/main/kotlin/de/gesellix/docker/engine/model/InlineObject3.kt
 src/main/kotlin/de/gesellix/docker/engine/model/InlineResponse400.kt
 src/main/kotlin/de/gesellix/docker/engine/model/JoinTokens.kt
 src/main/kotlin/de/gesellix/docker/engine/model/Limit.kt

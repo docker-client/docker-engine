@@ -8626,6 +8626,7 @@ paths:
           in: "body"
           schema:
             type: "object"
+            title: "ExecStartConfig"
             properties:
               Detach:
                 type: "boolean"

@@ -16,15 +16,15 @@ import com.squareup.moshi.JsonClass
 
 /**
  *
- * @param container The ID or name of the container to disconnect from the network.
- * @param force Force the container to disconnect from the network.
+ * @param detach Detach from the command.
+ * @param tty Allocate a pseudo-TTY.
  */
 @JsonClass(generateAdapter = true)
-data class InlineObject2(
-  /* The ID or name of the container to disconnect from the network.  */
-  @Json(name = "Container")
-  val container: kotlin.String? = null,
-  /* Force the container to disconnect from the network.  */
-  @Json(name = "Force")
-  val force: kotlin.Boolean? = null
+data class ExecStartConfig(
+  /* Detach from the command. */
+  @Json(name = "Detach")
+  val detach: kotlin.Boolean? = null,
+  /* Allocate a pseudo-TTY. */
+  @Json(name = "Tty")
+  val tty: kotlin.Boolean? = null
 )
