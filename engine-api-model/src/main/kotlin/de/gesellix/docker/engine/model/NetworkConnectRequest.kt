@@ -20,7 +20,7 @@ import com.squareup.moshi.JsonClass
  * @param endpointConfig
  */
 @JsonClass(generateAdapter = true)
-data class InlineObject1(
+data class NetworkConnectRequest(
   /* The ID or name of the container to connect to the network. */
   @Json(name = "Container")
   val container: kotlin.String? = null,

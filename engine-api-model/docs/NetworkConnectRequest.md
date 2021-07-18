@@ -1,5 +1,5 @@
 
-# InlineObject1
+# NetworkConnectRequest
 
 ## Properties
 Name | Type | Description | Notes

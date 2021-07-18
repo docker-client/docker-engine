@@ -58,9 +58,6 @@ docs/ImageRootFS.md
 docs/ImageSearchResponseItem.md
 docs/ImageSummary.md
 docs/IndexInfo.md
-docs/InlineObject.md
-docs/InlineObject1.md
-docs/InlineObject2.md
 docs/InlineResponse400.md
 docs/JoinTokens.md
 docs/Limit.md
@@ -74,8 +71,11 @@ docs/MountVolumeOptions.md
 docs/MountVolumeOptionsDriverConfig.md
 docs/Network.md
 docs/NetworkAttachmentConfig.md
+docs/NetworkConnectRequest.md
 docs/NetworkContainer.md
+docs/NetworkCreateRequest.md
 docs/NetworkCreateResponse.md
+docs/NetworkDisconnectRequest.md
 docs/NetworkPruneResponse.md
 docs/NetworkSettings.md
 docs/NetworkingConfig.md
@@ -99,6 +99,7 @@ docs/PluginDevice.md
 docs/PluginEnv.md
 docs/PluginInterfaceType.md
 docs/PluginMount.md
+docs/PluginPrivilege.md
 docs/PluginPrivilegeItem.md
 docs/PluginSettings.md
 docs/PluginsInfo.md
@@ -244,9 +245,6 @@ src/main/kotlin/de/gesellix/docker/engine/model/ImageRootFS.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ImageSearchResponseItem.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ImageSummary.kt
 src/main/kotlin/de/gesellix/docker/engine/model/IndexInfo.kt
-src/main/kotlin/de/gesellix/docker/engine/model/InlineObject.kt
-src/main/kotlin/de/gesellix/docker/engine/model/InlineObject1.kt
-src/main/kotlin/de/gesellix/docker/engine/model/InlineObject2.kt
 src/main/kotlin/de/gesellix/docker/engine/model/InlineResponse400.kt
 src/main/kotlin/de/gesellix/docker/engine/model/JoinTokens.kt
 src/main/kotlin/de/gesellix/docker/engine/model/Limit.kt
@@ -260,8 +258,11 @@ src/main/kotlin/de/gesellix/docker/engine/model/MountVolumeOptions.kt
 src/main/kotlin/de/gesellix/docker/engine/model/MountVolumeOptionsDriverConfig.kt
 src/main/kotlin/de/gesellix/docker/engine/model/Network.kt
 src/main/kotlin/de/gesellix/docker/engine/model/NetworkAttachmentConfig.kt
+src/main/kotlin/de/gesellix/docker/engine/model/NetworkConnectRequest.kt
 src/main/kotlin/de/gesellix/docker/engine/model/NetworkContainer.kt
+src/main/kotlin/de/gesellix/docker/engine/model/NetworkCreateRequest.kt
 src/main/kotlin/de/gesellix/docker/engine/model/NetworkCreateResponse.kt
+src/main/kotlin/de/gesellix/docker/engine/model/NetworkDisconnectRequest.kt
 src/main/kotlin/de/gesellix/docker/engine/model/NetworkPruneResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/NetworkSettings.kt
 src/main/kotlin/de/gesellix/docker/engine/model/NetworkingConfig.kt
@@ -285,6 +286,7 @@ src/main/kotlin/de/gesellix/docker/engine/model/PluginDevice.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginEnv.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginInterfaceType.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginMount.kt
+src/main/kotlin/de/gesellix/docker/engine/model/PluginPrivilege.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginPrivilegeItem.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginSettings.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginsInfo.kt

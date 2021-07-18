@@ -2977,6 +2977,7 @@ definitions:
                 Describes a permission accepted by the user upon installing the
                 plugin.
               type: "object"
+              title: "PluginPrivilege"
               properties:
                 Name:
                   type: "string"
@@ -9151,6 +9152,7 @@ paths:
           required: true
           schema:
             type: "object"
+            title: "NetworkCreateRequest"
             required: ["Name"]
             properties:
               Name:
@@ -9261,6 +9263,7 @@ paths:
           required: true
           schema:
             type: "object"
+            title: "NetworkConnectRequest"
             properties:
               Container:
                 type: "string"
@@ -9307,6 +9310,7 @@ paths:
           required: true
           schema:
             type: "object"
+            title: "NetworkDisconnectRequest"
             properties:
               Container:
                 type: "string"
@@ -9484,6 +9488,7 @@ paths:
                 Describes a permission accepted by the user upon installing the
                 plugin.
               type: "object"
+              title: "PluginPrivilege"
               properties:
                 Name:
                   type: "string"
@@ -9668,6 +9673,7 @@ paths:
                 Describes a permission accepted by the user upon installing the
                 plugin.
               type: "object"
+              title: "PluginPrivilege"
               properties:
                 Name:
                   type: "string"

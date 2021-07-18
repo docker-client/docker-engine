@@ -1,5 +1,5 @@
 
-# InlineObject
+# PluginPrivilege
 
 ## Properties
 Name | Type | Description | Notes

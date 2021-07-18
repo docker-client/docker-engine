@@ -15,23 +15,47 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * Plugin spec for the service.  *(Experimental release only.)*  <p><br /></p>  > **Note**: ContainerSpec, NetworkAttachmentSpec, and PluginSpec are > mutually exclusive. PluginSpec is only used when the Runtime field > is set to `plugin`. NetworkAttachmentSpec is used when the Runtime > field is set to `attachment`.
- * @param name The name or 'alias' to use for the plugin.
- * @param remote The plugin image reference to use.
- * @param disabled Disable the plugin once scheduled.
- * @param pluginPrivilege
+ *
+ * @param name The network's name.
+ * @param checkDuplicate Check for networks with duplicate names. Since Network is primarily keyed based on a random ID and not on the name, and network name is strictly a user-friendly alias to the network which is uniquely identified using ID, there is no guaranteed way to check for duplicates. CheckDuplicate is there to provide a best effort checking of any networks which has the same name but it is not guaranteed to catch all name collisions.
+ * @param driver Name of the network driver plugin to use.
+ * @param `internal` Restrict external access to the network.
+ * @param attachable Globally scoped network is manually attachable by regular containers from workers in swarm mode.
+ * @param ingress Ingress network is the network which provides the routing-mesh in swarm mode.
+ * @param IPAM
+ * @param enableIPv6 Enable IPv6 on the network.
+ * @param options Network specific options to be used by the drivers.
+ * @param labels User-defined key/value metadata.
  */
 @JsonClass(generateAdapter = true)
-data class TaskSpecPluginSpec(
-  /* The name or 'alias' to use for the plugin. */
+data class NetworkCreateRequest(
+  /* The network's name. */
   @Json(name = "Name")
-  val name: kotlin.String? = null,
-  /* The plugin image reference to use. */
-  @Json(name = "Remote")
-  val remote: kotlin.String? = null,
-  /* Disable the plugin once scheduled. */
-  @Json(name = "Disabled")
-  val disabled: kotlin.Boolean? = null,
-  @Json(name = "PluginPrivilege")
-  val pluginPrivilege: kotlin.collections.List<PluginPrivilege>? = null
+  val name: kotlin.String,
+  /* Check for networks with duplicate names. Since Network is primarily keyed based on a random ID and not on the name, and network name is strictly a user-friendly alias to the network which is uniquely identified using ID, there is no guaranteed way to check for duplicates. CheckDuplicate is there to provide a best effort checking of any networks which has the same name but it is not guaranteed to catch all name collisions.  */
+  @Json(name = "CheckDuplicate")
+  val checkDuplicate: kotlin.Boolean? = null,
+  /* Name of the network driver plugin to use. */
+  @Json(name = "Driver")
+  val driver: kotlin.String? = null,
+  /* Restrict external access to the network. */
+  @Json(name = "Internal")
+  val `internal`: kotlin.Boolean? = null,
+  /* Globally scoped network is manually attachable by regular containers from workers in swarm mode.  */
+  @Json(name = "Attachable")
+  val attachable: kotlin.Boolean? = null,
+  /* Ingress network is the network which provides the routing-mesh in swarm mode.  */
+  @Json(name = "Ingress")
+  val ingress: kotlin.Boolean? = null,
+  @Json(name = "IPAM")
+  val IPAM: IPAM? = null,
+  /* Enable IPv6 on the network. */
+  @Json(name = "EnableIPv6")
+  val enableIPv6: kotlin.Boolean? = null,
+  /* Network specific options to be used by the drivers. */
+  @Json(name = "Options")
+  val options: kotlin.collections.Map<kotlin.String, kotlin.String>? = null,
+  /* User-defined key/value metadata. */
+  @Json(name = "Labels")
+  val labels: kotlin.collections.Map<kotlin.String, kotlin.String>? = null
 )

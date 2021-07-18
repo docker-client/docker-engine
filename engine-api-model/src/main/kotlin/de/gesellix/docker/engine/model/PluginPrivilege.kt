@@ -15,16 +15,17 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- *
- * @param container The ID or name of the container to disconnect from the network.
- * @param force Force the container to disconnect from the network.
+ * Describes a permission accepted by the user upon installing the plugin.
+ * @param name
+ * @param description
+ * @param value
  */
 @JsonClass(generateAdapter = true)
-data class InlineObject2(
-  /* The ID or name of the container to disconnect from the network.  */
-  @Json(name = "Container")
-  val container: kotlin.String? = null,
-  /* Force the container to disconnect from the network.  */
-  @Json(name = "Force")
-  val force: kotlin.Boolean? = null
+data class PluginPrivilege(
+  @Json(name = "Name")
+  val name: kotlin.String? = null,
+  @Json(name = "Description")
+  val description: kotlin.String? = null,
+  @Json(name = "Value")
+  val value: kotlin.collections.List<kotlin.String>? = null
 )

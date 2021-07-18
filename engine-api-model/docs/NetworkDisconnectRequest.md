@@ -1,5 +1,5 @@
 
-# InlineObject2
+# NetworkDisconnectRequest
 
 ## Properties
 Name | Type | Description | Notes
