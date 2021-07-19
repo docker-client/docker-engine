@@ -99,7 +99,6 @@ docs/PluginDevice.md
 docs/PluginEnv.md
 docs/PluginInterfaceType.md
 docs/PluginMount.md
-docs/PluginPrivilege.md
 docs/PluginPrivilegeItem.md
 docs/PluginSettings.md
 docs/PluginsInfo.md
@@ -286,7 +285,6 @@ src/main/kotlin/de/gesellix/docker/engine/model/PluginDevice.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginEnv.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginInterfaceType.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginMount.kt
-src/main/kotlin/de/gesellix/docker/engine/model/PluginPrivilege.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginPrivilegeItem.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginSettings.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginsInfo.kt

@@ -33,5 +33,5 @@ data class TaskSpecPluginSpec(
   @Json(name = "Disabled")
   val disabled: kotlin.Boolean? = null,
   @Json(name = "PluginPrivilege")
-  val pluginPrivilege: kotlin.collections.List<PluginPrivilege>? = null
+  val pluginPrivilege: kotlin.collections.List<PluginPrivilegeItem>? = null
 )
