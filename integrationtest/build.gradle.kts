@@ -68,7 +68,7 @@ dependencies {
   testImplementation("com.squareup.okhttp3:okhttp")
 
   testImplementation("org.slf4j:slf4j-api")
-  testRuntimeOnly("ch.qos.logback:logback-classic:1.2.3")
+  testRuntimeOnly("ch.qos.logback:logback-classic:1.2.4")
 
   testImplementation("org.spockframework:spock-core:2.0-groovy-2.5")
   testImplementation("cglib:cglib-nodep:3.3.0")
