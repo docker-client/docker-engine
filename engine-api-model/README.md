@@ -248,7 +248,6 @@ Class | Method | HTTP request | Description
  - [de.gesellix.docker.engine.model.PluginEnv](docs/PluginEnv.md)
  - [de.gesellix.docker.engine.model.PluginInterfaceType](docs/PluginInterfaceType.md)
  - [de.gesellix.docker.engine.model.PluginMount](docs/PluginMount.md)
- - [de.gesellix.docker.engine.model.PluginPrivilege](docs/PluginPrivilege.md)
  - [de.gesellix.docker.engine.model.PluginPrivilegeItem](docs/PluginPrivilegeItem.md)
  - [de.gesellix.docker.engine.model.PluginSettings](docs/PluginSettings.md)
  - [de.gesellix.docker.engine.model.PluginsInfo](docs/PluginsInfo.md)
