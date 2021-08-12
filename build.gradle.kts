@@ -17,7 +17,7 @@ plugins {
 
 val dependencyVersions = listOf(
   "com.squareup.okio:okio:2.10.0",
-  "org.jetbrains:annotations:21.0.1",
+  "org.jetbrains:annotations:22.0.0",
   "org.jetbrains.kotlin:kotlin-reflect:1.4.31",
   "org.jetbrains.kotlin:kotlin-stdlib:1.4.31",
   "org.jetbrains.kotlin:kotlin-stdlib-common:1.4.31",
