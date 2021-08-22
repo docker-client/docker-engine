@@ -15,15 +15,20 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- *
- * @param descriptor
- * @param platforms An array containing all platforms supported by the image.
+ * A descriptor struct containing digest, media type, and size.
+ * @param mediaType The media type of the object this schema refers to.
+ * @param digest The digest of the targeted content.
+ * @param size The size in bytes of the blob.
  */
 @JsonClass(generateAdapter = true)
-data class DistributionInspectResponse(
-  @Json(name = "Descriptor")
-  val descriptor: DistributionInspectResponseDescriptor,
-  /* An array containing all platforms supported by the image.  */
-  @Json(name = "Platforms")
-  val platforms: kotlin.collections.List<DistributionInspectResponsePlatforms>
+data class OCIDescriptor(
+  /* The media type of the object this schema refers to.  */
+  @Json(name = "mediaType")
+  val mediaType: kotlin.String? = null,
+  /* The digest of the targeted content.  */
+  @Json(name = "digest")
+  val digest: kotlin.String? = null,
+  /* The size in bytes of the blob.  */
+  @Json(name = "size")
+  val size: kotlin.Long? = null
 )

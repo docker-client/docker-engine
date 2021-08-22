@@ -15,27 +15,15 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- *
- * @param type The type of object emitting the event
- * @param action The type of event
- * @param actor
- * @param time Timestamp of event
- * @param timeNano Timestamp of event, with nanosecond accuracy
+ * Describes the result obtained from contacting the registry to retrieve image metadata.
+ * @param descriptor
+ * @param platforms An array containing all platforms supported by the image.
  */
 @JsonClass(generateAdapter = true)
-data class SystemEventsResponse(
-  /* The type of object emitting the event */
-  @Json(name = "Type")
-  val type: kotlin.String? = null,
-  /* The type of event */
-  @Json(name = "Action")
-  val action: kotlin.String? = null,
-  @Json(name = "Actor")
-  val actor: SystemEventsResponseActor? = null,
-  /* Timestamp of event */
-  @Json(name = "time")
-  val time: kotlin.Int? = null,
-  /* Timestamp of event, with nanosecond accuracy */
-  @Json(name = "timeNano")
-  val timeNano: kotlin.Long? = null
+data class DistributionInspect(
+  @Json(name = "Descriptor")
+  val descriptor: OCIDescriptor,
+  /* An array containing all platforms supported by the image.  */
+  @Json(name = "Platforms")
+  val platforms: kotlin.collections.List<OCIPlatform>
 )
