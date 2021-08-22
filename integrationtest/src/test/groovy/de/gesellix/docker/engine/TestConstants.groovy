@@ -54,11 +54,11 @@ class TestConstants {
     }
     else if (LocalDocker.isNativeWindows()) {
       versionDetails = [
-          ApiVersion   : { it == "1.40" },
+          ApiVersion   : { it == "1.41" },
           Arch         : { it == "amd64" },
-          BuildTime    : { it =~ "2021-09-16T\\w+" },
-          GitCommit    : { it == "4484c46d9d" },
-          GoVersion    : { it == "go1.13.15" },
+          BuildTime    : { it =~ "2021-07-30T\\w+" },
+          GitCommit    : { it == "75249d8" },
+          GoVersion    : { it == "go1.16.6" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.24" },
           Os           : { it == "windows" },
@@ -68,9 +68,9 @@ class TestConstants {
       versionDetails = [
           ApiVersion   : { it == "1.41" },
           Arch         : { it == "amd64" },
-          BuildTime    : { it =~ "2021-06-02T\\w+" },
-          GitCommit    : { it == "b0f5bc3" },
-          GoVersion    : { it == "go1.13.15" },
+          BuildTime    : { it =~ "2021-07-30T\\w+" },
+          GitCommit    : { it == "75249d8" },
+          GoVersion    : { it == "go1.16.6" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.12" },
           Os           : { it == "linux" },
