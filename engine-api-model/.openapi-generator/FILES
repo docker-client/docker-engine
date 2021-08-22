@@ -24,9 +24,8 @@ docs/ContainerWaitResponseError.md
 docs/CreateImageInfo.md
 docs/DeviceMapping.md
 docs/DeviceRequest.md
-docs/DistributionInspectResponse.md
-docs/DistributionInspectResponseDescriptor.md
-docs/DistributionInspectResponsePlatforms.md
+docs/DistributionApi.md
+docs/DistributionInspect.md
 docs/Driver.md
 docs/EndpointIPAMConfig.md
 docs/EndpointPortConfig.md
@@ -36,6 +35,8 @@ docs/EngineDescription.md
 docs/EngineDescriptionPlugins.md
 docs/ErrorDetail.md
 docs/ErrorResponse.md
+docs/EventActor.md
+docs/EventMessage.md
 docs/ExecConfig.md
 docs/ExecInspectResponse.md
 docs/ExecStartConfig.md
@@ -84,6 +85,8 @@ docs/NodeDescription.md
 docs/NodeSpec.md
 docs/NodeState.md
 docs/NodeStatus.md
+docs/OCIDescriptor.md
+docs/OCIPlatform.md
 docs/ObjectVersion.md
 docs/PeerNode.md
 docs/Platform.md
@@ -99,7 +102,7 @@ docs/PluginDevice.md
 docs/PluginEnv.md
 docs/PluginInterfaceType.md
 docs/PluginMount.md
-docs/PluginPrivilegeItem.md
+docs/PluginPrivilege.md
 docs/PluginSettings.md
 docs/PluginsInfo.md
 docs/Port.md
@@ -148,8 +151,6 @@ docs/SwarmSpecTaskDefaultsLogDriver.md
 docs/SwarmUnlockRequest.md
 docs/SystemAuthResponse.md
 docs/SystemDataUsageResponse.md
-docs/SystemEventsResponse.md
-docs/SystemEventsResponseActor.md
 docs/SystemInfo.md
 docs/SystemInfoDefaultAddressPools.md
 docs/SystemVersion.md
@@ -210,9 +211,7 @@ src/main/kotlin/de/gesellix/docker/engine/model/ContainerWaitResponseError.kt
 src/main/kotlin/de/gesellix/docker/engine/model/CreateImageInfo.kt
 src/main/kotlin/de/gesellix/docker/engine/model/DeviceMapping.kt
 src/main/kotlin/de/gesellix/docker/engine/model/DeviceRequest.kt
-src/main/kotlin/de/gesellix/docker/engine/model/DistributionInspectResponse.kt
-src/main/kotlin/de/gesellix/docker/engine/model/DistributionInspectResponseDescriptor.kt
-src/main/kotlin/de/gesellix/docker/engine/model/DistributionInspectResponsePlatforms.kt
+src/main/kotlin/de/gesellix/docker/engine/model/DistributionInspect.kt
 src/main/kotlin/de/gesellix/docker/engine/model/Driver.kt
 src/main/kotlin/de/gesellix/docker/engine/model/EndpointIPAMConfig.kt
 src/main/kotlin/de/gesellix/docker/engine/model/EndpointPortConfig.kt
@@ -222,6 +221,8 @@ src/main/kotlin/de/gesellix/docker/engine/model/EngineDescription.kt
 src/main/kotlin/de/gesellix/docker/engine/model/EngineDescriptionPlugins.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ErrorDetail.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ErrorResponse.kt
+src/main/kotlin/de/gesellix/docker/engine/model/EventActor.kt
+src/main/kotlin/de/gesellix/docker/engine/model/EventMessage.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ExecConfig.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ExecInspectResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ExecStartConfig.kt
@@ -270,6 +271,8 @@ src/main/kotlin/de/gesellix/docker/engine/model/NodeDescription.kt
 src/main/kotlin/de/gesellix/docker/engine/model/NodeSpec.kt
 src/main/kotlin/de/gesellix/docker/engine/model/NodeState.kt
 src/main/kotlin/de/gesellix/docker/engine/model/NodeStatus.kt
+src/main/kotlin/de/gesellix/docker/engine/model/OCIDescriptor.kt
+src/main/kotlin/de/gesellix/docker/engine/model/OCIPlatform.kt
 src/main/kotlin/de/gesellix/docker/engine/model/ObjectVersion.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PeerNode.kt
 src/main/kotlin/de/gesellix/docker/engine/model/Platform.kt
@@ -285,7 +288,7 @@ src/main/kotlin/de/gesellix/docker/engine/model/PluginDevice.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginEnv.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginInterfaceType.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginMount.kt
-src/main/kotlin/de/gesellix/docker/engine/model/PluginPrivilegeItem.kt
+src/main/kotlin/de/gesellix/docker/engine/model/PluginPrivilege.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginSettings.kt
 src/main/kotlin/de/gesellix/docker/engine/model/PluginsInfo.kt
 src/main/kotlin/de/gesellix/docker/engine/model/Port.kt
@@ -334,8 +337,6 @@ src/main/kotlin/de/gesellix/docker/engine/model/SwarmSpecTaskDefaultsLogDriver.k
 src/main/kotlin/de/gesellix/docker/engine/model/SwarmUnlockRequest.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SystemAuthResponse.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SystemDataUsageResponse.kt
-src/main/kotlin/de/gesellix/docker/engine/model/SystemEventsResponse.kt
-src/main/kotlin/de/gesellix/docker/engine/model/SystemEventsResponseActor.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SystemInfo.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SystemInfoDefaultAddressPools.kt
 src/main/kotlin/de/gesellix/docker/engine/model/SystemVersion.kt

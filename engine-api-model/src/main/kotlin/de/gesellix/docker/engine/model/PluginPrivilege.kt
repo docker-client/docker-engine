@@ -15,20 +15,17 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * A descriptor struct containing digest, media type, and size.
- * @param mediaType
- * @param size
- * @param digest
- * @param urls
+ * Describes a permission the user has to accept upon installing the plugin.
+ * @param name
+ * @param value
+ * @param description
  */
 @JsonClass(generateAdapter = true)
-data class DistributionInspectResponseDescriptor(
-  @Json(name = "mediaType")
-  val mediaType: kotlin.String? = null,
-  @Json(name = "size")
-  val size: kotlin.Long? = null,
-  @Json(name = "digest")
-  val digest: kotlin.String? = null,
-  @Json(name = "urls")
-  val urls: kotlin.collections.List<kotlin.String>? = null
+data class PluginPrivilege(
+  @Json(name = "Name")
+  val name: kotlin.String,
+  @Json(name = "Value")
+  val value: kotlin.collections.List<kotlin.String>,
+  @Json(name = "Description")
+  val description: kotlin.String? = null
 )

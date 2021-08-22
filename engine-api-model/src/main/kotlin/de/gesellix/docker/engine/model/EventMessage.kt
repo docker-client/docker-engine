@@ -15,26 +15,58 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- *
- * @param architecture
- * @param os
- * @param osVersion
- * @param osFeatures
- * @param variant
- * @param features
+ * EventMessage represents the information an event contains.
+ * @param type The type of object emitting the event
+ * @param action The type of event
+ * @param actor
+ * @param scope Scope of the event. Engine events are `local` scope. Cluster (Swarm) events are `swarm` scope.
+ * @param time Timestamp of event
+ * @param timeNano Timestamp of event, with nanosecond accuracy
  */
 @JsonClass(generateAdapter = true)
-data class DistributionInspectResponsePlatforms(
-  @Json(name = "architecture")
-  val architecture: kotlin.String? = null,
-  @Json(name = "os")
-  val os: kotlin.String? = null,
-  @Json(name = "os.version")
-  val osVersion: kotlin.String? = null,
-  @Json(name = "os.features")
-  val osFeatures: kotlin.collections.List<kotlin.String>? = null,
-  @Json(name = "variant")
-  val variant: kotlin.String? = null,
-  @Json(name = "Features")
-  val features: kotlin.collections.List<kotlin.String>? = null
-)
+data class EventMessage(
+  /* The type of object emitting the event */
+  @Json(name = "Type")
+  val type: EventMessage.Type? = null,
+  /* The type of event */
+  @Json(name = "Action")
+  val action: kotlin.String? = null,
+  @Json(name = "Actor")
+  val actor: EventActor? = null,
+  /* Scope of the event. Engine events are `local` scope. Cluster (Swarm) events are `swarm` scope.  */
+  @Json(name = "scope")
+  val scope: EventMessage.Scope? = null,
+  /* Timestamp of event */
+  @Json(name = "time")
+  val time: kotlin.Long? = null,
+  /* Timestamp of event, with nanosecond accuracy */
+  @Json(name = "timeNano")
+  val timeNano: kotlin.Long? = null
+) {
+
+  /**
+   * The type of object emitting the event
+   * Values: Builder,Config,Container,Daemon,Image,Network,Node,Plugin,Secret,Service,Volume
+   */
+  enum class Type(val value: kotlin.String) {
+    @Json(name = "builder") Builder("builder"),
+    @Json(name = "config") Config("config"),
+    @Json(name = "container") Container("container"),
+    @Json(name = "daemon") Daemon("daemon"),
+    @Json(name = "image") Image("image"),
+    @Json(name = "network") Network("network"),
+    @Json(name = "node") Node("node"),
+    @Json(name = "plugin") Plugin("plugin"),
+    @Json(name = "secret") Secret("secret"),
+    @Json(name = "service") Service("service"),
+    @Json(name = "volume") Volume("volume");
+  }
+  /**
+   * Scope of the event. Engine events are `local` scope. Cluster (Swarm) events are `swarm` scope.
+   * Values: Local,Swarm
+   */
+  enum class Scope(val value: kotlin.String) {
+    @Json(name = "local") Local("local"),
+    @Json(name = "swarm") Swarm("swarm");
+  }
+}
