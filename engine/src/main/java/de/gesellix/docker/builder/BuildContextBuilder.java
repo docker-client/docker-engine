@@ -41,7 +41,8 @@ public class BuildContextBuilder {
 
   public static void archiveTarFiles(File base, List<String> filenames, OutputStream target) throws IOException {
     try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new GZIPOutputStream(target))) {
-      tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+      tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
+      tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
       for (String filename : filenames) {
         String relativeFileName = relativize(base, new File(filename));
         log.debug("adding {} as {}", filename, relativeFileName);
