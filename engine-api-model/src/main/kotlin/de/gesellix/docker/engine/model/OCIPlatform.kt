@@ -15,7 +15,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * Describes the platform which the image in the manifest runs on.
+ * Describes the platform which the image in the manifest runs on, as defined in the [OCI Image Index Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-index.md).
  * @param architecture The CPU architecture, for example `amd64` or `ppc64`.
  * @param os The operating system, for example `linux` or `windows`.
  * @param osVersion Optional field specifying the operating system version, for example on Windows `10.0.19041.1165`.
