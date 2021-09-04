@@ -7012,7 +7012,7 @@ paths:
             properties:
               StatusCode:
                 description: "Exit code of the container"
-                type: "integer"
+                type: "number"
                 x-nullable: false
               Error:
                 description: "container waiting error, if any"
