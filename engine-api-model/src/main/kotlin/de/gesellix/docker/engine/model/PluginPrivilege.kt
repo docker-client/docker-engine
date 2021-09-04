@@ -17,15 +17,15 @@ import com.squareup.moshi.JsonClass
 /**
  * Describes a permission the user has to accept upon installing the plugin.
  * @param name
- * @param value
  * @param description
+ * @param value
  */
 @JsonClass(generateAdapter = true)
 data class PluginPrivilege(
   @Json(name = "Name")
-  val name: kotlin.String,
-  @Json(name = "Value")
-  val value: kotlin.collections.List<kotlin.String>,
+  val name: kotlin.String? = null,
   @Json(name = "Description")
-  val description: kotlin.String? = null
+  val description: kotlin.String? = null,
+  @Json(name = "Value")
+  val value: kotlin.collections.List<kotlin.String>? = null
 )

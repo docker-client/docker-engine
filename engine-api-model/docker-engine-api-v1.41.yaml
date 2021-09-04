@@ -2201,25 +2201,15 @@ definitions:
     properties:
       Name:
         type: "string"
+        example: "network"
       Description:
         type: "string"
       Value:
         type: "array"
         items:
           type: "string"
-    example:
-      - Name: "network"
-        Description: ""
-        Value:
+        example:
           - "host"
-      - Name: "mount"
-        Description: ""
-        Value:
-          - "/data"
-      - Name: "device"
-        Description: ""
-        Value:
-          - "/dev/cpu_dma_latency"
 
   Plugin:
     description: "A plugin for the Engine API"
@@ -5276,7 +5266,8 @@ definitions:
     type: "object"
     x-go-name: Descriptor
     description: |
-      A descriptor struct containing digest, media type, and size.
+      A descriptor struct containing digest, media type, and size, as defined in
+      the [OCI Content Descriptors Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/descriptor.md).
     properties:
       mediaType:
         description: |
@@ -5315,7 +5306,8 @@ definitions:
     type: "object"
     x-go-name: Platform
     description: |
-      Describes the platform which the image in the manifest runs on.
+      Describes the platform which the image in the manifest runs on, as defined
+      in the [OCI Image Index Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/image-index.md).
     properties:
       architecture:
         description: |

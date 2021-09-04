@@ -15,7 +15,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * A descriptor struct containing digest, media type, and size.
+ * A descriptor struct containing digest, media type, and size, as defined in the [OCI Content Descriptors Specification](https://github.com/opencontainers/image-spec/blob/v1.0.1/descriptor.md).
  * @param mediaType The media type of the object this schema refers to.
  * @param digest The digest of the targeted content.
  * @param size The size in bytes of the blob.

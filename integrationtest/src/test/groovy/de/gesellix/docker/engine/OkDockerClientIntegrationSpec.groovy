@@ -136,10 +136,10 @@ class OkDockerClientIntegrationSpec extends Specification {
     client.post([path              : "/containers/${containerId}/start".toString(),
                  requestContentType: "application/json"])
     // inspect container
-    def multiplexStreams = !client.get([path: "/containers/${containerId}/json".toString()]).content.Config.Tty
+    boolean multiplexStreams = !client.get([path: "/containers/${containerId}/json".toString()]).content.Config.Tty
 
-    def content = "attach ${UUID.randomUUID()}"
-    def expectedOutput = "$content\r\n#$content#\r\n"
+    String content = "attach ${UUID.randomUUID()}"
+    String expectedOutput = "$content\r\n#$content#\r\n"
 
     def stdout = new ByteArrayOutputStream(expectedOutput.length())
     def stdin = new PipedOutputStream()
@@ -177,9 +177,9 @@ class OkDockerClientIntegrationSpec extends Specification {
     stdin.write("$content\n".bytes)
     stdin.flush()
     stdin.close()
-    def sourceConsumed = onSourceConsumed.await(5, SECONDS)
-    def sinkWritten = onSinkWritten.await(5, SECONDS)
-    def sinkClosed = onSinkClosed.await(5, SECONDS)
+    boolean sourceConsumed = onSourceConsumed.await(5, SECONDS)
+    boolean sinkWritten = onSinkWritten.await(5, SECONDS)
+    boolean sinkClosed = onSinkClosed.await(5, SECONDS)
 
     then:
     sinkClosed
@@ -189,10 +189,8 @@ class OkDockerClientIntegrationSpec extends Specification {
     stdout.toByteArray() == expectedOutput.bytes
 
     cleanup:
-    client.post([path : "/containers/${containerId}/stop".toString(),
-                 query: [t: 10]])
+    client.post([path : "/containers/${containerId}/stop".toString(), query: [t: 10]])
     client.post([path: "/containers/${containerId}/wait".toString()])
-    client.delete([path : "/containers/${containerId}".toString(),
-                   query: [:]])
+    client.delete([path : "/containers/${containerId}".toString(), query: [:]])
   }
 }
