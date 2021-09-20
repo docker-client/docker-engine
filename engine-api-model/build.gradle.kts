@@ -53,7 +53,7 @@ repositories {
 }
 
 dependencies {
-  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.30")
+  implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31")
 
   implementation("com.squareup.moshi:moshi:1.12.0")
   kapt("com.squareup.moshi:moshi-kotlin-codegen:1.12.0")
