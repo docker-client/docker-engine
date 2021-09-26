@@ -30,12 +30,12 @@ public class AuthConfigReader {
   }
 
   //  @Override
-  AuthConfig readDefaultAuthConfig() {
+  public AuthConfig readDefaultAuthConfig() {
     return readAuthConfig(null, env.getDockerConfigFile());
   }
 
   //  @Override
-  AuthConfig readAuthConfig(String hostname, File dockerCfg) {
+  public AuthConfig readAuthConfig(String hostname, File dockerCfg) {
     log.debug("read authConfig");
 
     if (hostname == null || hostname.trim().isEmpty()) {
@@ -51,7 +51,7 @@ public class AuthConfigReader {
     return credsStore.getAuthConfig(hostname);
   }
 
-  Map readDockerConfigFile(File dockerCfg) {
+  public Map readDockerConfigFile(File dockerCfg) {
     if (dockerCfg == null) {
       dockerCfg = env.getDockerConfigFile();
     }
@@ -69,11 +69,11 @@ public class AuthConfigReader {
     }
   }
 
-  CredsStore getCredentialsStore(Map parsedDockerCfg) {
+  public CredsStore getCredentialsStore(Map parsedDockerCfg) {
     return getCredentialsStore(parsedDockerCfg, "");
   }
 
-  CredsStore getCredentialsStore(Map parsedDockerCfg, String hostname) {
+  public CredsStore getCredentialsStore(Map parsedDockerCfg, String hostname) {
     if (parsedDockerCfg.containsKey("credHelpers") && hostname != null && !hostname.trim().isEmpty()) {
       return new NativeStore((String) ((Map) parsedDockerCfg.get("credHelpers")).get(hostname));
     }
