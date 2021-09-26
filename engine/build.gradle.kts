@@ -59,8 +59,8 @@ dependencies {
     ).onEach {
       implementation(it) {
         version {
-          strictly("[2.5,)")
-          prefer("2.5.14")
+          strictly("[3,)")
+          prefer("3.0.9")
         }
       }
     }
@@ -83,7 +83,7 @@ dependencies {
 
   implementation("org.bouncycastle:bcpkix-jdk15on:1.69")
 
-  testImplementation("org.spockframework:spock-core:2.0-groovy-2.5")
+  testImplementation("org.spockframework:spock-core:2.0-groovy-3.0")
   testImplementation("cglib:cglib-nodep:3.3.0")
 }
 
