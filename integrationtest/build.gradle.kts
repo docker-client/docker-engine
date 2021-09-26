@@ -52,17 +52,6 @@ dependencies {
         }
       }
     }
-    listOf(
-      "org.codehaus.groovy:groovy",
-      "org.codehaus.groovy:groovy-json"
-    ).onEach {
-      implementation(it) {
-        version {
-          strictly("[3,)")
-          prefer("3.0.9")
-        }
-      }
-    }
   }
   implementation(project(":engine"))
   testImplementation("com.squareup.okhttp3:okhttp")
