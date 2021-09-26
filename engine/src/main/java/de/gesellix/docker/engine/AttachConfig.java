@@ -1,6 +1,5 @@
 package de.gesellix.docker.engine;
 
-import groovy.lang.Closure;
 import okhttp3.Response;
 
 import java.io.InputStream;
@@ -30,30 +29,12 @@ public class AttachConfig {
     callbacks.onFailure = onFailure;
   }
 
-  /**
-   * @see #setOnFailure(Function)
-   * @deprecated Will be removed after migration from Groovy to plain Java
-   */
-  @Deprecated
-  public void setOnFailure(Closure<?> onFailure) {
-    setOnFailure(onFailure::call);
-  }
-
   public Object onResponse(Response r) {
     return callbacks.onResponse.apply(r);
   }
 
   public void setOnResponse(Function<Response, ?> onResponse) {
     callbacks.onResponse = onResponse;
-  }
-
-  /**
-   * @see #setOnResponse(Function)
-   * @deprecated Will be removed after migration from Groovy to plain Java
-   */
-  @Deprecated
-  public void setOnResponse(Closure<?> onResponse) {
-    setOnResponse(onResponse::call);
   }
 
   public Object onSinkClosed(Response r) {
@@ -64,15 +45,6 @@ public class AttachConfig {
     callbacks.onSinkClosed = onSinkClosed;
   }
 
-  /**
-   * @see #setOnSinkClosed(Function)
-   * @deprecated Will be removed after migration from Groovy to plain Java
-   */
-  @Deprecated
-  public void setOnSinkClosed(Closure<?> onSinkClosed) {
-    setOnSinkClosed(onSinkClosed::call);
-  }
-
   public Object onSinkWritten(Response r) {
     return callbacks.onSinkWritten.apply(r);
   }
@@ -81,33 +53,12 @@ public class AttachConfig {
     callbacks.onSinkWritten = onSinkWritten;
   }
 
-  /**
-   * @see #setOnSinkWritten(Function)
-   * @deprecated Will be removed after migration from Groovy to plain Java
-   */
-  @Deprecated
-  public void setOnSinkWritten(Closure<?> onSinkWritten) {
-    setOnSinkWritten(onSinkWritten::call);
-  }
-
   public Object onSourceConsumed() {
     return callbacks.onSourceConsumed.get();
   }
 
   public void setOnSourceConsumed(Supplier<?> onSourceConsumed) {
     callbacks.onSourceConsumed = onSourceConsumed;
-  }
-
-  /**
-   * @see #setOnSourceConsumed(Supplier)
-   * @deprecated Will be removed after migration from Groovy to plain Java
-   */
-  @Deprecated
-  public void setOnSourceConsumed(Closure<?> onSourceConsumed) {
-    setOnSourceConsumed(() -> {
-      onSourceConsumed.call();
-      return null;
-    });
   }
 
   public static class Streams {

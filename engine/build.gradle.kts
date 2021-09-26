@@ -65,7 +65,6 @@ dependencies {
       }
     }
   }
-  implementation("org.codehaus.groovy:groovy")
 
   implementation("com.squareup.moshi:moshi:1.12.0")
 
