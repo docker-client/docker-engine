@@ -1717,7 +1717,7 @@ definitions:
           The level at which the volume exists. Either `global` for cluster-wide,
           or `local` for machine level.
         default: "local"
-        x-nullable: false
+        x-nullable: true
         enum: ["local", "global"]
       Options:
         type: "object"
