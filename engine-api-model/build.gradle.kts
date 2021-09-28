@@ -19,7 +19,8 @@ openApiGenerate {
   configFile.set(file("./openapi-generator-config.yaml").absolutePath)
   outputDir.set(file(".").absolutePath)
 }
-val openApiGenerateCleanup by tasks.register("openApiGenerateCleanup") {
+val openApiGenerateCleanupBuildScript by tasks.register("openApiGenerateCleanupBuildScript") {
+  group = "openapi tools"
   dependsOn(tasks.openApiGenerate)
   doLast {
     listOf(
@@ -31,7 +32,17 @@ val openApiGenerateCleanup by tasks.register("openApiGenerateCleanup") {
       file(it).delete()
     }
     listOf(
-      "gradle",
+      "gradle"
+    ).onEach {
+      file(it).deleteRecursively()
+    }
+  }
+}
+val openApiGenerateCleanupGeneratedCode by tasks.register("openApiGenerateCleanupGeneratedCode") {
+  group = "openapi tools"
+  dependsOn(tasks.openApiGenerate)
+  doLast {
+    listOf(
       "src/main/kotlin/de/gesellix/docker/engine/api",
       "src/main/kotlin/de/gesellix/docker/engine/client"
     ).onEach {
@@ -39,13 +50,14 @@ val openApiGenerateCleanup by tasks.register("openApiGenerateCleanup") {
     }
   }
 }
-tasks.runKtlintFormatOverKotlinScripts.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanup)
-tasks.ktlintKotlinScriptFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanup)
-tasks.ktlintMainSourceSetFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanup)
-tasks.ktlintFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanup)
+tasks.runKtlintFormatOverKotlinScripts.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanupBuildScript)
+tasks.ktlintKotlinScriptFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanupBuildScript)
+tasks.ktlintMainSourceSetFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanupBuildScript)
+tasks.ktlintFormat.get().dependsOn(tasks.openApiGenerate, openApiGenerateCleanupBuildScript)
 val updateApiModelSources by tasks.register("updateApiModelSources") {
   group = "openapi tools"
   dependsOn(tasks.ktlintFormat)
+  finalizedBy(openApiGenerateCleanupGeneratedCode)
 }
 
 repositories {
