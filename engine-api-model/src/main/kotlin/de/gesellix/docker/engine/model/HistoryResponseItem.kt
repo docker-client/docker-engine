@@ -32,7 +32,7 @@ data class HistoryResponseItem(
   @Json(name = "CreatedBy")
   val createdBy: kotlin.String,
   @Json(name = "Tags")
-  val tags: kotlin.collections.List<kotlin.String>,
+  val tags: kotlin.collections.List<kotlin.String>?,
   @Json(name = "Size")
   val size: kotlin.Long,
   @Json(name = "Comment")
