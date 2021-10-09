@@ -9,26 +9,13 @@ plugins {
   id("net.ossindex.audit") version "0.4.11"
   id("io.freefair.maven-central.validate-poms") version "6.2.0"
   id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
-  id("org.jetbrains.kotlin.jvm") version "1.5.31" apply false
-  id("org.jetbrains.kotlin.kapt") version "1.5.31" apply false
-  id("org.openapi.generator") version "5.2.0" apply false
-  id("org.jlleitschuh.gradle.ktlint") version "10.2.0" apply false
 }
 
 val dependencyVersions = listOf(
-  "com.squareup.okio:okio:2.10.0",
-  "org.jetbrains:annotations:22.0.0",
-  "org.jetbrains.kotlin:kotlin-reflect:1.5.31",
-  "org.jetbrains.kotlin:kotlin-stdlib:1.5.31",
-  "org.jetbrains.kotlin:kotlin-stdlib-common:1.5.31",
-  "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.31",
-  "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31"
+  "org.jetbrains:annotations:22.0.0"
 )
 
-val dependencyGroupVersions = mapOf(
-  "org.junit" to "5.8.0",
-  "org.junit.jupiter" to "5.8.0",
-  "org.junit.platform" to "1.8.0"
+val dependencyGroupVersions = mapOf<String, String>(
 )
 
 subprojects {
