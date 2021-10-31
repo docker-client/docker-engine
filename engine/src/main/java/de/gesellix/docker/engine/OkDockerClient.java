@@ -320,13 +320,7 @@ public class OkDockerClient implements EngineClient {
         default:
           Source source = Okio.source((InputStream) body);
           BufferedSource buffer = Okio.buffer(source);
-          try {
-            requestBody = RequestBody.create(buffer.readByteArray(), MediaType.parse(contentType));
-          }
-          catch (IOException e) {
-            log.error("Failed to read request body", e);
-            throw new RuntimeException("Failed to read request body", e);
-          }
+          requestBody = new StreamingRequestBody(MediaType.parse(contentType), buffer);
           break;
       }
     }
