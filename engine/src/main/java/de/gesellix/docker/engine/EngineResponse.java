@@ -3,7 +3,7 @@ package de.gesellix.docker.engine;
 import java.io.InputStream;
 import java.util.concurrent.Future;
 
-public class EngineResponse {
+public class EngineResponse<R> {
 
   private EngineResponseStatus status = new EngineResponseStatus();
   private Object headers;
@@ -11,7 +11,7 @@ public class EngineResponse {
   private String mimeType;
   private String contentLength;
   private InputStream stream;
-  private Object content;
+  private R content;
   private Future<?> taskFuture;
   private OkResponseCallback responseCallback;
 
@@ -63,11 +63,11 @@ public class EngineResponse {
     this.stream = stream;
   }
 
-  public Object getContent() {
+  public R getContent() {
     return content;
   }
 
-  public void setContent(Object content) {
+  public void setContent(R content) {
     this.content = content;
   }
 
