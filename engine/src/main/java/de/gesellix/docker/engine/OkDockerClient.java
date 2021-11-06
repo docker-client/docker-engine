@@ -370,12 +370,13 @@ public class OkDockerClient implements EngineClient {
         break;
       case "application/octet-stream":
         InputStream octet = httpResponse.body().byteStream();
-        log.debug("passing through via `response.stream`.");
         if (config.getStdout() != null) {
+          log.debug("redirecting to stdout.");
           IOUtils.copy(octet, config.getStdout());
           response.setStream(null);
         }
         else {
+          log.debug("passing through via `response.stream`.");
           response.setStream(octet);
         }
         break;
@@ -396,12 +397,13 @@ public class OkDockerClient implements EngineClient {
         ResponseBody body = httpResponse.body();
         if (body.contentLength() == -1) {
           InputStream stream = body.byteStream();
-          log.debug("passing through via `response.stream`.");
           if (config.getStdout() != null) {
+            log.debug("redirecting to stdout.");
             IOUtils.copy(stream, config.getStdout());
             response.setStream(null);
           }
           else {
+            log.debug("passing through via `response.stream`.");
             response.setStream(stream);
           }
         }
