@@ -23,23 +23,27 @@ public class FileStore implements CredsStore {
   public Map<String, AuthConfig> getAuthConfigs() {
     if (allAuthConfigs == null) {
       allAuthConfigs = config.entrySet().stream()
-          .filter((e) -> e.getValue() != null && e.getValue().get("auth") != null)
+          .filter((e) -> e.getValue() != null && (e.getValue().get("auth") != null || e.getValue().containsKey("identitytoken")))
           .collect(Collectors.toMap(
               Map.Entry::getKey,
               e -> {
                 String registry = e.getKey();
                 Map value = e.getValue();
-                String[] login = new String(Base64.getDecoder().decode((String) value.get("auth"))).split(":");
-                String username = login[0];
-                String password = login[1];
 
                 AuthConfig authConfig = new AuthConfig();
                 authConfig.setServeraddress(registry);
-                // TODO?
-                // if (username == TOKEN_USERNAME) { authConfig.setIdentitytoken(value.get("Secret")) }
-                authConfig.setUsername(username);
-                authConfig.setPassword(password);
-                authConfig.setEmail((String) value.get("email"));
+
+                if (value.containsKey("identitytoken")) {
+                  authConfig.setIdentitytoken((String) value.get("identitytoken"));
+                }
+                else {
+                  String[] login = new String(Base64.getDecoder().decode((String) value.get("auth"))).split(":");
+                  String username = login[0];
+                  String password = login[1];
+                  authConfig.setUsername(username);
+                  authConfig.setPassword(password);
+                  authConfig.setEmail((String) value.get("email"));
+                }
                 return authConfig;
               }
           ));

@@ -49,6 +49,7 @@ class FileStoreTest extends Specification {
   def "getAuthConfigs all known AuthConfigs"() {
     given:
     FileStore credsStore = new FileStore([auths: [
+        "host0.name": [identitytoken: "to.k.en"],
         "host1.name": [auth: "Z2VzZWxsaXg6LXlldC1hbm90aGVyLXBhc3N3b3JkLQ==", email: "tobias@gesellix.de"],
         "host2.name": [auth: "Z2VzZWxsaXg6LWEtcGFzc3dvcmQtZm9yLXF1YXkt", email: "tobias@gesellix.de"]]])
 
@@ -56,7 +57,11 @@ class FileStoreTest extends Specification {
     Map<String, AuthConfig> result = credsStore.getAuthConfigs()
 
     then:
-    result.size() == 2
+    result.size() == 3
+    result["host0.name"] == new AuthConfig(
+        identitytoken: "to.k.en",
+        serveraddress: "host0.name"
+    )
     result["host1.name"] == new AuthConfig(
         username: "gesellix",
         password: "-yet-another-password-",
