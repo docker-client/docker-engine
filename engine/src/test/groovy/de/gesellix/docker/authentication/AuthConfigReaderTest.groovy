@@ -1,6 +1,5 @@
 package de.gesellix.docker.authentication
 
-import com.squareup.moshi.Moshi
 import de.gesellix.docker.engine.DockerEnv
 import de.gesellix.testutil.ResourceReader
 import spock.lang.Requires
@@ -12,8 +11,6 @@ class AuthConfigReaderTest extends Specification {
 
   DockerEnv env
   AuthConfigReader authConfigReader
-
-  Moshi moshi = new Moshi.Builder().build()
 
   def setup() {
     env = Mock(DockerEnv)
