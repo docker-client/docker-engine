@@ -20,24 +20,21 @@ public class IOUtils {
   }
 
   public static long copy(Source source, Sink sink) throws IOException {
+    long count = 0;
     BufferedSink buffer = Okio.buffer(sink);
-    long count = buffer.writeAll(source);
+    while (buffer.isOpen()) {
+      long n = source.read(buffer.getBuffer(), 8192L);
+      if (n < 1) {
+        break;
+      }
+      count += n;
+    }
     buffer.flush();
     return count;
   }
 
   public static String toString(InputStream source) throws IOException {
     return Okio.buffer(Okio.source(source)).readUtf8();
-  }
-
-  public static void closeQuietly(InputStream stream) {
-    try {
-      if (stream != null) {
-        stream.close();
-      }
-    }
-    catch (Exception ignored) {
-    }
   }
 
   public static void closeQuietly(Source source) {

@@ -1,11 +1,13 @@
 package de.gesellix.docker.engine;
 
 import com.squareup.moshi.Moshi;
-import de.gesellix.docker.client.filesocket.NamedPipeSocket;
+import de.gesellix.docker.client.filesocket.FileSocketFactory;
+import de.gesellix.docker.client.filesocket.HostnameEncoder;
 import de.gesellix.docker.client.filesocket.NamedPipeSocketFactory;
-import de.gesellix.docker.client.filesocket.UnixSocket;
 import de.gesellix.docker.client.filesocket.UnixSocketFactory;
 import de.gesellix.docker.client.filesocket.UnixSocketFactorySupport;
+import de.gesellix.docker.hijack.HijackingInterceptor;
+import de.gesellix.docker.hijack.OkResponseCallback;
 import de.gesellix.docker.json.CustomObjectAdapterFactory;
 import de.gesellix.docker.rawstream.RawInputStream;
 import de.gesellix.docker.response.JsonContentHandler;
@@ -48,6 +50,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static de.gesellix.docker.client.filesocket.FileSocket.SOCKET_MARKER;
 import static de.gesellix.docker.engine.RequestMethod.DELETE;
 import static de.gesellix.docker.engine.RequestMethod.GET;
 import static de.gesellix.docker.engine.RequestMethod.HEAD;
@@ -139,7 +142,6 @@ public class OkDockerClient implements EngineClient {
   public EngineResponse request(EngineRequest requestConfig) {
     EngineRequest config = ensureValidRequestConfig(requestConfig);
 
-    // https://docs.docker.com/engine/reference/api/docker_remote_api_v1.24/#attach-to-a-container
     AttachConfig attachConfig = null;
     if (config.getAttach() != null) {
       Map<String, String> headers = config.getHeaders();
@@ -147,6 +149,8 @@ public class OkDockerClient implements EngineClient {
         headers = new HashMap<>();
       }
       config.setHeaders(headers);
+      // https://docs.docker.com/engine/api/v1.41/#operation/ContainerAttach
+      // To hint potential proxies about connection hijacking, the Docker client sends connection upgrade headers.
       headers.put("Upgrade", "tcp");
       headers.put("Connection", "Upgrade");
       attachConfig = config.getAttach();
@@ -159,9 +163,11 @@ public class OkDockerClient implements EngineClient {
     OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), config.getTimeout());
     OkResponseCallback responseCallback = null;
     if (attachConfig != null) {
-      ConnectionProvider connectionProvider = new ConnectionProvider();
-      clientBuilder.addNetworkInterceptor(connectionProvider);
-      responseCallback = new OkResponseCallback(connectionProvider, attachConfig);
+      clientBuilder.addNetworkInterceptor(new HijackingInterceptor(
+          attachConfig,
+          attachConfig.getStreams().getStdin() == null ? null : Okio.source(attachConfig.getStreams().getStdin()),
+          attachConfig.getStreams().getStdout() == null ? null : Okio.sink(attachConfig.getStreams().getStdout())));
+      responseCallback = new OkResponseCallback(attachConfig);
     }
     final OkHttpClient client = newClient(clientBuilder);
 
@@ -171,9 +177,7 @@ public class OkDockerClient implements EngineClient {
     if (responseCallback != null) {
       call.enqueue(responseCallback);
       log.debug("request enqueued");
-      EngineResponse dockerResponse = new EngineResponse();
-      dockerResponse.setResponseCallback(responseCallback);
-      return dockerResponse;
+      return new EngineResponse<Void>();
     }
     else {
       EngineResponse dockerResponse;
@@ -182,7 +186,7 @@ public class OkDockerClient implements EngineClient {
         log.debug("response: " + response);
         dockerResponse = handleResponse(response, config);
         if (dockerResponse.getStream() == null) {
-//            log.warn("closing response...")
+//          log.warn("closing response...");
           response.close();
         }
       }
@@ -240,14 +244,14 @@ public class OkDockerClient implements EngineClient {
           log.error("Unix domain socket not supported, but configured (using defaults?). Please consider changing the DOCKER_HOST environment setting to use tcp.");
           throw new IllegalStateException("Unix domain socket not supported.");
         }
-        UnixSocketFactory unixSocketFactory = (UnixSocketFactory) socketFactories.get(protocol);
+        FileSocketFactory unixSocketFactory = (FileSocketFactory) socketFactories.get(protocol);
         builder
             .socketFactory(unixSocketFactory)
             .dns(unixSocketFactory)
             .build();
         break;
       case "npipe":
-        NamedPipeSocketFactory npipeSocketFactory = (NamedPipeSocketFactory) socketFactories.get(protocol);
+        FileSocketFactory npipeSocketFactory = (FileSocketFactory) socketFactories.get(protocol);
         builder
             .socketFactory(npipeSocketFactory)
             .dns(npipeSocketFactory)
@@ -281,17 +285,10 @@ public class OkDockerClient implements EngineClient {
     HttpUrl httpUrl;
     switch (protocol) {
       case "unix":
-        httpUrl = urlBuilder
-            .scheme("http")
-            .host(new UnixSocket().encodeHostname(host))
-//                    .port(/not/allowed/for/unix/socket/)
-            .build();
-        break;
       case "npipe":
         httpUrl = urlBuilder
             .scheme("http")
-            .host(new NamedPipeSocket().encodeHostname(host))
-//                    .port(/not/allowed/for/npipe/socket/)
+            .host(new HostnameEncoder().encode(host) + SOCKET_MARKER)
             .build();
         break;
       default:
@@ -337,6 +334,7 @@ public class OkDockerClient implements EngineClient {
       }
       return response;
     }
+    ResponseBody body = httpResponse.body();
 
     String mimeType = response.getMimeType();
     if (mimeType == null) {
@@ -344,7 +342,7 @@ public class OkDockerClient implements EngineClient {
     }
     switch (mimeType) {
       case "application/vnd.docker.raw-stream":
-        InputStream rawStream = new RawInputStream(httpResponse.body().byteStream());
+        InputStream rawStream = new RawInputStream(body.byteStream());
         if (config.getStdout() != null) {
           log.debug("redirecting to stdout.");
           IOUtils.copy(rawStream, config.getStdout());
@@ -356,20 +354,20 @@ public class OkDockerClient implements EngineClient {
         break;
       case "application/json":
         if (config.isAsync()) {
-          consumeResponseBody(response, httpResponse.body().source(), config);
+          consumeResponseBody(response, body.source(), config);
         }
         else {
-          Object content = new JsonContentHandler().getContent(httpResponse.body().source());
+          Object content = new JsonContentHandler().getContent(body.source());
           consumeResponseBody(response, content, config);
         }
         break;
       case "text/html":
       case "text/plain":
-        InputStream text = httpResponse.body().byteStream();
+        InputStream text = body.byteStream();
         consumeResponseBody(response, text, config);
         break;
       case "application/octet-stream":
-        InputStream octet = httpResponse.body().byteStream();
+        InputStream octet = body.byteStream();
         if (config.getStdout() != null) {
           log.debug("redirecting to stdout.");
           IOUtils.copy(octet, config.getStdout());
@@ -393,8 +391,12 @@ public class OkDockerClient implements EngineClient {
         }
         break;
       default:
+        if (body == null || body.contentLength() == 0) {
+          response.setContent(body == null ? null : body.string());
+          response.setStream(null);
+          return response;
+        }
         log.debug("unexpected mime type '" + response.getMimeType() + "'.");
-        ResponseBody body = httpResponse.body();
         if (body.contentLength() == -1) {
           InputStream stream = body.byteStream();
           if (config.getStdout() != null) {
@@ -426,10 +428,10 @@ public class OkDockerClient implements EngineClient {
     status.setCode(httpResponse.code());
     status.setSuccess(httpResponse.isSuccessful());
     dockerResponse.setStatus(status);
-    log.debug("status: " + dockerResponse.getStatus());
+    log.trace("status: " + dockerResponse.getStatus());
 
     final Headers headers = httpResponse.headers();
-    log.debug("headers: \n" + headers);
+    log.trace("headers: \n" + headers);
     dockerResponse.setHeaders(headers);
 
     String contentType = headers.get("content-type");
