@@ -9,12 +9,18 @@ import java.util.function.Supplier;
 
 public class AttachConfig {
 
+  private final boolean expectMultiplexedResponse;
   private final Streams streams;
   private final Callbacks callbacks;
 
   public AttachConfig() {
-    streams = new Streams();
-    callbacks = new Callbacks();
+    this(false);
+  }
+
+  public AttachConfig(boolean expectMultiplexedResponse) {
+    this.expectMultiplexedResponse = expectMultiplexedResponse;
+    this.streams = new Streams();
+    this.callbacks = new Callbacks();
   }
 
   public Streams getStreams() {
@@ -59,6 +65,10 @@ public class AttachConfig {
 
   public void setOnSourceConsumed(Supplier<?> onSourceConsumed) {
     callbacks.onSourceConsumed = onSourceConsumed;
+  }
+
+  public boolean isExpectMultiplexedResponse() {
+    return expectMultiplexedResponse;
   }
 
   public static class Streams {

@@ -117,8 +117,12 @@ public class RawInputStream extends FilterInputStream {
   }
 
   public RawStreamHeader readFrameHeader() throws IOException {
-    int[] headerBuf = new int[] {read(), read(), read(), read(),
-                                 read(), read(), read(), read()};
+    int available = super.available();
+    if (available <= 0) {
+      return RawStreamHeader.EMPTY_HEADER;
+    }
+    int[] headerBuf = new int[] {super.read(), super.read(), super.read(), super.read(),
+                                 super.read(), super.read(), super.read(), super.read()};
 
 //    log.trace("header bytes: '${headerBuf}'")
 //    byte[] headerBufAsBytes = [

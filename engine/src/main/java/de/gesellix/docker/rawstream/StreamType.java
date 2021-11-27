@@ -14,6 +14,8 @@ package de.gesellix.docker.rawstream;
  */
 public enum StreamType {
 
+  // special case for `container.tty == false`
+  RAW((byte) -1),
   STDIN((byte) 0),
   STDOUT((byte) 1),
   STDERR((byte) 2),

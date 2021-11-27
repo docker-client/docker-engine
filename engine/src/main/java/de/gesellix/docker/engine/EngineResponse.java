@@ -13,7 +13,6 @@ public class EngineResponse<R> {
   private InputStream stream;
   private R content;
   private Future<?> taskFuture;
-  private OkResponseCallback responseCallback;
 
   public EngineResponseStatus getStatus() {
     return status;
@@ -79,14 +78,6 @@ public class EngineResponse<R> {
     this.taskFuture = taskFuture;
   }
 
-  public OkResponseCallback getResponseCallback() {
-    return responseCallback;
-  }
-
-  public void setResponseCallback(OkResponseCallback responseCallback) {
-    this.responseCallback = responseCallback;
-  }
-
   @Override
   public String toString() {
     return "EngineResponse{" +
@@ -98,7 +89,6 @@ public class EngineResponse<R> {
            ", stream=" + stream +
            ", content=" + content +
            ", taskFuture=" + taskFuture +
-           ", responseCallback=" + responseCallback +
            '}';
   }
 }

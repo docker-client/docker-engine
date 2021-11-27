@@ -115,13 +115,13 @@ class OkDockerClientIntegrationSpec extends Specification {
 
     // pull image (ensure it exists locally)
     client.post([path   : "/images/create",
-                 query  : [fromImage: CONSTANTS.imageRepo,
-                           tag      : CONSTANTS.imageTag],
+                 query  : [fromImage: CONSTANTS.imageName],
                  headers: [EncodedRegistryAuth: "."]])
     // create container
     // docker run --rm -it gesellix/testimage:os-windows cmd /V:ON /C "set /p line= & echo #!line!#"
     def containerConfig = [
         Tty      : true,
+//        Tty      : false,
         OpenStdin: true,
         Image    : CONSTANTS.imageName,
         Cmd      : LocalDocker.isNativeWindows()
@@ -135,11 +135,14 @@ class OkDockerClientIntegrationSpec extends Specification {
     // start container
     client.post([path              : "/containers/${containerId}/start".toString(),
                  requestContentType: "application/json"])
+    // resize container TTY
+//    client.post([path : "/containers/${containerId}/attach/resize".toString(),
+//                 query: [h: 46, w: 158]])
     // inspect container
-    boolean multiplexStreams = !client.get([path: "/containers/${containerId}/json".toString()]).content.Config.Tty
+//    boolean multiplexStreams = !client.get([path: "/containers/${containerId}/json".toString()]).content.Config.Tty
 
     String content = "attach ${UUID.randomUUID()}"
-    String expectedOutput = "$content\r\n#$content#\r\n"
+    String expectedOutput = containerConfig.Tty ? "$content\r\n#$content#\r\n" : "#$content#\n"
 
     def stdout = new ByteArrayOutputStream(expectedOutput.length())
     def stdin = new PipedOutputStream()
@@ -148,30 +151,33 @@ class OkDockerClientIntegrationSpec extends Specification {
     def onSinkWritten = new CountDownLatch(1)
     def onSourceConsumed = new CountDownLatch(1)
 
-    def attachConfig = new AttachConfig()
+    def attachConfig = new AttachConfig(!containerConfig.Tty)
     attachConfig.streams.stdin = new PipedInputStream(stdin)
-    attachConfig.streams.stdout = stdout
+    attachConfig.streams.stdout = new TeeOutputStream(stdout, System.out)
+    attachConfig.onResponse = { Response response ->
+      log.info("[attach (interactive)] got response")
+    }
     attachConfig.onSinkClosed = { Response response ->
-      log.info("[attach (interactive)] sink closed \n${stdout.toString()}")
+      log.info("[attach (interactive)] sink closed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
       onSinkClosed.countDown()
     }
     attachConfig.onSinkWritten = { Response response ->
-      log.info("[attach (interactive)] sink written \n${stdout.toString()}")
+      log.info("[attach (interactive)] sink written (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
       onSinkWritten.countDown()
     }
     attachConfig.onSourceConsumed = {
       if (stdout.toString() == expectedOutput) {
-        log.info("[attach (interactive)] fully consumed \n${stdout.toString()}")
+        log.info("[attach (interactive)] consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
         onSourceConsumed.countDown()
       }
       else {
-        log.info("[attach (interactive)] partially consumed \n${stdout.toString()}")
+        log.info("[attach (interactive)] consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
       }
     }
-    client.post([path            : "/containers/${containerId}/attach".toString(),
-                 query           : [stream: 1, stdin: 1, stdout: 1, stderr: 1],
-                 attach          : attachConfig,
-                 multiplexStreams: multiplexStreams])
+    client.post([
+        path  : "/containers/${containerId}/attach".toString(),
+        query : [logs: true, stream: true, stdin: true, stdout: true, stderr: true],
+        attach: attachConfig])
 
     when:
     stdin.write("$content\n".bytes)
@@ -189,8 +195,8 @@ class OkDockerClientIntegrationSpec extends Specification {
     stdout.toByteArray() == expectedOutput.bytes
 
     cleanup:
-    client.post([path : "/containers/${containerId}/stop".toString(), query: [t: 10]])
+    client.post([path: "/containers/${containerId}/stop".toString(), query: [t: 10]])
     client.post([path: "/containers/${containerId}/wait".toString()])
-    client.delete([path : "/containers/${containerId}".toString(), query: [:]])
+    client.delete([path: "/containers/${containerId}".toString(), query: [:]])
   }
 }
