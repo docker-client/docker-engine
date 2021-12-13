@@ -50,7 +50,7 @@ class OkDockerClientIntegrationSpec extends Specification {
     ]
   }
 
-  @IgnoreIf({ OkDockerClientIntegrationSpec.dockerHubPassword == "-yet-another-password-" })
+  @IgnoreIf({ dockerHubPassword == "-yet-another-password-" })
   def "should allow POST requests with body"() {
     given:
     def client = new OkDockerClient()
@@ -114,19 +114,16 @@ class OkDockerClientIntegrationSpec extends Specification {
     def client = new OkDockerClient()
 
     // pull image (ensure it exists locally)
-    client.post([path   : "/images/create",
-                 query  : [fromImage: CONSTANTS.imageName],
-                 headers: [EncodedRegistryAuth: "."]])
+    client.post([path : "/images/create",
+                 query: [fromImage: CONSTANTS.imageName]])
     // create container
     // docker run --rm -it gesellix/testimage:os-windows cmd /V:ON /C "set /p line= & echo #!line!#"
     def containerConfig = [
-        Tty      : true,
-//        Tty      : false,
-        OpenStdin: true,
-        Image    : CONSTANTS.imageName,
-        Cmd      : LocalDocker.isNativeWindows()
-            ? ["cmd", "/V:ON", "/C", "set /p line= & echo #!line!#"]
-            : ["/bin/sh", "-c", "read line && echo \"#\$line#\""]
+        Tty       : true,
+//        Tty       : false,
+        OpenStdin : true,
+        Image     : CONSTANTS.imageName,
+        Entrypoint: ["/cat"]
     ]
     String containerId = client.post([path              : "/containers/create".toString(),
                                       query             : [name: ""],
@@ -142,7 +139,7 @@ class OkDockerClientIntegrationSpec extends Specification {
 //    boolean multiplexStreams = !client.get([path: "/containers/${containerId}/json".toString()]).content.Config.Tty
 
     String content = "attach ${UUID.randomUUID()}"
-    String expectedOutput = containerConfig.Tty ? "$content\r\n#$content#\r\n" : "#$content#\n"
+    String expectedOutput = containerConfig.Tty ? "$content\r\n$content\r\n" : "$content\n"
 
     def stdout = new ByteArrayOutputStream(expectedOutput.length())
     def stdin = new PipedOutputStream()
@@ -183,9 +180,9 @@ class OkDockerClientIntegrationSpec extends Specification {
     stdin.write("$content\n".bytes)
     stdin.flush()
     stdin.close()
-    boolean sourceConsumed = onSourceConsumed.await(5, SECONDS)
     boolean sinkWritten = onSinkWritten.await(5, SECONDS)
     boolean sinkClosed = onSinkClosed.await(5, SECONDS)
+    boolean sourceConsumed = onSourceConsumed.await(5, SECONDS)
 
     then:
     sinkClosed

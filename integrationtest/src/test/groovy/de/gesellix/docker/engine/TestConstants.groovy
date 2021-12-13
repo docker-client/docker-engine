@@ -9,19 +9,18 @@ class TestConstants {
 
   final Map<String, Closure<Boolean>> versionDetails = [:]
 
-  static TestConstants CONSTANTS = new TestConstants()
+  public static TestConstants CONSTANTS = new TestConstants()
 
   TestConstants() {
     if (LocalDocker.isNativeWindows()) {
-      imageRepo = "gesellix/testimage"
+      imageRepo = "gesellix/echo-server"
       imageTag = "os-windows"
-      imageDigest = "sha256:fd9e2bfa5acf34d40971f7749fcb560f3ef4423a814218055e5d124579ce7bd0"
-      //imageDigest = "sha256:ad668e7a31ddd5df9fa481b983df0ea300045da865179cfe058503c6ef16237d"
+      imageDigest = "sha256:9f33e2a85c7238da1205513c33b4f813176c34dbd3069752500e2f9f12bdde98"
     }
     else {
-      imageRepo = "gesellix/testimage"
+      imageRepo = "gesellix/echo-server"
       imageTag = "os-linux"
-      imageDigest = "sha256:0ce18ad10d281bef97fe2333a9bdcc2dbf84b5302f66d796fed73aac675320db"
+      imageDigest = "sha256:9161d20871559b45e5afa19047ed0bfc1a0e2c6dfdd6a9488a2fd388fe28642d"
     }
     imageName = "$imageRepo:$imageTag"
 
@@ -56,9 +55,9 @@ class TestConstants {
       versionDetails = [
           ApiVersion   : { it == "1.41" },
           Arch         : { it == "amd64" },
-          BuildTime    : { it =~ "2021-07-30T\\w+" },
-          GitCommit    : { it == "75249d8" },
-          GoVersion    : { it == "go1.16.6" },
+          BuildTime    : { it =~ "2021-11-18T\\w+" },
+          GitCommit    : { it == "847da18" },
+          GoVersion    : { it == "go1.16.9" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.24" },
           Os           : { it == "windows" },
