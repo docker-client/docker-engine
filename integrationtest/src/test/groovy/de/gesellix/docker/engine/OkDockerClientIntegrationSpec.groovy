@@ -6,6 +6,7 @@ import okio.Okio
 import spock.lang.IgnoreIf
 import spock.lang.Requires
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.util.concurrent.CountDownLatch
 
@@ -109,7 +110,8 @@ class OkDockerClientIntegrationSpec extends Specification {
     response.status.code == 200
   }
 
-  def "attach (interactive)"() {
+  @Unroll
+  def "attach (openStdin: #openStdin, tty: #tty)"() {
     given:
     def client = new OkDockerClient()
 
@@ -117,11 +119,9 @@ class OkDockerClientIntegrationSpec extends Specification {
     client.post([path : "/images/create",
                  query: [fromImage: CONSTANTS.imageName]])
     // create container
-    // docker run --rm -it gesellix/testimage:os-windows cmd /V:ON /C "set /p line= & echo #!line!#"
     def containerConfig = [
-        Tty       : true,
-//        Tty       : false,
-        OpenStdin : true,
+        Tty       : tty,
+        OpenStdin : openStdin,
         Image     : CONSTANTS.imageName,
         Entrypoint: ["/cat"]
     ]
@@ -150,6 +150,7 @@ class OkDockerClientIntegrationSpec extends Specification {
 
     def attachConfig = new AttachConfig(!containerConfig.Tty)
     attachConfig.streams.stdin = new PipedInputStream(stdin)
+//    attachConfig.streams.stdout = stdout
     attachConfig.streams.stdout = new TeeOutputStream(stdout, System.out)
     attachConfig.onResponse = { Response response ->
       log.info("[attach (interactive)] got response")
@@ -171,6 +172,7 @@ class OkDockerClientIntegrationSpec extends Specification {
         log.info("[attach (interactive)] consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
       }
     }
+//    new OkDockerClient().post([
     client.post([
         path  : "/containers/${containerId}/attach".toString(),
         query : [logs: true, stream: true, stdin: true, stdout: true, stderr: true],
@@ -195,5 +197,10 @@ class OkDockerClientIntegrationSpec extends Specification {
     client.post([path: "/containers/${containerId}/stop".toString(), query: [t: 10]])
     client.post([path: "/containers/${containerId}/wait".toString()])
     client.delete([path: "/containers/${containerId}".toString(), query: [:]])
+
+    where:
+    tty   | openStdin
+    false | true
+//    true  | true // TODO: fix on Windows
   }
 }
