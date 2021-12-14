@@ -5,10 +5,15 @@ import okio.Buffer;
 import okio.BufferedSource;
 import okio.Okio;
 import okio.Source;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 public class FrameReader implements Reader<Frame> {
+
+  private final static Logger log = LoggerFactory.getLogger(FrameReader.class);
 
   private final BufferedSource bufferedSource;
   private boolean expectMultiplexedResponse;
@@ -25,7 +30,7 @@ public class FrameReader implements Reader<Frame> {
   }
 
   @Override
-  public Frame readNext(Class<Frame> type) throws IOException {
+  public Frame readNext(Class<Frame> type) {
     if (expectMultiplexedResponse) {
       // See https://docs.docker.com/engine/api/v1.41/#operation/ContainerAttach for the stream format documentation.
       // header := [8]byte{STREAM_TYPE, 0, 0, 0, SIZE1, SIZE2, SIZE3, SIZE4}
@@ -37,7 +42,11 @@ public class FrameReader implements Reader<Frame> {
 
         return new Frame(streamType, bufferedSource.readByteArray(frameSize));
       }
+      catch (EOFException e) {
+        return null;
+      }
       catch (IOException e) {
+        log.error("error reading multiplexed frames", e);
         return null;
       }
     }
