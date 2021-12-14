@@ -7,6 +7,7 @@ import okhttp3.Connection;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.internal.connection.RealConnection;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.Okio;
@@ -51,7 +52,6 @@ public class HijackingInterceptor implements Interceptor {
           .build();
     }
 
-//    chain.connection().socket().setSoTimeout(0);
     Response response = chain.proceed(modifiedRequest);
 
     if (!(response.code() == 101 || response.isSuccessful()) || stdin == null) {
@@ -59,6 +59,8 @@ public class HijackingInterceptor implements Interceptor {
     }
 //    TcpUpgradeVerificator.ensureTcpUpgrade(response);
 
+    connection.socket().setSoTimeout(0);
+    ((RealConnection) connection).setNoNewExchanges(true);
     chain.call().timeout().clearTimeout().clearDeadline();
 
     // stdin -> sink
