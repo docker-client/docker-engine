@@ -68,7 +68,7 @@ dependencies {
   testImplementation("org.apache.commons:commons-lang3:3.12.0")
 
   implementation("de.gesellix:docker-filesocket:2021-12-13T07-10-00")
-  testImplementation("de.gesellix:testutil:2021-09-20T20-00-00")
+  testImplementation("de.gesellix:testutil:2021-12-18T14-29-00")
 
   implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
 
