@@ -44,7 +44,7 @@ class TestConstants {
             Arch         : { it == "amd64" },
             BuildTime    : { it =~ "2021-11-18T\\w+" },
             GitCommit    : { it == "847da184ad5048b27f5bdf9d53d070f731b43180" },
-            GoVersion    : { it == "go1.16.8" },
+            GoVersion    : { it == "go1.16.12" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.12" },
             Os           : { it == "linux" },
