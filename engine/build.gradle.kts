@@ -55,7 +55,7 @@ dependencies {
     }
   }
 
-  implementation("com.squareup.moshi:moshi:1.12.0")
+  implementation("com.squareup.moshi:moshi:1.13.0")
 
   implementation("org.slf4j:slf4j-api")
   testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.2.9")
