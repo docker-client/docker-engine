@@ -19,7 +19,13 @@ dependencies {
     implementation("org.slf4j:slf4j-api") {
       version {
         strictly("[1.7,1.8)")
-        prefer("1.7.32")
+        prefer("1.7.36")
+      }
+    }
+    implementation("com.squareup.moshi:moshi") {
+      version {
+        strictly("[1.12.0,1.14.0)")
+        prefer("1.13.0")
       }
     }
     listOf(
@@ -35,8 +41,8 @@ dependencies {
     }
     implementation("com.squareup.okio:okio") {
       version {
-        strictly("[2.5,3)")
-        prefer("2.10.0")
+        strictly("[2.5,4)")
+        prefer("3.0.0")
       }
     }
     listOf(
@@ -48,8 +54,8 @@ dependencies {
     ).onEach {
       implementation(it) {
         version {
-          strictly("[1.3,1.6)")
-          prefer("1.5.31")
+          strictly("[1.3,1.7)")
+          prefer("1.6.10")
         }
       }
     }
@@ -57,12 +63,12 @@ dependencies {
 
   implementation("com.squareup.moshi:moshi:1.13.0")
 
-  implementation("org.slf4j:slf4j-api")
-  testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.2.9")
+  implementation("org.slf4j:slf4j-api:1.7.36")
+  testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.2.10")
 
-  implementation("com.squareup.okio:okio")
-  implementation("com.squareup.okhttp3:okhttp")
-  testImplementation("com.squareup.okhttp3:mockwebserver")
+  implementation("com.squareup.okio:okio:3.0.0")
+  implementation("com.squareup.okhttp3:okhttp:4.9.3")
+  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.3")
 
   implementation("org.apache.commons:commons-compress:1.21")
   testImplementation("org.apache.commons:commons-lang3:3.12.0")

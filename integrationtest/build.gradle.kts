@@ -18,7 +18,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api") {
       version {
         strictly("[1.7,1.8)")
-        prefer("1.7.32")
+        prefer("1.7.36")
       }
     }
     listOf(
@@ -34,8 +34,8 @@ dependencies {
     }
     implementation("com.squareup.okio:okio") {
       version {
-        strictly("[2.5,3)")
-        prefer("2.10.0")
+        strictly("[2.5,4)")
+        prefer("3.0.0")
       }
     }
     listOf(
@@ -47,17 +47,17 @@ dependencies {
     ).onEach {
       implementation(it) {
         version {
-          strictly("[1.3,1.6)")
-          prefer("1.5.31")
+          strictly("[1.3,1.7)")
+          prefer("1.6.10")
         }
       }
     }
   }
   implementation(project(":engine"))
-  testImplementation("com.squareup.okhttp3:okhttp")
+  testImplementation("com.squareup.okhttp3:okhttp:4.9.3")
 
-  testImplementation("org.slf4j:slf4j-api")
-  testRuntimeOnly("ch.qos.logback:logback-classic:1.2.10")
+  testImplementation("org.slf4j:slf4j-api:1.7.36")
+  testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.2.10")
 
   testImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
   testImplementation("cglib:cglib-nodep:3.3.0")
