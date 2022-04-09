@@ -48,14 +48,15 @@ dependencies {
     listOf(
       "org.jetbrains.kotlin:kotlin-reflect",
       "org.jetbrains.kotlin:kotlin-stdlib",
+      "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
       "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
       "org.jetbrains.kotlin:kotlin-stdlib-common",
       "org.jetbrains.kotlin:kotlin-test"
     ).onEach {
       implementation(it) {
         version {
-          strictly("[1.3,1.7)")
-          prefer("1.6.10")
+          strictly("[1.4,1.7)")
+          prefer("1.6.20")
         }
       }
     }
@@ -64,7 +65,7 @@ dependencies {
   implementation("com.squareup.moshi:moshi:1.13.0")
 
   implementation("org.slf4j:slf4j-api:1.7.36")
-  testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.2.10")
+  testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.2.11")
 
   implementation("com.squareup.okio:okio:3.0.0")
   implementation("com.squareup.okhttp3:okhttp:4.9.3")
