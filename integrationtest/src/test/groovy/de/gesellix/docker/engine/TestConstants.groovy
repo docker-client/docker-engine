@@ -19,7 +19,7 @@ class TestConstants {
       imageDigest = "sha256:9161d20871559b45e5afa19047ed0bfc1a0e2c6dfdd6a9488a2fd388fe28642d"
     }
     imageRepo = "gesellix/echo-server"
-    imageTag = "2022-04-08T22-27-00";
+    imageTag = "2022-04-08T22-27-00"
     imageName = "$imageRepo:$imageTag"
 
     if (System.getenv("GITHUB_ACTOR")) {
