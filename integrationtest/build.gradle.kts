@@ -41,13 +41,14 @@ dependencies {
     listOf(
       "org.jetbrains.kotlin:kotlin-reflect",
       "org.jetbrains.kotlin:kotlin-stdlib",
+      "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
       "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
       "org.jetbrains.kotlin:kotlin-stdlib-common",
       "org.jetbrains.kotlin:kotlin-test"
     ).onEach {
       implementation(it) {
         version {
-          strictly("[1.4,1.7)")
+          strictly("[1.6,1.7)")
           prefer("1.6.21")
         }
       }
