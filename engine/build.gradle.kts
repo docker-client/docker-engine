@@ -74,7 +74,7 @@ dependencies {
 
   implementation("com.squareup.okio:okio-jvm:3.1.0")
   implementation("com.squareup.okhttp3:okhttp:4.9.3")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.9.3")
+  testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
 
   implementation("org.apache.commons:commons-compress:1.21")
   testImplementation("org.apache.commons:commons-lang3:3.12.0")
