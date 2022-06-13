@@ -54,7 +54,7 @@ dependencies {
     }
   }
   implementation(project(":engine"))
-  testImplementation("com.squareup.okhttp3:okhttp:4.9.3")
+  testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
 
   testImplementation("org.slf4j:slf4j-api:1.7.36")
   testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.2.11")
