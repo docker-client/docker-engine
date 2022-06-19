@@ -40,9 +40,9 @@ class TestConstants {
         versionDetails = [
             ApiVersion   : { it == "1.41" },
             Arch         : { it == "amd64" },
-            BuildTime    : { it =~ "2022-03-24T\\w+" },
-            GitCommit    : { it == "87a90dc786bda134c9eb02adbae2c6a7342fb7f6" },
-            GoVersion    : { it == "go1.16.15" },
+            BuildTime    : { it =~ "2022-05-12T\\w+" },
+            GitCommit    : { it == "f756502055d2e36a84f2068e6620bea5ecf09058" },
+            GoVersion    : { it == "go1.17.10" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.12" },
             Os           : { it == "linux" },
