@@ -84,7 +84,7 @@ dependencies {
 
   implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
 
-  testImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
+  testImplementation("org.spockframework:spock-core:2.2-groovy-4.0")
   testImplementation("cglib:cglib-nodep:3.3.0")
 }
 
