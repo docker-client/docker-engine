@@ -24,8 +24,8 @@ dependencies {
     }
     implementation("com.squareup.moshi:moshi") {
       version {
-        strictly("[1.12.0,1.14.0)")
-        prefer("1.13.0")
+        strictly("[1.12.0,2)")
+        prefer("1.14.0")
       }
     }
     listOf(
