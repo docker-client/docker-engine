@@ -17,7 +17,7 @@ dependencies {
   constraints {
     implementation("org.slf4j:slf4j-api") {
       version {
-        strictly("[1.7,1.8)")
+        strictly("[1.7,3)")
         prefer("1.7.36")
       }
     }
@@ -48,7 +48,7 @@ dependencies {
       implementation(it) {
         version {
           strictly("[1.5,1.8)")
-          prefer("1.7.10")
+          prefer("1.7.20")
         }
       }
     }
@@ -57,7 +57,7 @@ dependencies {
   testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
 
   testImplementation("org.slf4j:slf4j-api:1.7.36")
-  testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.2.11")
+  testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,3)!!1.2.11")
 
   testImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
   testImplementation("cglib:cglib-nodep:3.3.0")
