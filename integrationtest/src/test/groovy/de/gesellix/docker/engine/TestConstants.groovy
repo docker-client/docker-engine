@@ -19,11 +19,11 @@ class TestConstants {
       // TODO consider checking the Docker api version instead of "GITHUB_ACTOR"
       if (LocalDocker.isNativeWindows()) {
         versionDetails = [
-            ApiVersion   : { it == "1.41" },
+            ApiVersion   : { it == "1.42" },
             Arch         : { it == "amd64" },
-            BuildTime    : { it =~ "08/19/2021 \\w+" },
-            GitCommit    : { it == "e1bf5b9c13" },
-            GoVersion    : { it == "go1.13.15" },
+            BuildTime    : { it =~ "2022-03-27T\\w+" },
+            GitCommit    : { it == "8941dcfcc5" },
+            GoVersion    : { it == "go1.18" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.24" },
             Os           : { it == "windows" },
@@ -33,9 +33,9 @@ class TestConstants {
         versionDetails = [
             ApiVersion   : { it == "1.41" },
             Arch         : { it == "amd64" },
-            BuildTime    : { it =~ "2022-06-06T\\w+" },
-            GitCommit    : { it == "a89b84221c8560e7a3dee2a653353429e7628424" },
-            GoVersion    : { it == "go1.17.11" },
+            BuildTime    : { it =~ "2022-09-08T\\w+" },
+            GitCommit    : { it == "e42327a6d3c55ceda3bd5475be7aae6036d02db3" },
+            GoVersion    : { it == "go1.18.6" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.12" },
             Os           : { it == "linux" },
