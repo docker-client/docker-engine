@@ -19,7 +19,9 @@ public class DockerVersion implements Comparable<DockerVersion> {
 
     final DockerVersion parsedVersion = new DockerVersion();
     Matcher matcher = versionPattern.matcher(version);
-    matcher.matches();
+    if (!matcher.matches()) {
+      throw new IllegalArgumentException(String.format("Version does not match the expected version pattern: '%s'", version));
+    }
     parsedVersion.setMajor(Integer.parseInt(matcher.group(1)));
     parsedVersion.setMinor(Integer.parseInt(matcher.group(2)));
     final String s = matcher.group(3);

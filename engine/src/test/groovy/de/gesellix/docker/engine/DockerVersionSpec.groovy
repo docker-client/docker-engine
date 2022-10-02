@@ -7,6 +7,20 @@ import static de.gesellix.docker.engine.DockerVersion.parseDockerVersion
 
 class DockerVersionSpec extends Specification {
 
+  def "fails for invalid version"() {
+    given:
+    // this pattern appears in the wild for packages installed from
+    // https://master.dockerproject.org/
+    String versionString = "master-dockerproject-2022-03-26"
+
+    when:
+    parseDockerVersion(versionString)
+
+    then:
+    def e = thrown(IllegalArgumentException)
+    e.message == "Version does not match the expected version pattern: '$versionString'"
+  }
+
   @Unroll
   def "parse version #versionString"() {
     expect:
