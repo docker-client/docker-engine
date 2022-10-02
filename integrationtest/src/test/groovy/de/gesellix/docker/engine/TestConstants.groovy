@@ -5,21 +5,14 @@ class TestConstants {
   final String imageRepo
   final String imageTag
   final String imageName
-  final String imageDigest
 
   final Map<String, Closure<Boolean>> versionDetails = [:]
 
   public static TestConstants CONSTANTS = new TestConstants()
 
   TestConstants() {
-    if (LocalDocker.isNativeWindows()) {
-      imageDigest = "sha256:9f33e2a85c7238da1205513c33b4f813176c34dbd3069752500e2f9f12bdde98"
-    }
-    else {
-      imageDigest = "sha256:9161d20871559b45e5afa19047ed0bfc1a0e2c6dfdd6a9488a2fd388fe28642d"
-    }
     imageRepo = "gesellix/echo-server"
-    imageTag = "2022-04-08T22-27-00"
+    imageTag = "2022-07-31T15-12-00"
     imageName = "$imageRepo:$imageTag"
 
     if (System.getenv("GITHUB_ACTOR")) {
@@ -53,9 +46,9 @@ class TestConstants {
       versionDetails = [
           ApiVersion   : { it == "1.41" },
           Arch         : { it == "amd64" },
-          BuildTime    : { it =~ "2021-12-13T\\w+" },
-          GitCommit    : { it == "459d0df" },
-          GoVersion    : { it == "go1.16.12" },
+          BuildTime    : { it =~ "2022-06-06T\\w+" },
+          GitCommit    : { it == "a89b842" },
+          GoVersion    : { it == "go1.17.11" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.24" },
           Os           : { it == "windows" },
@@ -65,9 +58,9 @@ class TestConstants {
       versionDetails = [
           ApiVersion   : { it == "1.41" },
           Arch         : { it == "amd64" },
-          BuildTime    : { it =~ "2021-12-13T\\w+" },
-          GitCommit    : { it == "459d0df" },
-          GoVersion    : { it == "go1.16.12" },
+          BuildTime    : { it =~ "2022-06-06T\\w+" },
+          GitCommit    : { it == "a89b842" },
+          GoVersion    : { it == "go1.17.11" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.12" },
           Os           : { it == "linux" },
