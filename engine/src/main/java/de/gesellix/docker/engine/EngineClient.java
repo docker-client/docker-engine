@@ -5,6 +5,12 @@ import okhttp3.WebSocketListener;
 
 import java.util.Map;
 
+/**
+ * Will be replaced with the implementation from <a href="https://github.com/docker-client/docker-remote-api-client">github.com/docker-client/docker-remote-api-client</a>.
+ *
+ * @deprecated
+ */
+@Deprecated
 public interface EngineClient {
 
   EngineResponse request(EngineRequest requestConfig);

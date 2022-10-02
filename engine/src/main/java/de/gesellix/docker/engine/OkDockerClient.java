@@ -58,6 +58,12 @@ import static de.gesellix.docker.engine.RequestMethod.POST;
 import static de.gesellix.docker.engine.RequestMethod.PUT;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+/**
+ * Will be replaced with the implementation from <a href="https://github.com/docker-client/docker-remote-api-client">github.com/docker-client/docker-remote-api-client</a>.
+ *
+ * @deprecated
+ */
+@Deprecated
 public class OkDockerClient implements EngineClient {
 
   private static final Logger log = LoggerFactory.getLogger(OkDockerClient.class);
