@@ -1,5 +1,6 @@
 package de.gesellix.docker.authentication
 
+import de.gesellix.docker.engine.DockerConfigReader
 import de.gesellix.docker.engine.DockerEnv
 import de.gesellix.testutil.ResourceReader
 import spock.lang.Requires
@@ -10,10 +11,12 @@ import static de.gesellix.docker.authentication.AuthConfig.EMPTY_AUTH_CONFIG
 class AuthConfigReaderTest extends Specification {
 
   DockerEnv env
+  DockerConfigReader dockerConfigReader
   AuthConfigReader authConfigReader
 
   def setup() {
-    env = Mock(DockerEnv)
+    dockerConfigReader = Spy(DockerConfigReader)
+    env = Mock(DockerEnv) { it.getDockerConfigReader() >> dockerConfigReader }
     authConfigReader = Spy(AuthConfigReader, constructorArgs: [env])
   }
 
@@ -24,13 +27,13 @@ class AuthConfigReaderTest extends Specification {
     env.indexUrl_v1 >> 'https://index.docker.io/v1/'
 
     when:
-    def result = authConfigReader.readAuthConfig(null, expectedConfigFile)
+    AuthConfig result = authConfigReader.readAuthConfig(null, expectedConfigFile)
 
     then:
     result == new AuthConfig(username: "gesellix",
-                             password: "-yet-another-password-",
-                             email: "tobias@gesellix.de",
-                             serveraddress: "https://index.docker.io/v1/")
+        password: "-yet-another-password-",
+        email: "tobias@gesellix.de",
+        serveraddress: "https://index.docker.io/v1/")
 
     cleanup:
     if (oldDockerConfig) {
@@ -45,13 +48,13 @@ class AuthConfigReaderTest extends Specification {
     env.indexUrl_v1 >> 'https://index.docker.io/v1/'
 
     when:
-    def result = authConfigReader.readAuthConfig(null, expectedConfigFile)
+    AuthConfig result = authConfigReader.readAuthConfig(null, expectedConfigFile)
 
     then:
     result == new AuthConfig(username: "gesellix",
-                             password: "-yet-another-password-",
-                             email: "tobias@gesellix.de",
-                             serveraddress: "https://index.docker.io/v1/")
+        password: "-yet-another-password-",
+        email: "tobias@gesellix.de",
+        serveraddress: "https://index.docker.io/v1/")
 
     cleanup:
     if (oldDockerConfig) {
@@ -65,7 +68,7 @@ class AuthConfigReaderTest extends Specification {
     File dockerCfg = new ResourceReader().getClasspathResourceAsFile('/auth/config.json', AuthConfigReader)
 
     when:
-    def authDetails = authConfigReader.readAuthConfig(null, dockerCfg)
+    AuthConfig authDetails = authConfigReader.readAuthConfig(null, dockerCfg)
 
     then:
     authDetails.username == "gesellix"
@@ -82,7 +85,7 @@ class AuthConfigReaderTest extends Specification {
     File dockerCfg = new ResourceReader().getClasspathResourceAsFile('/auth/config.json', AuthConfigReader)
 
     when:
-    def authDetails = authConfigReader.readAuthConfig("quay.io", dockerCfg)
+    AuthConfig authDetails = authConfigReader.readAuthConfig("quay.io", dockerCfg)
 
     then:
     authDetails.username == "gesellix"
@@ -100,7 +103,7 @@ class AuthConfigReaderTest extends Specification {
     assert !nonExistingFile.exists()
 
     when:
-    def authDetails = authConfigReader.readAuthConfig(null, nonExistingFile)
+    AuthConfig authDetails = authConfigReader.readAuthConfig(null, nonExistingFile)
 
     then:
     authDetails == new AuthConfig()
@@ -111,7 +114,7 @@ class AuthConfigReaderTest extends Specification {
     File dockerCfg = new ResourceReader().getClasspathResourceAsFile('/auth/config.json', AuthConfigReader)
 
     when:
-    def authDetails = authConfigReader.readAuthConfig("unknown.example.com", dockerCfg)
+    AuthConfig authDetails = authConfigReader.readAuthConfig("unknown.example.com", dockerCfg)
 
     then:
     authDetails == EMPTY_AUTH_CONFIG
@@ -127,7 +130,7 @@ class AuthConfigReaderTest extends Specification {
     env.getDockerConfigFile() >> expectedConfigFile
 
     when:
-    def authConfig = authConfigReader.readDefaultAuthConfig()
+    AuthConfig authConfig = authConfigReader.readDefaultAuthConfig()
 
     then:
     1 * authConfigReader.readAuthConfig(null, expectedConfigFile)
@@ -146,17 +149,17 @@ class AuthConfigReaderTest extends Specification {
     String oldDockerConfig = System.clearProperty("docker.config")
     File expectedConfigFile = new ResourceReader().getClasspathResourceAsFile('/auth/config.json', AuthConfigReader)
     env.indexUrl_v1 >> 'https://index.docker.io/v1/'
-    env.getDockerConfigFile() >> expectedConfigFile
+    dockerConfigReader.getDockerConfigFile() >> expectedConfigFile
 
     when:
-    def result = authConfigReader.readDefaultAuthConfig()
+    AuthConfig result = authConfigReader.readDefaultAuthConfig()
 
     then:
     1 * authConfigReader.readAuthConfig(null, expectedConfigFile)
     result == new AuthConfig(username: "gesellix",
-                             password: "-yet-another-password-",
-                             email: "tobias@gesellix.de",
-                             serveraddress: "https://index.docker.io/v1/")
+        password: "-yet-another-password-",
+        email: "tobias@gesellix.de",
+        serveraddress: "https://index.docker.io/v1/")
 
     cleanup:
     if (oldDockerConfig) {

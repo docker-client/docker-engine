@@ -19,11 +19,11 @@ class TestConstants {
       // TODO consider checking the Docker api version instead of "GITHUB_ACTOR"
       if (LocalDocker.isNativeWindows()) {
         versionDetails = [
-            ApiVersion   : { it == "1.42" },
-            Arch         : { it == "amd64" },
-            BuildTime    : { it =~ "2022-03-27T\\w+" },
-            GitCommit    : { it == "8941dcfcc5" },
-            GoVersion    : { it == "go1.18" },
+            ApiVersion   : { it == "1.41" },
+            Arch         : { it in ["amd64", "arm64"] },
+            BuildTime    : { it =~ "2022-\\d{2}-\\d{2}T\\w+" },
+            GitCommit    : { it =~ "\\w{6,}" },
+            GoVersion    : { it == "go1.18.7" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.24" },
             Os           : { it == "windows" },
@@ -32,9 +32,9 @@ class TestConstants {
       else {
         versionDetails = [
             ApiVersion   : { it == "1.41" },
-            Arch         : { it == "amd64" },
-            BuildTime    : { it =~ "2022-09-08T\\w+" },
-            GitCommit    : { it == "e42327a6d3c55ceda3bd5475be7aae6036d02db3" },
+            Arch         : { it in ["amd64", "arm64"] },
+            BuildTime    : { it =~ "2022-\\d{2}-\\d{2}T\\w+" },
+            GitCommit    : { it =~ "\\w{6,}" },
             GoVersion    : { it == "go1.18.7" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.12" },
@@ -45,7 +45,7 @@ class TestConstants {
     else if (LocalDocker.isNativeWindows()) {
       versionDetails = [
           ApiVersion   : { it == "1.41" },
-          Arch         : { it == "amd64" },
+          Arch         : { it in ["amd64", "arm64"] },
           BuildTime    : { it =~ "2022-06-06T\\w+" },
           GitCommit    : { it == "a89b842" },
           GoVersion    : { it == "go1.17.11" },
@@ -57,10 +57,10 @@ class TestConstants {
     else {
       versionDetails = [
           ApiVersion   : { it == "1.41" },
-          Arch         : { it == "amd64" },
-          BuildTime    : { it =~ "2022-06-06T\\w+" },
-          GitCommit    : { it == "a89b842" },
-          GoVersion    : { it == "go1.17.11" },
+          Arch         : { it in ["amd64", "arm64"] },
+          BuildTime    : { it =~ "2022-10-18T\\w+" },
+          GitCommit    : { it == "03df974" },
+          GoVersion    : { it == "go1.18.7" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.12" },
           Os           : { it == "linux" },

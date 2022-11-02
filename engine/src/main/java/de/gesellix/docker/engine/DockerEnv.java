@@ -1,5 +1,9 @@
 package de.gesellix.docker.engine;
 
+import de.gesellix.docker.context.ContextStore;
+import de.gesellix.docker.context.DockerContextResolver;
+import de.gesellix.docker.context.EndpointMetaBase;
+
 import java.io.File;
 
 /**
@@ -22,11 +26,15 @@ public class DockerEnv {
   private final String indexUrl_v1 = "https://index.docker.io/v1/";
   private final String indexUrl_v2 = "https://registry-1.docker.io";
 
-  private File configFile = new File(System.getProperty("user.home") + "/.docker", "config.json");
+  private DockerConfigReader dockerConfigReader;
+  private DockerContextResolver dockerContextResolver;
 
-  private File legacyConfigFile = new File(System.getProperty("user.home"), ".dockercfg");
+  private String contextsDirectoryName = "contexts";
 
-  private File dockerConfigFile = null;
+  private File dockerContextStoreDir = null;
+
+  public static final String dockerEndpointDefaultName = "docker";
+  public static final String dockerDefaultContextName = "default";
 
   private String apiVersion = System.getProperty("docker.api.version", System.getenv("DOCKER_API_VERSION"));
 
@@ -39,51 +47,92 @@ public class DockerEnv {
   private String officialNotaryServer = "https://notary.docker.io";
 
   public DockerEnv() {
-    this(getDockerHostOrDefault());
+    this(null);
   }
 
   public DockerEnv(String dockerHost) {
-    this.dockerHost = dockerHost;
+    // TODO allow configuration via "config file provider" for lazy config file resolution
+    this.dockerConfigReader = new DockerConfigReader();
+    this.dockerContextResolver = new DockerContextResolver();
+    this.resetDockerHostFromCurrentConfig(dockerHost);
   }
 
-  public static String getDockerHostOrDefault() {
+  /**
+   * Visible internally and for tests
+   *
+   * @deprecated should ony be used in tests
+   */
+  @Deprecated
+  void resetDockerHostFromCurrentConfig() {
+    this.resetDockerHostFromCurrentConfig(null);
+  }
+
+  /**
+   * Visible internally and for tests
+   *
+   * @param dockerHostOverride optional override of any other configuration inputs
+   * @deprecated should ony be used in tests
+   */
+  @Deprecated
+  void resetDockerHostFromCurrentConfig(String dockerHostOverride) {
+    this.dockerContextStoreDir = null;
+    getDockerConfigReader().resetDockerConfigFile();
+    if (dockerHostOverride == null) {
+      this.dockerHost = getDockerHostFromContextOrHostOrDefault();
+    } else {
+      this.dockerHost = dockerHostOverride;
+    }
+  }
+
+  private String getDockerHostFromContextOrHostOrDefault() {
+    // TODO allow configuration via "contexts directory provider" for lazy contexts directory resolution
+    ContextStore store = new ContextStore(getDockerContextStoreDir());
+    String dockerContextName = dockerContextResolver.resolveDockerContextName(getDockerConfigReader());
+    EndpointMetaBase dockerEndpoint = dockerContextResolver.resolveDockerEndpoint(store, dockerContextName);
+    if (dockerEndpoint != null && dockerEndpoint.getHost() != null) {
+      return dockerEndpoint.getHost();
+    } else {
+      return getDefaultDockerHost();
+    }
+  }
+
+  public static String getDockerHostFromSystemPropertyOrEnvironment() {
     String configuredDockerHost = System.getProperty("docker.host", System.getenv("DOCKER_HOST"));
     if (configuredDockerHost != null && !configuredDockerHost.isEmpty()) {
       return configuredDockerHost;
     }
-    else {
-      if (((String) System.getProperties().get("os.name")).toLowerCase().contains("windows")) {
-        // default to non-tls http
-        //return "tcp://localhost:2375"
-
-        // or use a named pipe:
-        return "npipe:////./pipe/docker_engine";
-      }
-      else {
-        return "unix:///var/run/docker.sock";
-      }
-    }
+    return null;
   }
 
-  public void setDockerConfigFile(File dockerConfigFile) {
-    this.dockerConfigFile = dockerConfigFile;
+  public static String getDockerContextFromSystemPropertyOrEnvironment() {
+    String configuredDockerContext = System.getProperty("docker.context", System.getenv("DOCKER_CONTEXT"));
+    if (configuredDockerContext != null && !configuredDockerContext.isEmpty()) {
+      return configuredDockerContext;
+    }
+    return null;
+  }
+
+  public static String getDefaultDockerHost() {
+    if (((String) System.getProperties().get("os.name")).toLowerCase().contains("windows")) {
+      return "npipe:////./pipe/docker_engine";
+    } else {
+      return "unix:///var/run/docker.sock";
+    }
   }
 
   public File getDockerConfigFile() {
-    if (dockerConfigFile == null) {
-      String dockerConfig = System.getProperty("docker.config", System.getenv("DOCKER_CONFIG"));
-      if (dockerConfig != null && !dockerConfig.isEmpty()) {
-        this.dockerConfigFile = new File(dockerConfig, "config.json");
-      }
-      else if (configFile.exists()) {
-        this.dockerConfigFile = configFile;
-      }
-      else if (legacyConfigFile.exists()) {
-        this.dockerConfigFile = legacyConfigFile;
-      }
-    }
+    return dockerConfigReader.getDockerConfigFile();
+  }
 
-    return dockerConfigFile;
+  public DockerConfigReader getDockerConfigReader() {
+    return dockerConfigReader;
+  }
+
+  public File getDockerContextStoreDir() {
+    if (dockerContextStoreDir == null) {
+      dockerContextStoreDir = new File(getDockerConfigFile().getParentFile(), contextsDirectoryName);
+    }
+    return dockerContextStoreDir;
   }
 
   public String getDockerHost() {
@@ -132,22 +181,6 @@ public class DockerEnv {
 
   public String getIndexUrl_v2() {
     return indexUrl_v2;
-  }
-
-  public File getConfigFile() {
-    return configFile;
-  }
-
-  public void setConfigFile(File configFile) {
-    this.configFile = configFile;
-  }
-
-  public File getLegacyConfigFile() {
-    return legacyConfigFile;
-  }
-
-  public void setLegacyConfigFile(File legacyConfigFile) {
-    this.legacyConfigFile = legacyConfigFile;
   }
 
   public String getApiVersion() {
