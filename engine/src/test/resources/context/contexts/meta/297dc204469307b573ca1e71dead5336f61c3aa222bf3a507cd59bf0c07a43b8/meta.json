@@ -1,0 +1,10 @@
+{
+  "Name": "for-test",
+  "Metadata": {},
+  "Endpoints": {
+    "docker": {
+      "Host": "unix:///var/run/docker.sock",
+      "SkipTLSVerify": false
+    }
+  }
+}

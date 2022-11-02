@@ -1,14 +1,11 @@
 package de.gesellix.docker.authentication;
 
-import com.squareup.moshi.Moshi;
+import de.gesellix.docker.engine.DockerConfigReader;
 import de.gesellix.docker.engine.DockerEnv;
-import okio.Okio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.text.MessageFormat;
-import java.util.Collections;
 import java.util.Map;
 
 import static de.gesellix.docker.authentication.AuthConfig.EMPTY_AUTH_CONFIG;
@@ -17,9 +14,8 @@ public class AuthConfigReader {
 
   private final static Logger log = LoggerFactory.getLogger(AuthConfigReader.class);
 
-  private final Moshi moshi = new Moshi.Builder().build();
-
   private final DockerEnv env;
+  private DockerConfigReader dockerConfigReader;
 
   public AuthConfigReader() {
     this(new DockerEnv());
@@ -27,11 +23,12 @@ public class AuthConfigReader {
 
   public AuthConfigReader(DockerEnv env) {
     this.env = env;
+    this.dockerConfigReader = env.getDockerConfigReader();
   }
 
   //  @Override
   public AuthConfig readDefaultAuthConfig() {
-    return readAuthConfig(null, env.getDockerConfigFile());
+    return readAuthConfig(null, dockerConfigReader.getDockerConfigFile());
   }
 
   //  @Override
@@ -42,31 +39,13 @@ public class AuthConfigReader {
       hostname = env.getIndexUrl_v1();
     }
 
-    Map parsedDockerCfg = readDockerConfigFile(dockerCfg);
+    Map parsedDockerCfg = dockerConfigReader.readDockerConfigFile(dockerCfg);
     if (parsedDockerCfg == null || parsedDockerCfg.isEmpty()) {
       return EMPTY_AUTH_CONFIG;
     }
 
     CredsStore credsStore = getCredentialsStore(parsedDockerCfg, hostname);
     return credsStore.getAuthConfig(hostname);
-  }
-
-  public Map readDockerConfigFile(File dockerCfg) {
-    if (dockerCfg == null) {
-      dockerCfg = env.getDockerConfigFile();
-    }
-    if (dockerCfg == null || !dockerCfg.exists()) {
-      log.info("docker config '${dockerCfg}' doesn't exist");
-      return Collections.emptyMap();
-    }
-    log.debug("reading auth info from {}", dockerCfg);
-    try {
-      return moshi.adapter(Map.class).fromJson(Okio.buffer(Okio.source(dockerCfg)));
-    }
-    catch (Exception e) {
-      log.debug(MessageFormat.format("failed to read auth info from {}", dockerCfg), e);
-      return Collections.emptyMap();
-    }
   }
 
   public CredsStore getCredentialsStore(Map parsedDockerCfg) {

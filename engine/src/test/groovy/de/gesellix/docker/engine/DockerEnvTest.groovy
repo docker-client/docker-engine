@@ -5,16 +5,11 @@ import spock.lang.Specification
 
 class DockerEnvTest extends Specification {
 
-  DockerEnv env
-
-  def setup() {
-    env = new DockerEnv()
-  }
-
   def "read configured docker config.json"() {
     given:
     def expectedConfigDir = new File('.').absoluteFile
     def oldDockerConfigDir = System.setProperty("docker.config", expectedConfigDir.absolutePath)
+    DockerEnv env = new DockerEnv()
 
     when:
     def dockerConfigFile = env.getDockerConfigFile()
@@ -25,40 +20,42 @@ class DockerEnvTest extends Specification {
     cleanup:
     if (oldDockerConfigDir) {
       System.setProperty("docker.config", oldDockerConfigDir)
-    }
-    else {
+    } else {
       System.clearProperty("docker.config")
     }
   }
 
   def "read default docker config file"() {
     given:
-    def oldDockerConfig = System.clearProperty("docker.config")
     def expectedConfigFile = new ResourceReader().getClasspathResourceAsFile('/auth/config.json', getClass())
-    env.configFile = expectedConfigFile
+    def oldDockerConfigDir = System.setProperty("docker.config", expectedConfigFile.parent)
+    DockerEnv env = new DockerEnv()
 
     when:
-    def actualConfigFile = env.getDockerConfigFile()
+    File actualConfigFile = env.getDockerConfigFile()
 
     then:
     actualConfigFile == expectedConfigFile
 
     cleanup:
-    if (oldDockerConfig) {
-      System.setProperty("docker.config", oldDockerConfig)
+    if (oldDockerConfigDir) {
+      System.setProperty("docker.config", oldDockerConfigDir)
     }
   }
 
   def "read legacy docker config file"() {
     given:
+    DockerEnv env = new DockerEnv()
     def oldDockerConfig = System.clearProperty("docker.config")
 
     def nonExistingFile = new File('./I should not exist')
     assert !nonExistingFile.exists()
-    env.configFile = nonExistingFile
+    env.dockerConfigReader.configFile = nonExistingFile
 
     def expectedConfigFile = new ResourceReader().getClasspathResourceAsFile('/auth/dockercfg', getClass())
-    env.legacyConfigFile = expectedConfigFile
+    env.dockerConfigReader.legacyConfigFile = expectedConfigFile
+
+    env.resetDockerHostFromCurrentConfig()
 
     when:
     def actualConfigFile = env.getDockerConfigFile()
