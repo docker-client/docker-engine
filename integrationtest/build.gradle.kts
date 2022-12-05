@@ -5,8 +5,9 @@ plugins {
 }
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(8))
+  }
 }
 
 repositories {
@@ -18,7 +19,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api") {
       version {
         strictly("[1.7,3)")
-        prefer("2.0.3")
+        prefer("2.0.5")
       }
     }
     listOf(
@@ -48,7 +49,7 @@ dependencies {
       implementation(it) {
         version {
           strictly("[1.5,1.8)")
-          prefer("1.7.21")
+          prefer("1.7.22")
         }
       }
     }
@@ -65,7 +66,10 @@ dependencies {
 tasks.check.get().shouldRunAfter(project(":engine").tasks.check)
 
 tasks {
-  withType(Test::class.java) {
+  withType<JavaCompile> {
+    options.encoding = "UTF-8"
+  }
+  withType<Test> {
     useJUnitPlatform()
   }
 }
