@@ -19,7 +19,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api") {
       version {
         strictly("[1.7,3)")
-        prefer("2.0.5")
+        prefer("2.0.6")
       }
     }
     listOf(
@@ -58,7 +58,7 @@ dependencies {
   testImplementation("com.squareup.okhttp3:okhttp:4.10.0")
 
   testImplementation("org.slf4j:slf4j-api:2.0.6")
-  testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.3.3")
+  testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.3.5")
 
   testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
   testRuntimeOnly("net.bytebuddy:byte-buddy:1.12.19")
