@@ -85,7 +85,7 @@ dependencies {
   implementation("org.bouncycastle:bcpkix-jdk15on:1.70")
 
   testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
-  testRuntimeOnly("net.bytebuddy:byte-buddy:1.12.20")
+  testRuntimeOnly("net.bytebuddy:byte-buddy:1.12.21")
 }
 
 java {
