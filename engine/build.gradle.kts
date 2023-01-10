@@ -46,7 +46,7 @@ dependencies {
       implementation(it) {
         version {
           strictly("[3,4)")
-          prefer("3.2.0")
+          prefer("3.3.0")
         }
       }
     }
@@ -60,7 +60,7 @@ dependencies {
     ).onEach {
       implementation(it) {
         version {
-          strictly("[1.5,1.8)")
+          strictly("[1.5,1.9)")
           prefer("1.7.22")
         }
       }
