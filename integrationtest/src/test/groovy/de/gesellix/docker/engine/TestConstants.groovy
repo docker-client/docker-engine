@@ -12,7 +12,7 @@ class TestConstants {
 
   TestConstants() {
     imageRepo = "gesellix/echo-server"
-    imageTag = "2022-07-31T15-12-00"
+    imageTag = "2023-03-12T23-40-00"
     imageName = "$imageRepo:$imageTag"
 
     if (System.getenv("GITHUB_ACTOR")) {
@@ -33,9 +33,9 @@ class TestConstants {
         versionDetails = [
             ApiVersion   : { it == "1.41" },
             Arch         : { it in ["amd64", "arm64"] },
-            BuildTime    : { it =~ "2022-\\d{2}-\\d{2}T\\w+" },
+            BuildTime    : { it =~ "2023-\\d{2}-\\d{2}T\\w+" },
             GitCommit    : { it =~ "\\w{6,}" },
-            GoVersion    : { it == "go1.18.9" },
+            GoVersion    : { it == "go1.19.6" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.12" },
             Os           : { it == "linux" },
@@ -46,9 +46,9 @@ class TestConstants {
       versionDetails = [
           ApiVersion   : { it == "1.41" },
           Arch         : { it in ["amd64", "arm64"] },
-          BuildTime    : { it =~ "2022-06-06T\\w+" },
-          GitCommit    : { it == "a89b842" },
-          GoVersion    : { it == "go1.17.11" },
+          BuildTime    : { it =~ "2023-01-19T\\w+" },
+          GitCommit    : { it == "6051f14" },
+          GoVersion    : { it == "go1.18.10" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.24" },
           Os           : { it == "windows" },
@@ -58,9 +58,9 @@ class TestConstants {
       versionDetails = [
           ApiVersion   : { it == "1.41" },
           Arch         : { it in ["amd64", "arm64"] },
-          BuildTime    : { it =~ "2022-10-25T\\w+" },
-          GitCommit    : { it == "3056208" },
-          GoVersion    : { it == "go1.18.7" },
+          BuildTime    : { it =~ "2023-01-19T\\w+" },
+          GitCommit    : { it == "6051f14" },
+          GoVersion    : { it == "go1.18.10" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.12" },
           Os           : { it == "linux" },
