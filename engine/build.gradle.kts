@@ -70,7 +70,7 @@ dependencies {
   implementation("com.squareup.moshi:moshi:1.14.0")
 
   implementation("org.slf4j:slf4j-api:2.0.7")
-  testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.3.5")
+  testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.3.6")
 
   implementation("com.squareup.okio:okio-jvm:3.3.0")
   implementation("com.squareup.okhttp3:okhttp:4.10.0")
