@@ -12,7 +12,7 @@ class TestConstants {
 
   TestConstants() {
     imageRepo = "gesellix/echo-server"
-    imageTag = "2023-03-12T23-40-00"
+    imageTag = "2023-04-05T20-08-00"
     imageName = "$imageRepo:$imageTag"
 
     if (System.getenv("GITHUB_ACTOR")) {
