@@ -19,11 +19,11 @@ class TestConstants {
       // TODO consider checking the Docker api version instead of "GITHUB_ACTOR"
       if (LocalDocker.isNativeWindows()) {
         versionDetails = [
-            ApiVersion   : { it == "1.41" },
+            ApiVersion   : { it == "1.42" },
             Arch         : { it in ["amd64", "arm64"] },
-            BuildTime    : { it =~ "2022-\\d{2}-\\d{2}T\\w+" },
+            BuildTime    : { it =~ "2023-\\d{2}-\\d{2}T\\w+" },
             GitCommit    : { it =~ "\\w{6,}" },
-            GoVersion    : { it == "go1.18.7" },
+            GoVersion    : { it == "go1.19.8" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.24" },
             Os           : { it == "windows" },
