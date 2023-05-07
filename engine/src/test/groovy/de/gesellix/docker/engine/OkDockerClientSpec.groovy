@@ -138,13 +138,14 @@ class OkDockerClientSpec extends Specification {
     expect:
     client.getMimeType(contentType) == expectedMimeType
     where:
-    contentType                         | expectedMimeType
-    null                                | null
-    "application/json"                  | "application/json"
-    "text/plain"                        | "text/plain"
-    "text/plain; charset=utf-8"         | "text/plain"
-    "text/html"                         | "text/html"
-    "application/vnd.docker.raw-stream" | "application/vnd.docker.raw-stream"
+    contentType                                 | expectedMimeType
+    null                                        | null
+    "application/json"                          | "application/json"
+    "text/plain"                                | "text/plain"
+    "text/plain; charset=utf-8"                 | "text/plain"
+    "text/html"                                 | "text/html"
+    "application/vnd.docker.raw-stream"         | "application/vnd.docker.raw-stream"
+    "application/vnd.docker.multiplexed-stream" | "application/vnd.docker.multiplexed-stream"
   }
 
   def "getCharset"() {
@@ -154,12 +155,13 @@ class OkDockerClientSpec extends Specification {
     expect:
     client.getCharset(contentType) == expectedCharset
     where:
-    contentType                         | expectedCharset
-    "application/json"                  | "utf-8"
-    "text/plain"                        | "utf-8"
-    "text/plain; charset=ISO-8859-1"    | "ISO-8859-1"
-    "text/html"                         | "utf-8"
-    "application/vnd.docker.raw-stream" | "utf-8"
+    contentType                                 | expectedCharset
+    "application/json"                          | "utf-8"
+    "text/plain"                                | "utf-8"
+    "text/plain; charset=ISO-8859-1"            | "ISO-8859-1"
+    "text/html"                                 | "utf-8"
+    "application/vnd.docker.raw-stream"         | "utf-8"
+    "application/vnd.docker.multiplexed-stream" | "utf-8"
   }
 
   @Unroll
@@ -920,6 +922,73 @@ class OkDockerClientSpec extends Specification {
     def headerAndPayload = new RawHeaderAndPayload(STDOUT, actualText.bytes)
     def responseBody = new ByteArrayInputStream(headerAndPayload.bytes as byte[])
     def mediaType = MediaType.parse("application/vnd.docker.raw-stream")
+    def client = new OkDockerClient() {
+
+      @Override
+      OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
+        clientBuilder
+            .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(responseBody.bytes, mediaType)))
+            .build()
+      }
+    }
+    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "https://127.0.0.1:2376"))
+    client.socketFactories["https"] = new SslSocketConfigFactory() {
+
+      @Override
+      DockerSslSocket createDockerSslSocket(String certPath) {
+        return null
+      }
+    }
+    def stdout = new ByteArrayOutputStream()
+
+    when:
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
+        .tap { it.stdout = stdout })
+
+    then:
+    stdout.toByteArray() == actualText.bytes
+    and:
+    responseBody.available() == 0
+    and:
+    response.stream == null
+    and:
+    response.content == null
+  }
+
+  def "request with docker multiplexed-stream response"() {
+    given:
+    def actualText = "holy ship"
+    def headerAndPayload = new RawHeaderAndPayload(STDOUT, actualText.bytes)
+    def responseBody = new ByteArrayInputStream(headerAndPayload.bytes as byte[])
+    def mediaType = MediaType.parse("application/vnd.docker.multiplexed-stream")
+    def client = new OkDockerClient() {
+
+      @Override
+      OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
+        clientBuilder
+            .addInterceptor(new ConstantResponseInterceptor(ResponseBody.create(responseBody.bytes, mediaType)))
+            .build()
+      }
+    }
+    client.dockerClientConfig.apply(new DockerEnv(dockerHost: "http://127.0.0.1:2375"))
+
+    when:
+    def response = client.request(new EngineRequest(OPTIONS, "/a-resource"))
+
+    then:
+    response.stream instanceof RawInputStream
+    and:
+    IOUtils.toString(response.stream as RawInputStream) == actualText
+    and:
+    response.content == null
+  }
+
+  def "request with docker multiplexed-stream response on stdout"() {
+    given:
+    def actualText = "holy ship"
+    def headerAndPayload = new RawHeaderAndPayload(STDOUT, actualText.bytes)
+    def responseBody = new ByteArrayInputStream(headerAndPayload.bytes as byte[])
+    def mediaType = MediaType.parse("application/vnd.docker.multiplexed-stream")
     def client = new OkDockerClient() {
 
       @Override

@@ -347,6 +347,7 @@ public class OkDockerClient implements EngineClient {
       mimeType = "";
     }
     switch (mimeType) {
+      case "application/vnd.docker.multiplexed-stream":
       case "application/vnd.docker.raw-stream":
         InputStream rawStream = new RawInputStream(body.byteStream());
         if (config.getStdout() != null) {
