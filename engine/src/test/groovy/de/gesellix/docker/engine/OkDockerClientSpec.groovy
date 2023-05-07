@@ -67,8 +67,7 @@ class OkDockerClientSpec extends Specification {
     cleanup:
     if (oldDockerHost) {
       System.setProperty("docker.host", oldDockerHost)
-    }
-    else {
+    } else {
       System.clearProperty("docker.host")
     }
   }
@@ -108,8 +107,7 @@ class OkDockerClientSpec extends Specification {
     cleanup:
     if (oldDockerCertPath) {
       System.setProperty("docker.cert.path", oldDockerCertPath)
-    }
-    else {
+    } else {
       System.clearProperty("docker.cert.path")
     }
   }
@@ -128,8 +126,7 @@ class OkDockerClientSpec extends Specification {
     cleanup:
     if (oldDockerCertPath) {
       System.setProperty("docker.cert.path", oldDockerCertPath)
-    }
-    else {
+    } else {
       System.clearProperty("docker.cert.path")
     }
   }
@@ -322,8 +319,7 @@ class OkDockerClientSpec extends Specification {
     cleanup:
     if (oldDockerCertPath) {
       System.setProperty("docker.cert.path", oldDockerCertPath)
-    }
-    else {
+    } else {
       System.clearProperty("docker.cert.path")
     }
   }
@@ -479,7 +475,7 @@ class OkDockerClientSpec extends Specification {
 
     when:
     def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
-                                      .tap { apiVersion = "v1.23" })
+        .tap { apiVersion = "v1.23" })
     then:
     response.status.success
     and:
@@ -522,7 +518,7 @@ class OkDockerClientSpec extends Specification {
 
     when:
     def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
-                                      .tap { query = [baz: ["la/la"], answer: ["42"]] })
+        .tap { query = [baz: ["la/la"], answer: ["42"]] })
     then:
     response.status.success
     and:
@@ -536,9 +532,9 @@ class OkDockerClientSpec extends Specification {
     given:
     def mockWebServer = new MockWebServer()
     mockWebServer.enqueue(new MockResponse()
-                              .setResponseCode(101)
-                              .addHeader("Connection", "Upgrade")
-                              .addHeader("Upgrade", "tcp"))
+        .setResponseCode(101)
+        .addHeader("Connection", "Upgrade")
+        .addHeader("Upgrade", "tcp"))
     mockWebServer.start()
 
     def errors = []
@@ -575,14 +571,14 @@ class OkDockerClientSpec extends Specification {
     }
 
     client.request(new EngineRequest(OPTIONS, "/a-resource")
-                       .tap {
-                         attach = new AttachConfig(onResponse: onResponse)
-                         headers = [
-                             "header-a"  : "header-a-value",
-                             "Upgrade"   : "tcp",
-                             "Connection": "Upgrade"
-                         ]
-                       })
+        .tap {
+          attach = new AttachConfig(onResponse: onResponse)
+          headers = [
+              "header-a"  : "header-a-value",
+              "Upgrade"   : "tcp",
+              "Connection": "Upgrade"
+          ]
+        })
     then:
     latch.await(10, TimeUnit.SECONDS)
     and:
@@ -675,8 +671,7 @@ class OkDockerClientSpec extends Specification {
     mockWebServer.shutdown()
     if (oldDockerCertPath) {
       System.setProperty("docker.cert.path", oldDockerCertPath)
-    }
-    else {
+    } else {
       System.clearProperty("docker.cert.path")
     }
   }
@@ -785,7 +780,7 @@ class OkDockerClientSpec extends Specification {
 
     when:
     def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
-                                      .tap { it.stdout = stdout })
+        .tap { it.stdout = stdout })
 
     then:
     stdout.toByteArray() == "holy ship".bytes
@@ -859,7 +854,7 @@ class OkDockerClientSpec extends Specification {
 
     when:
     def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
-                                      .tap { it.stdout = stdout })
+        .tap { it.stdout = stdout })
 
     then:
     stdout.toByteArray() == "holy ship".bytes
@@ -946,7 +941,7 @@ class OkDockerClientSpec extends Specification {
 
     when:
     def response = client.request(new EngineRequest(OPTIONS, "/a-resource")
-                                      .tap { it.stdout = stdout })
+        .tap { it.stdout = stdout })
 
     then:
     stdout.toByteArray() == actualText.bytes
@@ -1045,8 +1040,8 @@ class OkDockerClientSpec extends Specification {
       def hosts = isWindows ? new File("${System.getenv("SystemRoot")}\\System32\\drivers\\etc\\hosts") : new File("/etc/hosts")
       if (hosts.isFile()) {
         whitelist.addAll(hosts.readLines()
-                             .grep({ it.startsWith("127.0.0.1 ") })
-                             .collect({ it.substring("127.0.0.1 ".length()).toLowerCase() }))
+            .grep({ it.startsWith("127.0.0.1 ") })
+            .collect({ it.substring("127.0.0.1 ".length()).toLowerCase() }))
       }
       def isAllowed = host.toLowerCase() in whitelist || host.endsWith(".internal")
       if (!isAllowed) {
