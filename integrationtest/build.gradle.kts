@@ -62,7 +62,7 @@ dependencies {
   testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.3.6")
 
   testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
-  testRuntimeOnly("net.bytebuddy:byte-buddy:1.14.4")
+  testRuntimeOnly("net.bytebuddy:byte-buddy:1.14.5")
 }
 tasks.check.get().shouldRunAfter(project(":engine").tasks.check)
 
