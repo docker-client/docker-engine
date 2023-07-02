@@ -12,7 +12,7 @@ class TestConstants {
 
   TestConstants() {
     imageRepo = "gesellix/echo-server"
-    imageTag = "2023-04-05T20-08-00"
+    imageTag = "2023-07-02T12-00-00"
     imageName = "$imageRepo:$imageTag"
 
     if (System.getenv("GITHUB_ACTOR")) {
@@ -35,7 +35,7 @@ class TestConstants {
             Arch         : { it in ["amd64", "arm64"] },
             BuildTime    : { it =~ "2023-\\d{2}-\\d{2}T\\w+" },
             GitCommit    : { it =~ "\\w{6,}" },
-            GoVersion    : { it == "go1.19.6" },
+            GoVersion    : { it == "go1.19.10" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.12" },
             Os           : { it == "linux" },
@@ -56,11 +56,11 @@ class TestConstants {
     }
     else {
       versionDetails = [
-          ApiVersion   : { it == "1.41" },
+          ApiVersion   : { it == "1.43" },
           Arch         : { it in ["amd64", "arm64"] },
-          BuildTime    : { it =~ "2023-01-19T\\w+" },
-          GitCommit    : { it == "6051f14" },
-          GoVersion    : { it == "go1.18.10" },
+          BuildTime    : { it =~ "2023-05-25T\\w+" },
+          GitCommit    : { it == "659604f" },
+          GoVersion    : { it == "go1.20.4" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.12" },
           Os           : { it == "linux" },
