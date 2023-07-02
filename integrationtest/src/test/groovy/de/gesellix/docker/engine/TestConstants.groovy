@@ -44,11 +44,11 @@ class TestConstants {
     }
     else if (LocalDocker.isNativeWindows()) {
       versionDetails = [
-          ApiVersion   : { it == "1.41" },
+          ApiVersion   : { it == "1.43" },
           Arch         : { it in ["amd64", "arm64"] },
-          BuildTime    : { it =~ "2023-01-19T\\w+" },
-          GitCommit    : { it == "6051f14" },
-          GoVersion    : { it == "go1.18.10" },
+          BuildTime    : { it =~ "2023-05-25T\\w+" },
+          GitCommit    : { it == "659604f9" },
+          GoVersion    : { it == "go1.20.4" },
           KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
           MinAPIVersion: { it == "1.24" },
           Os           : { it == "windows" },
