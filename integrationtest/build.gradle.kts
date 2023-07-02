@@ -50,7 +50,7 @@ dependencies {
       implementation(it) {
         version {
           strictly("[1.6,1.9)")
-          prefer("1.8.21")
+          prefer("1.8.22")
         }
       }
     }
@@ -59,7 +59,7 @@ dependencies {
   testImplementation("com.squareup.okhttp3:okhttp:4.11.0")
 
   testImplementation("org.slf4j:slf4j-api:2.0.7")
-  testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.3.6")
+  testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.3.8")
 
   testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
   testRuntimeOnly("net.bytebuddy:byte-buddy:1.14.5")

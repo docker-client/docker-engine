@@ -25,7 +25,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi") {
       version {
         strictly("[1.12.0,2)")
-        prefer("1.14.0")
+        prefer("1.15.0")
       }
     }
     listOf(
@@ -61,7 +61,7 @@ dependencies {
       implementation(it) {
         version {
           strictly("[1.6,1.9)")
-          prefer("1.8.21")
+          prefer("1.8.22")
         }
       }
     }
@@ -70,7 +70,7 @@ dependencies {
   implementation("com.squareup.moshi:moshi:1.14.0")
 
   implementation("org.slf4j:slf4j-api:2.0.7")
-  testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.3.6")
+  testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.3.8")
 
   implementation("com.squareup.okio:okio-jvm:3.3.0")
   implementation("com.squareup.okhttp3:okhttp:4.11.0")
