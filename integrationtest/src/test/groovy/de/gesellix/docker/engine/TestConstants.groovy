@@ -31,7 +31,7 @@ class TestConstants {
       }
       else {
         versionDetails = [
-            ApiVersion   : { it == "1.41" },
+            ApiVersion   : { it == "1.42" },
             Arch         : { it in ["amd64", "arm64"] },
             BuildTime    : { it =~ "2023-\\d{2}-\\d{2}T\\w+" },
             GitCommit    : { it =~ "\\w{6,}" },
