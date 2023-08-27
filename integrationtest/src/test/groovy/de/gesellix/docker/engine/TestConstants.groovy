@@ -31,11 +31,11 @@ class TestConstants {
       }
       else {
         versionDetails = [
-            ApiVersion   : { it == "1.42" },
+            ApiVersion   : { it == "1.43" },
             Arch         : { it in ["amd64", "arm64"] },
             BuildTime    : { it =~ "2023-\\d{2}-\\d{2}T\\w+" },
             GitCommit    : { it =~ "\\w{6,}" },
-            GoVersion    : { it == "go1.19.10" },
+            GoVersion    : { it == "go1.20.6" },
             KernelVersion: { it =~ "\\d.\\d{1,2}.\\d{1,2}\\w*" },
             MinAPIVersion: { it == "1.12" },
             Os           : { it == "linux" },
