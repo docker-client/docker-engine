@@ -73,8 +73,8 @@ dependencies {
   testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.3.11")
 
   implementation("com.squareup.okio:okio:3.6.0")
-  implementation("com.squareup.okhttp3:okhttp:4.11.0")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.11.0")
+  implementation("com.squareup.okhttp3:okhttp:4.12.0")
+  testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 
   implementation("org.apache.commons:commons-compress:1.24.0")
   testImplementation("org.apache.commons:commons-lang3:3.13.0")
