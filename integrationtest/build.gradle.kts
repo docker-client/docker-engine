@@ -25,7 +25,7 @@ dependencies {
     listOf(
       "com.squareup.okhttp3:mockwebserver",
       "com.squareup.okhttp3:okhttp"
-    ).onEach {
+    ).forEach {
       implementation(it) {
         version {
           strictly("[4,5)")
@@ -46,7 +46,7 @@ dependencies {
       "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
       "org.jetbrains.kotlin:kotlin-stdlib-common",
       "org.jetbrains.kotlin:kotlin-test"
-    ).onEach {
+    ).forEach {
       implementation(it) {
         version {
           strictly("[1.6,1.10)")
