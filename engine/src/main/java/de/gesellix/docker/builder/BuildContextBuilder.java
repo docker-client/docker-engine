@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -36,7 +35,7 @@ public class BuildContextBuilder {
   }
 
   public static void archiveTarFiles(File base, List<String> filenames, File targetFile) throws IOException {
-    archiveTarFiles(base, filenames, new FileOutputStream(targetFile));
+    archiveTarFiles(base, filenames, Files.newOutputStream(targetFile.toPath()));
   }
 
   public static void archiveTarFiles(File base, List<String> filenames, OutputStream target) throws IOException {
