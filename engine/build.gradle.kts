@@ -76,7 +76,7 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp:4.12.0")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 
-  implementation("org.apache.commons:commons-compress:1.25.0")
+  implementation("org.apache.commons:commons-compress:1.26.0")
   testImplementation("org.apache.commons:commons-lang3:3.14.0")
 
   implementation("de.gesellix:docker-filesocket:2024-01-12T22-30-00")
