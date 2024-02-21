@@ -77,6 +77,8 @@ dependencies {
   testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 
   implementation("org.apache.commons:commons-compress:1.26.0")
+  // declared as optional by commons-compress-1.26, but we need it for org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
+  implementation("commons-codec:commons-codec:1.16.1")
   testImplementation("org.apache.commons:commons-lang3:3.14.0")
 
   implementation("de.gesellix:docker-filesocket:2024-01-12T22-30-00")
