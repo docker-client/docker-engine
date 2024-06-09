@@ -115,7 +115,7 @@ class OkDockerClientIntegrationSpec extends Specification {
     response.status.code == 200
   }
 
-  @Ignore("Attach is broken")
+//  @Ignore("Attach is broken")
   @Unroll
   def "attach (openStdin: #openStdin, tty: #tty)"() {
     given:

@@ -11,6 +11,7 @@ plugins {
 }
 
 repositories {
+  mavenLocal()
   mavenCentral()
 }
 
@@ -34,8 +35,9 @@ dependencies {
     ).forEach {
       implementation(it) {
         version {
-          strictly("[4,5)")
-          prefer("4.12.0")
+          strictly("[4,6)")
+//          prefer("4.12.0")
+          prefer("5.0.0-SNAPSHOT")
         }
       }
     }
@@ -73,8 +75,10 @@ dependencies {
   testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.3.14")
 
   implementation("com.squareup.okio:okio:3.9.0")
-  implementation("com.squareup.okhttp3:okhttp:4.12.0")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+//  implementation("com.squareup.okhttp3:okhttp:4.12.0")
+//  testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+  implementation("com.squareup.okhttp3:okhttp:5.0.0-SNAPSHOT")
+  testImplementation("com.squareup.okhttp3:mockwebserver:5.0.0-SNAPSHOT")
 
   implementation("org.apache.commons:commons-compress:1.27.1")
   testImplementation("org.apache.commons:commons-lang3:3.17.0")
