@@ -95,19 +95,23 @@ class OkDockerClientIntegrationSpec extends Specification {
 
   @Requires({ LocalDocker.isUnixSocket() })
   def "should support unix socket connections (Linux native or Docker for Mac)"() {
-    def client = new OkDockerClient("unix:///var/run/docker.sock")
+    def client = new OkDockerClient()
     when:
     def response = client.request(new EngineRequest(GET, "/info"))
     then:
+    def dockerHost = client.getDockerClientConfig().getEnv().getDockerHost()
+    dockerHost.startsWith("unix://")
     response.status.code == 200
   }
 
   @Requires({ LocalDocker.isNamedPipe() })
   def "should support named pipe socket connections (Docker for Windows)"() {
-    def client = new OkDockerClient("npipe:////./pipe/docker_engine")
+    def client = new OkDockerClient()
     when:
     def response = client.request(new EngineRequest(GET, "/info"))
     then:
+    def dockerHost = client.getDockerClientConfig().getEnv().getDockerHost()
+    dockerHost.startsWith("npipe://")
     response.status.code == 200
   }
 
@@ -169,8 +173,7 @@ class OkDockerClientIntegrationSpec extends Specification {
       if (stdout.toString() == expectedOutput) {
         log.info("[attach (interactive)] consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
         onSourceConsumed.countDown()
-      }
-      else {
+      } else {
         log.info("[attach (interactive)] consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
       }
     }
