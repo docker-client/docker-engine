@@ -80,7 +80,7 @@ dependencies {
   testImplementation("org.apache.commons:commons-lang3:3.14.0")
 
   implementation("de.gesellix:docker-filesocket:2024-03-13T21-20-00")
-  testImplementation("de.gesellix:testutil:2024-01-16T20-15-00")
+  testImplementation("de.gesellix:testutil:2024-06-09T20-55-00")
 
   implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
 
