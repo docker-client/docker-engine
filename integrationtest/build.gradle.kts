@@ -58,7 +58,7 @@ dependencies {
   implementation(project(":engine"))
   testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
 
-  testImplementation("org.slf4j:slf4j-api:2.0.13")
+  testImplementation("org.slf4j:slf4j-api:2.0.15")
   testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.3.14")
 
   testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
