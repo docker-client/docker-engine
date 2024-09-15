@@ -36,7 +36,7 @@ dependencies {
     implementation("com.squareup.okio:okio") {
       version {
         strictly("[3,4)")
-        prefer("3.9.0")
+        prefer("3.9.1")
       }
     }
     listOf(
@@ -49,7 +49,7 @@ dependencies {
     ).forEach {
       implementation(it) {
         version {
-          strictly("[1.6,2.1)")
+          strictly("[1.6,3)")
           prefer("1.9.25")
         }
       }
