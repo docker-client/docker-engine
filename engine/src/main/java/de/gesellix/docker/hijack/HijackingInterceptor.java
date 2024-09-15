@@ -7,7 +7,6 @@ import okhttp3.Connection;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.internal.connection.RealConnection;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.Okio;
@@ -59,16 +58,13 @@ public class HijackingInterceptor implements Interceptor {
     }
 //    TcpUpgradeVerificator.ensureTcpUpgrade(response);
 
-    connection.socket().setSoTimeout(0);
-    ((RealConnection) connection).setNoNewExchanges(true);
-    chain.call().timeout().clearTimeout().clearDeadline();
-
     // stdin -> sink
     Thread stdin2sink = new Thread(() -> {
       Buffer tmpBuffer = new Buffer();
       try (BufferedSink bufferedSink = Okio.buffer(sink)) {
         long count = 0;
         while (bufferedSink.isOpen()) {
+          tmpBuffer.clear();
           long n = stdin.read(tmpBuffer, 1024);
           if (n < 0) {
             log.warn("finished after " + count + " bytes");
@@ -99,7 +95,7 @@ public class HijackingInterceptor implements Interceptor {
       try (BufferedSink bufferedSink = Okio.buffer(stdout)) {
         long count = 0;
 
-        if (true || attachConfig.isExpectMultiplexedResponse()) {
+        if (attachConfig.isExpectMultiplexedResponse()) {
           FrameReader frameReader = new FrameReader(source, attachConfig.isExpectMultiplexedResponse());
           Frame frame;
           while ((frame = frameReader.readNext(Frame.class)) != null) {

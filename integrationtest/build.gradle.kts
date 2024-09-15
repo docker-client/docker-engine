@@ -11,6 +11,7 @@ java {
 }
 
 repositories {
+  mavenLocal()
   mavenCentral()
 }
 
@@ -28,8 +29,9 @@ dependencies {
     ).forEach {
       implementation(it) {
         version {
-          strictly("[4,5)")
-          prefer("4.12.0")
+          strictly("[4,6)")
+//          prefer("4.12.0")
+          prefer("5.0.0-SNAPSHOT")
         }
       }
     }
@@ -56,7 +58,8 @@ dependencies {
     }
   }
   implementation(project(":engine"))
-  testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
+//  testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
+  testImplementation("com.squareup.okhttp3:okhttp:5.0.0-SNAPSHOT")
 
   testImplementation("org.slf4j:slf4j-api:2.0.16")
   testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.3.14")

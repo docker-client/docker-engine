@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
 
 public class FrameReader implements Reader<Frame> {
 
@@ -31,6 +32,9 @@ public class FrameReader implements Reader<Frame> {
 
   @Override
   public Frame readNext(Class<Frame> type) {
+    if (!bufferedSource.isOpen()){
+      return null;
+    }
     if (expectMultiplexedResponse) {
       // See https://docs.docker.com/engine/api/v1.41/#operation/ContainerAttach for the stream format documentation.
       // header := [8]byte{STREAM_TYPE, 0, 0, 0, SIZE1, SIZE2, SIZE3, SIZE4}
@@ -42,7 +46,7 @@ public class FrameReader implements Reader<Frame> {
 
         return new Frame(streamType, bufferedSource.readByteArray(frameSize));
       }
-      catch (EOFException e) {
+      catch (EOFException | ClosedChannelException e) {
         return null;
       }
       catch (IOException e) {
