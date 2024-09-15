@@ -12,11 +12,11 @@ class TestConstants {
 
   TestConstants() {
     imageRepo = "gesellix/echo-server"
-    imageTag = "2024-07-28T18-30-00"
+    imageTag = "2024-09-15T19-35-00"
     imageName = "$imageRepo:$imageTag"
 
     versionDetails = [
-        ApiVersion   : { it in ["1.43", "1.44", "1.45"] },
+        ApiVersion   : { it in ["1.43", "1.44", "1.45", "1.46", "1.47"] },
         Arch         : { it in ["amd64", "arm64"] },
         BuildTime    : { it =~ "\\d{4}-\\d{2}-\\d{2}T\\w+" },
         GitCommit    : { it =~ "\\w{6,}" },
