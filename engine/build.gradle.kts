@@ -82,7 +82,7 @@ dependencies {
   implementation("de.gesellix:docker-filesocket:2024-09-15T19-35-00")
   testImplementation("de.gesellix:testutil:2024-09-15T19-35-00")
 
-  implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
+  implementation("org.bouncycastle:bcpkix-jdk18on:1.79")
 
   testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
   testRuntimeOnly("net.bytebuddy:byte-buddy:1.15.10")
