@@ -12,7 +12,7 @@ class TestConstants {
 
   TestConstants() {
     imageRepo = "gesellix/echo-server"
-    imageTag = "2024-09-15T19-35-00"
+    imageTag = "2024-12-22T16-35-00"
     imageName = "$imageRepo:$imageTag"
 
     versionDetails = [
