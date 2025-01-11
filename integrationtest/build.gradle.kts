@@ -18,49 +18,41 @@ dependencies {
   constraints {
     implementation("org.slf4j:slf4j-api") {
       version {
-        strictly("[1.7,3)")
-        prefer("2.0.16")
+        strictly(libs.versions.slf4jVersionrange.get())
+        prefer(libs.versions.slf4j.get())
       }
     }
     listOf(
-      "com.squareup.okhttp3:mockwebserver",
-      "com.squareup.okhttp3:okhttp"
+      libs.bundles.okhttp
     ).forEach {
       implementation(it) {
         version {
-          strictly("[4,5)")
-          prefer("4.12.0")
+          strictly(libs.versions.okhttpVersionrange.get())
+          prefer(libs.versions.okhttp.get())
         }
       }
     }
     implementation("com.squareup.okio:okio") {
       version {
-        strictly("[3,4)")
-        prefer("3.9.1")
+        strictly(libs.versions.okioVersionrange.get())
+        prefer(libs.versions.okio.get())
       }
     }
     listOf(
-      "org.jetbrains.kotlin:kotlin-reflect",
-      "org.jetbrains.kotlin:kotlin-stdlib",
-      "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
-      "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
-      "org.jetbrains.kotlin:kotlin-stdlib-common",
-      "org.jetbrains.kotlin:kotlin-test"
+      libs.bundles.kotlin
     ).forEach {
       implementation(it) {
         version {
-          strictly("[1.6,3)")
-          prefer("2.1.0")
+          strictly(libs.versions.kotlinVersionrange.get())
+          prefer(libs.versions.kotlin.get())
         }
       }
     }
   }
   implementation(project(":engine"))
-  testImplementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-  testImplementation("org.slf4j:slf4j-api:2.0.16")
-  testRuntimeOnly("ch.qos.logback:logback-classic:[1.2,2)!!1.3.14")
-
+  testImplementation(libs.okhttp)
+  testImplementation(libs.slf4j)
+  testRuntimeOnly(libs.logback)
   testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
   testRuntimeOnly("net.bytebuddy:byte-buddy:1.15.11")
 }
