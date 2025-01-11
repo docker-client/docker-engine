@@ -18,63 +18,56 @@ dependencies {
   constraints {
     implementation("org.slf4j:slf4j-api") {
       version {
-        strictly("[1.7,3)")
-        prefer("2.0.16")
+        strictly(libs.versions.slf4jVersionrange.get())
+        prefer(libs.versions.slf4j.get())
       }
     }
     implementation("com.squareup.moshi:moshi") {
       version {
-        strictly("[1.12.0,2)")
-        prefer("1.15.2")
+        strictly(libs.versions.moshiVersionrange.get())
+        prefer(libs.versions.moshi.get())
       }
     }
     listOf(
-      "com.squareup.okhttp3:mockwebserver",
       "com.squareup.okhttp3:okhttp"
     ).forEach {
       implementation(it) {
         version {
-          strictly("[4,5)")
-          prefer("4.12.0")
+          strictly(libs.versions.okhttpVersionrange.get())
+          prefer(libs.versions.okhttp.get())
         }
       }
     }
     listOf(
-      "com.squareup.okio:okio",
-      "com.squareup.okio:okio-jvm"
+      libs.bundles.okio
     ).forEach {
       implementation(it) {
         version {
-          strictly("[3,4)")
-          prefer("3.9.1")
+          strictly(libs.versions.okioVersionrange.get())
+          prefer(libs.versions.okio.get())
         }
       }
     }
     listOf(
-      "org.jetbrains.kotlin:kotlin-reflect",
-      "org.jetbrains.kotlin:kotlin-stdlib",
-      "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
-      "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
-      "org.jetbrains.kotlin:kotlin-stdlib-common",
-      "org.jetbrains.kotlin:kotlin-test"
+      libs.bundles.kotlin
     ).forEach {
       implementation(it) {
         version {
-          strictly("[1.6,3)")
-          prefer("2.1.0")
+          strictly(libs.versions.kotlinVersionrange.get())
+          prefer(libs.versions.kotlin.get())
         }
       }
     }
   }
 
-  implementation("com.squareup.moshi:moshi:1.15.2")
+  implementation(libs.moshi)
 
-  implementation("org.slf4j:slf4j-api:2.0.16")
-  testImplementation("ch.qos.logback:logback-classic:[1.2,2)!!1.3.14")
+  implementation(libs.slf4j)
+  testImplementation("ch.qos.logback:logback-classic:${libs.versions.logbackVersionrange.get()}!!${libs.versions.logback.get()}")
 
-  implementation("com.squareup.okio:okio:3.9.1")
-  implementation("com.squareup.okhttp3:okhttp:4.12.0")
-  testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+  implementation(libs.okio)
+  implementation(libs.okhttp)
+  testImplementation(libs.okhttpMockwebserver)
 
   implementation("org.apache.commons:commons-compress:1.27.1")
   testImplementation("org.apache.commons:commons-lang3:3.17.0")
