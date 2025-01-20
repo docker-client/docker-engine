@@ -54,7 +54,7 @@ dependencies {
   testImplementation(libs.slf4j)
   testRuntimeOnly(libs.logback)
   testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
-  testRuntimeOnly("net.bytebuddy:byte-buddy:1.16.0")
+  testRuntimeOnly("net.bytebuddy:byte-buddy:1.16.1")
 }
 tasks.check.get().shouldRunAfter(project(":engine").tasks.check)
 
