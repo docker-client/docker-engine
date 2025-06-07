@@ -46,9 +46,9 @@ class OkDockerClientIntegrationSpec extends Specification {
     when:
     def response = client.post(request)
     then:
-    response.content.last() in [
-        [status: "Status: Image is up to date for ${CONSTANTS.imageName}".toString()],
-        [status: "Status: Downloaded newer image for ${CONSTANTS.imageName}".toString()]
+    response.content.last().status in [
+        "Status: Image is up to date for ${CONSTANTS.imageName}".toString(),
+        "Status: Downloaded newer image for ${CONSTANTS.imageName}".toString(),
     ]
   }
 
@@ -136,7 +136,9 @@ class OkDockerClientIntegrationSpec extends Specification {
         OpenStdin   : openStdin,
         StdinOnce   : true,
         Image       : CONSTANTS.imageName,
-        Entrypoint  : ["/cat"]
+        Cmd         : LocalDocker.isNativeWindows()
+            ? ["cmd", "/V:ON", "/C", "set /p line= & echo #!line!#"]
+            : ["/bin/sh", "-c", "read line && echo \"#\$line#\""]
     ]
     String containerId = client.post([path              : "/containers/create".toString(),
                                       query             : [name: ""],
@@ -179,10 +181,10 @@ class OkDockerClientIntegrationSpec extends Specification {
     }
     attachConfig.onSourceConsumed = {
       if (stdout.toString() == expectedOutput) {
-        log.info("[attach (interactive)] consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
+        log.info("[attach (interactive)] fully consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
         onSourceConsumed.countDown()
       } else {
-        log.info("[attach (interactive)] consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
+        log.info("[attach (interactive)] partially consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
       }
     }
 //    new OkDockerClient().post([
