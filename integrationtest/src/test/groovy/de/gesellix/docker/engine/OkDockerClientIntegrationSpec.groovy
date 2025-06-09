@@ -3,7 +3,6 @@ package de.gesellix.docker.engine
 import groovy.util.logging.Slf4j
 import okhttp3.Response
 import okio.Okio
-import spock.lang.Ignore
 import spock.lang.IgnoreIf
 import spock.lang.Requires
 import spock.lang.Specification
@@ -115,7 +114,6 @@ class OkDockerClientIntegrationSpec extends Specification {
     response.status.code == 200
   }
 
-  @Ignore("Attach is broken")
   @Unroll
   def "attach (openStdin: #openStdin, tty: #tty)"() {
     given:
@@ -206,6 +204,6 @@ class OkDockerClientIntegrationSpec extends Specification {
     where:
     tty   | openStdin
     false | true
-//    true  | true // TODO: fix on Windows
+    true  | true
   }
 }

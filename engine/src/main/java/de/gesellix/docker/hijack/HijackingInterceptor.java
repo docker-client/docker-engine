@@ -5,9 +5,8 @@ import de.gesellix.docker.rawstream.Frame;
 import de.gesellix.docker.rawstream.FrameReader;
 import okhttp3.Connection;
 import okhttp3.Interceptor;
-import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.internal.connection.RealConnection;
+import okhttp3.internal.http1.Streams;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.Okio;
@@ -39,103 +38,75 @@ public class HijackingInterceptor implements Interceptor {
       throw new IllegalStateException("Connection is null. This one should only be used as a network interceptor, not as application interceptor.");
     }
 
-    Sink sink = Okio.sink(connection.socket());
-    Source source = Okio.source(connection.socket());
-
-    Request originalRequest = chain.request();
-    Request modifiedRequest = originalRequest;
-    if (stdin != null) {
-      modifiedRequest = originalRequest.newBuilder()
-          .method(originalRequest.method(), originalRequest.body())
-          .header("transfer-encoding", "chunked")
-//        .tag(new HijackedSink(sink))
-          .build();
-    }
-
-    Response response = chain.proceed(modifiedRequest);
+    Response response = chain.proceed(chain.request());
 
     if (!(response.code() == 101 || response.isSuccessful()) || stdin == null) {
       return response;
     }
 //    TcpUpgradeVerificator.ensureTcpUpgrade(response);
 
-    connection.socket().setSoTimeout(0);
-    ((RealConnection) connection).setNoNewExchanges(true);
-    chain.call().timeout().clearTimeout().clearDeadline();
-
-    // stdin -> sink
-    Thread stdin2sink = new Thread(() -> {
-      Buffer tmpBuffer = new Buffer();
-      try (BufferedSink bufferedSink = Okio.buffer(sink)) {
-        long count = 0;
-        while (bufferedSink.isOpen()) {
-          long n = stdin.read(tmpBuffer, 1024);
-          if (n < 0) {
-            log.warn("finished after " + count + " bytes");
-            attachConfig.onSinkWritten(response);
-            break;
-          }
-          count += n;
-          bufferedSink.write(tmpBuffer, n);
-          bufferedSink.flush();
-//          attachConfig.onBytesWrittenToSink(n, count);
-        }
-      }
-      catch (Exception e) {
-        log.error("error", e);
-        attachConfig.onFailure(e);
-        throw new RuntimeException(e);
-      }
-      attachConfig.onSinkClosed(response);
-    });
-    stdin2sink.setName("stdin2sink-" + System.identityHashCode(originalRequest));
-    stdin2sink.setUncaughtExceptionHandler((thread, exception) -> log.error("", exception));
-    stdin2sink.setDaemon(true);
-    stdin2sink.start();
+    Streams streams = response.streams();
+    if (streams == null) {
+      throw new IllegalStateException("Streams is null. This one should only be used as a network interceptor, not as application interceptor.");
+    }
 
     // source -> stdout
     Thread source2stdout = new Thread(() -> {
-      Buffer tmpBuffer = new Buffer();
       try (BufferedSink bufferedSink = Okio.buffer(stdout)) {
-        long count = 0;
-
-        if (true || attachConfig.isExpectMultiplexedResponse()) {
-          FrameReader frameReader = new FrameReader(source, attachConfig.isExpectMultiplexedResponse());
+        if (attachConfig.isExpectMultiplexedResponse()) {
+          FrameReader frameReader = new FrameReader(streams.getSource(), attachConfig.isExpectMultiplexedResponse());
           Frame frame;
           while ((frame = frameReader.readNext(Frame.class)) != null) {
-//          while (bufferedSink.isOpen()) {
-//            frame = frameReader.readNext(Frame.class);
             if (frame != null && frame.getPayload() != null) {
-              count += frame.getPayload().length;
-//            tmpBuffer.write(frame.getPayload());
               bufferedSink.write(frame.getPayload());
               bufferedSink.flush();
             }
           }
-        }
-        else {
-          while (bufferedSink.isOpen()) {
-            long n = source.read(tmpBuffer, 1024);
-            if (n < 0) {
-              break;
-            }
-            count += n;
-            bufferedSink.write(tmpBuffer, n);
+        } else {
+          Buffer tmp = new Buffer();
+          for (long byteCount; (byteCount = streams.getSource().read(tmp, 8192L)) != -1; ) {
+            bufferedSink.write(tmp, byteCount);
             bufferedSink.flush();
           }
         }
-      }
-      catch (Exception e) {
+
+        // TODO how to make it work without that timeout?
+        Thread.sleep(2000);
+      } catch (Exception e) {
         log.error("error", e);
         attachConfig.onFailure(e);
         throw new RuntimeException(e);
       }
       attachConfig.onSourceConsumed();
     });
-    source2stdout.setName("source2stdout-" + System.identityHashCode(originalRequest));
+    source2stdout.setName("source2stdout-" + System.identityHashCode(chain.request()));
     source2stdout.setUncaughtExceptionHandler((thread, exception) -> log.error("", exception));
     source2stdout.setDaemon(true);
     source2stdout.start();
+
+    // stdin -> sink
+    Thread stdin2sink = new Thread(() -> {
+      try (BufferedSink bufferedSink = Okio.buffer(streams.getSink())) {
+        Buffer tmp = new Buffer();
+        for (long byteCount; (byteCount = stdin.read(tmp, 8192L)) != -1; ) {
+          bufferedSink.write(tmp, byteCount);
+          bufferedSink.flush();
+        }
+        attachConfig.onSinkWritten(response);
+
+        // TODO how to make it work without that timeout?
+        Thread.sleep(2000);
+      } catch (Exception e) {
+        log.error("error", e);
+        attachConfig.onFailure(e);
+        throw new RuntimeException(e);
+      }
+      attachConfig.onSinkClosed(response);
+    });
+    stdin2sink.setName("stdin2sink-" + System.identityHashCode(chain.request()));
+    stdin2sink.setUncaughtExceptionHandler((thread, exception) -> log.error("", exception));
+    stdin2sink.setDaemon(true);
+    stdin2sink.start();
 
     attachConfig.onResponse(response);
     return response;
