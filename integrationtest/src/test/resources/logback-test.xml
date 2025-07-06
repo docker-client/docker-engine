@@ -8,6 +8,7 @@
 
     <logger name="de.gesellix.docker.client.filesocket" level="INFO"/>
     <logger name="de.gesellix.docker.engine" level="DEBUG"/>
+    <logger name="de.gesellix.docker.hijack" level="DEBUG"/>
     <logger name="de.gesellix.docker.json" level="TRACE"/>
     <logger name="de.gesellix.docker.rawstream" level="TRACE"/>
 

@@ -16,7 +16,7 @@ public class FrameReader implements Reader<Frame> {
   private final static Logger log = LoggerFactory.getLogger(FrameReader.class);
 
   private final BufferedSource bufferedSource;
-  private boolean expectMultiplexedResponse;
+  private final boolean expectMultiplexedResponse;
 
   private final Buffer buffer = new Buffer();
 
@@ -32,6 +32,8 @@ public class FrameReader implements Reader<Frame> {
   @Override
   public Frame readNext(Class<Frame> type) {
     if (expectMultiplexedResponse) {
+      log.debug("reading frame: multiplexed");
+
       // See https://docs.docker.com/engine/api/v1.41/#operation/ContainerAttach for the stream format documentation.
       // header := [8]byte{STREAM_TYPE, 0, 0, 0, SIZE1, SIZE2, SIZE3, SIZE4}
 
@@ -51,6 +53,8 @@ public class FrameReader implements Reader<Frame> {
       }
     }
     else {
+      log.debug("reading frame: raw");
+
       long byteCount;
 //      buffer.clear();
       try {

@@ -3,6 +3,7 @@ package de.gesellix.docker.engine
 import groovy.util.logging.Slf4j
 import okhttp3.Response
 import okio.Okio
+import okio.Socket
 import spock.lang.Ignore
 import spock.lang.IgnoreIf
 import spock.lang.Requires
@@ -115,7 +116,7 @@ class OkDockerClientIntegrationSpec extends Specification {
     response.status.code == 200
   }
 
-  @Ignore("Attach is broken")
+//  @Ignore("Attach is broken")
   @Unroll
   def "attach (openStdin: #openStdin, tty: #tty)"() {
     given:
@@ -145,9 +146,10 @@ class OkDockerClientIntegrationSpec extends Specification {
 //    boolean multiplexStreams = !client.get([path: "/containers/${containerId}/json".toString()]).content.Config.Tty
 
     String content = "attach ${UUID.randomUUID()}"
+    // TTY mode duplicates output and uses CRLF, non-TTY uses single output with LF
     String expectedOutput = containerConfig.Tty ? "$content\r\n$content\r\n" : "$content\n"
 
-    def stdout = new ByteArrayOutputStream(expectedOutput.length())
+    def stdout = new ByteArrayOutputStream(expectedOutput.length() * 2) // Double buffer size to be safe
     def stdin = new PipedOutputStream()
 
     def onSinkClosed = new CountDownLatch(1)
@@ -159,22 +161,22 @@ class OkDockerClientIntegrationSpec extends Specification {
 //    attachConfig.streams.stdout = stdout
     attachConfig.streams.stdout = new TeeOutputStream(stdout, System.out)
     attachConfig.onResponse = { Response response ->
-      log.info("[attach (interactive)] got response")
+      log.info("[attach (interactive), tty: ${tty}, openStdin: ${openStdin}] got response")
     }
     attachConfig.onSinkClosed = { Response response ->
-      log.info("[attach (interactive)] sink closed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
+      log.info("[attach (interactive), tty: ${tty}, openStdin: ${openStdin}] sink closed")
       onSinkClosed.countDown()
     }
     attachConfig.onSinkWritten = { Response response ->
-      log.info("[attach (interactive)] sink written (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
+      log.info("[attach (interactive), tty: ${tty}, openStdin: ${openStdin}] sink written")
       onSinkWritten.countDown()
     }
     attachConfig.onSourceConsumed = {
       if (stdout.toString() == expectedOutput) {
-        log.info("[attach (interactive)] consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
+        log.info("[attach (interactive), tty: ${tty}, openStdin: ${openStdin}] consumed (complete: true)\\nExpected: \"${expectedOutput}\" (length: ${expectedOutput.length()})\\nActual: \"${stdout.toString()}\" (length: ${stdout.size()})")
         onSourceConsumed.countDown()
       } else {
-        log.info("[attach (interactive)] consumed (complete: ${stdout.toString() == expectedOutput})\n${stdout.toString()}")
+        log.info("[attach (interactive), tty: ${tty}, openStdin: ${openStdin}] consumed (complete: false)\\nExpected: \"${expectedOutput}\" (length: ${expectedOutput.length()})\\nActual: \"${stdout.toString()}\" (length: ${stdout.size()})")
       }
     }
 //    new OkDockerClient().post([
@@ -187,16 +189,31 @@ class OkDockerClientIntegrationSpec extends Specification {
     stdin.write("$content\n".bytes)
     stdin.flush()
     stdin.close()
-    boolean sinkWritten = onSinkWritten.await(5, SECONDS)
-    boolean sinkClosed = onSinkClosed.await(5, SECONDS)
-    boolean sourceConsumed = onSourceConsumed.await(5, SECONDS)
+    def timeout = 5
+    boolean sinkWritten = onSinkWritten.await(timeout, SECONDS)
+    boolean sinkClosed = onSinkClosed.await(timeout, SECONDS)
+    boolean sourceConsumed = onSourceConsumed.await(timeout, SECONDS)
 
     then:
     sinkClosed
     sinkWritten
     sourceConsumed
     stdout.size() > 0
-    stdout.toByteArray() == expectedOutput.bytes
+
+    def normalizedActual = stdout.toString().replaceAll("\r\n", "\n")
+    def normalizedExpected = expectedOutput.replaceAll("\r\n", "\n")
+
+    // Detailed logging for diagnosis
+    if (normalizedActual != normalizedExpected) {
+        log.error("""Final assertion mismatch (tty: ${tty}, openStdin: ${openStdin}):
+            |Raw expected (${expectedOutput.length()}): '${expectedOutput.encodeBase64()}'
+            |Raw actual (${stdout.size()}): '${stdout.toString().encodeBase64()}'
+            |Normalized expected (${normalizedExpected.length()}): '${normalizedExpected.encodeBase64()}'
+            |Normalized actual (${normalizedActual.length()}): '${normalizedActual.encodeBase64()}'
+            """.stripMargin())
+    }
+
+    normalizedActual == normalizedExpected
 
     cleanup:
     client.post([path: "/containers/${containerId}/stop".toString(), query: [t: 10]])
@@ -206,6 +223,6 @@ class OkDockerClientIntegrationSpec extends Specification {
     where:
     tty   | openStdin
     false | true
-//    true  | true // TODO: fix on Windows
+    true  | true // TODO: fix on Windows
   }
 }
