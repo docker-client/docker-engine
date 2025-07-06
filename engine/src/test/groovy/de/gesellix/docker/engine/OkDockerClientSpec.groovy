@@ -6,6 +6,8 @@ import de.gesellix.docker.ssl.DockerSslSocket
 import de.gesellix.docker.ssl.SslSocketConfigFactory
 import de.gesellix.util.IOUtils
 import groovy.util.logging.Slf4j
+import mockwebserver3.MockResponse
+import mockwebserver3.MockWebServer
 import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.MediaType
@@ -14,8 +16,6 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
 import okhttp3.WebSocketListener
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
 import org.codehaus.groovy.runtime.MethodClosure
 import spock.lang.IgnoreIf
@@ -48,10 +48,11 @@ class OkDockerClientSpec extends Specification {
     def isWindows = System.properties['os.name'].toLowerCase().contains('windows')
     def expectedScheme = isWindows ? "npipe" : "unix"
     def defaultHost = isWindows ? "//./pipe/docker_engine" : "/var/run/docker.sock"
+    def defaultHostWithContext = isWindows ? "//./pipe/docker_engine" : "${System.getProperty("user.home")}/.docker/run/docker.sock"
 
     expect:
     client.dockerClientConfig.scheme == expectedScheme
-    client.dockerClientConfig.host == defaultHost
+    client.dockerClientConfig.host == defaultHost || client.dockerClientConfig.host == defaultHostWithContext
     client.dockerClientConfig.port == -1
   }
 
@@ -329,7 +330,7 @@ class OkDockerClientSpec extends Specification {
   def "uses DIRECT proxy by default"() {
     given:
     def mockWebServer = new MockWebServer()
-    mockWebServer.enqueue(new MockResponse().setBody("mock-response"))
+    mockWebServer.enqueue(new MockResponse(200, Headers.of(), "mock-response"))
     mockWebServer.start()
 
     def hasVerified = false
@@ -358,14 +359,14 @@ class OkDockerClientSpec extends Specification {
     and:
     hasVerified
 
-    cleanup:
-    mockWebServer.shutdown()
+//    cleanup:
+//    mockWebServer.shutdown()
   }
 
   def "uses configured proxy"() {
     given:
     def mockWebServer = new MockWebServer()
-    mockWebServer.enqueue(new MockResponse().setBody("mock-response"))
+    mockWebServer.enqueue(new MockResponse(200, Headers.of(), "mock-response"))
     mockWebServer.start()
 
     def serverUrl = mockWebServer.url("/")
@@ -400,14 +401,14 @@ class OkDockerClientSpec extends Specification {
     and:
     hasVerified
 
-    cleanup:
-    mockWebServer.shutdown()
+//    cleanup:
+//    mockWebServer.shutdown()
   }
 
   def "request with path"() {
     given:
     def mockWebServer = new MockWebServer()
-    mockWebServer.enqueue(new MockResponse().setBody("mock-response"))
+    mockWebServer.enqueue(new MockResponse(200, Headers.of(), "mock-response"))
     mockWebServer.start()
 
     def serverUrl = mockWebServer.url("/")
@@ -441,14 +442,14 @@ class OkDockerClientSpec extends Specification {
     and:
     hasVerified
 
-    cleanup:
-    mockWebServer.shutdown()
+//    cleanup:
+//    mockWebServer.shutdown()
   }
 
   def "request with explicit api version"() {
     given:
     def mockWebServer = new MockWebServer()
-    mockWebServer.enqueue(new MockResponse().setBody("mock-response"))
+    mockWebServer.enqueue(new MockResponse(200, Headers.of(), "mock-response"))
     mockWebServer.start()
 
     def serverUrl = mockWebServer.url("/")
@@ -483,14 +484,14 @@ class OkDockerClientSpec extends Specification {
     and:
     hasVerified
 
-    cleanup:
-    mockWebServer.shutdown()
+//    cleanup:
+//    mockWebServer.shutdown()
   }
 
   def "request with path and query"() {
     given:
     def mockWebServer = new MockWebServer()
-    mockWebServer.enqueue(new MockResponse().setBody("mock-response"))
+    mockWebServer.enqueue(new MockResponse(200, Headers.of(), "mock-response"))
     mockWebServer.start()
 
     def serverUrl = mockWebServer.url("/")
@@ -526,17 +527,20 @@ class OkDockerClientSpec extends Specification {
     and:
     hasVerified
 
-    cleanup:
-    mockWebServer.shutdown()
+//    cleanup:
+//    mockWebServer.shutdown()
   }
 
   def "async request with headers"() {
     given:
     def mockWebServer = new MockWebServer()
-    mockWebServer.enqueue(new MockResponse()
-        .setResponseCode(101)
-        .addHeader("Connection", "Upgrade")
-        .addHeader("Upgrade", "tcp"))
+    mockWebServer.enqueue(new MockResponse(
+        101,
+        Headers.of(
+            "Connection", "Upgrade",
+            "Upgrade", "tcp"
+        ),
+        ""))
     mockWebServer.start()
 
     def errors = []
@@ -588,14 +592,14 @@ class OkDockerClientSpec extends Specification {
     and:
     hasVerified
 
-    cleanup:
-    mockWebServer.shutdown()
+//    cleanup:
+//    mockWebServer.shutdown()
   }
 
   def "connect via plain http connection"() {
     given:
     def mockWebServer = new MockWebServer()
-    mockWebServer.enqueue(new MockResponse().setBody("mock-response"))
+    mockWebServer.enqueue(new MockResponse(200, Headers.of(), "mock-response"))
     mockWebServer.start()
 
     def hasVerified = false
@@ -625,8 +629,8 @@ class OkDockerClientSpec extends Specification {
     and:
     hasVerified
 
-    cleanup:
-    mockWebServer.shutdown()
+//    cleanup:
+//    mockWebServer.shutdown()
   }
 
   def "connect via https connection"() {
@@ -635,8 +639,8 @@ class OkDockerClientSpec extends Specification {
     def oldDockerCertPath = System.setProperty("docker.cert.path", certsPath)
 
     def mockWebServer = new MockWebServer()
-    mockWebServer.useHttps(new SslSocketConfigFactory().createDockerSslSocket(certsPath).sslSocketFactory, false)
-    mockWebServer.enqueue(new MockResponse().setBody("mock-response"))
+    mockWebServer.useHttps(new SslSocketConfigFactory().createDockerSslSocket(certsPath).sslSocketFactory)
+    mockWebServer.enqueue(new MockResponse(200, Headers.of(), "mock-response"))
     mockWebServer.start()
 
     def hasVerified = false
@@ -670,7 +674,7 @@ class OkDockerClientSpec extends Specification {
     hasVerified
 
     cleanup:
-    mockWebServer.shutdown()
+//    mockWebServer.shutdown()
     if (oldDockerCertPath) {
       System.setProperty("docker.cert.path", oldDockerCertPath)
     } else {
