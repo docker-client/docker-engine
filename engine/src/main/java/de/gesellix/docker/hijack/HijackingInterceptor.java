@@ -139,7 +139,7 @@ public class HijackingInterceptor implements Interceptor {
               try {
                 // Don't sink.close() too quickly,
                 // let the reader have enough time to read all bytes
-                Thread.sleep(100);
+                Thread.sleep(500);
               } catch (InterruptedException ignored) {
               }
               sink.close();
