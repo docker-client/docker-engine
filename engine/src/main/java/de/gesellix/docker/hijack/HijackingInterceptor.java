@@ -96,6 +96,12 @@ public class HijackingInterceptor implements Interceptor {
         // IMPORTANT: Ensure stdout and the socket\'s source are closed
         try {
           if (stdout != null) {
+            try {
+              // Don't sink.close() too quickly,
+              // let the reader have enough time to read all bytes
+              Thread.sleep(500);
+            } catch (InterruptedException ignored) {
+            }
             stdout.close();
             log.debug("stdout closed.");
           }
@@ -104,6 +110,12 @@ public class HijackingInterceptor implements Interceptor {
         }
         try {
           if (source != null) {
+            try {
+              // Don't sink.close() too quickly,
+              // let the reader have enough time to read all bytes
+              Thread.sleep(500);
+            } catch (InterruptedException ignored) {
+            }
             source.close(); // Close the socket's input stream
             log.debug("source stream closed.");
           }
