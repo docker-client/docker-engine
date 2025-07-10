@@ -70,7 +70,7 @@ dependencies {
   testImplementation(libs.okhttpMockwebserver)
 
   implementation("org.apache.commons:commons-compress:1.27.1")
-  testImplementation("org.apache.commons:commons-lang3:3.17.0")
+  testImplementation("org.apache.commons:commons-lang3:3.18.0")
 
   implementation("de.gesellix:docker-filesocket:2025-06-08T17-40-00")
   testImplementation("de.gesellix:testutil:2025-06-08T17-40-00")
