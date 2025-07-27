@@ -11,12 +11,13 @@ class TestConstants {
   public static TestConstants CONSTANTS = new TestConstants()
 
   TestConstants() {
+    // docker inspect --format "{{ json .Created }}, Id: {{ json .Id }}, Digests: {{ json .RepoDigests }}" gesellix/echo-server:2025-07-27T22-12-00
     imageRepo = "gesellix/echo-server"
-    imageTag = "2024-12-22T16-35-00"
+    imageTag = "2025-07-27T22-12-00"
     imageName = "$imageRepo:$imageTag"
 
     versionDetails = [
-        ApiVersion   : { it in ["1.43", "1.44", "1.45", "1.46", "1.47", "1.48"] },
+        ApiVersion   : { it in ["1.43", "1.44", "1.45", "1.46", "1.47", "1.48", "1.49", "1.50", "1.51"] },
         Arch         : { it in ["amd64", "arm64"] },
         BuildTime    : { it =~ "\\d{4}-\\d{2}-\\d{2}T\\w+" },
         GitCommit    : { it =~ "\\w{6,}" },
