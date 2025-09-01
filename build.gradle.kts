@@ -13,7 +13,7 @@ plugins {
 
 val dependencyVersions = listOf(
   "org.apache.commons:commons-lang3:3.18.0",
-  "org.jetbrains:annotations:26.0.2",
+  "org.jetbrains:annotations:26.0.2-1",
   libs.junit4,
 )
 
