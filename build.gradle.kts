@@ -6,7 +6,7 @@ rootProject.extra.set("artifactVersion", SimpleDateFormat("yyyy-MM-dd\'T\'HH-mm-
 plugins {
   id("maven-publish")
   id("com.github.ben-manes.versions") version "0.53.0"
-  id("net.ossindex.audit") version "0.4.11"
+  id("org.sonatype.gradle.plugins.scan") version "3.1.4"
   id("io.freefair.maven-central.validate-poms") version "8.14.2"
   id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
 }
@@ -33,6 +33,11 @@ subprojects {
       }
     }
   }
+}
+
+ossIndexAudit {
+  username = System.getenv("SONATYPE_INDEX_USERNAME") ?: findProperty("sonatype.index.username")
+  password = System.getenv("SONATYPE_INDEX_PASSWORD") ?: findProperty("sonatype.index.password")
 }
 
 fun findProperty(s: String) = project.findProperty(s) as String?
