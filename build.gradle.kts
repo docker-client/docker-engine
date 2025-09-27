@@ -15,6 +15,7 @@ val dependencyVersions = listOf(
   "org.apache.commons:commons-lang3:3.19.0",
   "org.jetbrains:annotations:26.0.2-1",
   libs.junit4,
+  libs.junit5,
 )
 
 val dependencyGroupVersions = mapOf<String, String>(
