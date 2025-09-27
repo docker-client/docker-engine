@@ -1,7 +1,7 @@
 plugins {
   groovy
   id("com.github.ben-manes.versions")
-  id("net.ossindex.audit")
+  id("org.sonatype.gradle.plugins.scan")
 }
 
 java {
