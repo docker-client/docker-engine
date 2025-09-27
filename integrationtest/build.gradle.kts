@@ -55,6 +55,7 @@ dependencies {
   testRuntimeOnly(libs.logback)
   testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
   testRuntimeOnly("net.bytebuddy:byte-buddy:1.17.7")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.13.4")
 }
 tasks.check.get().shouldRunAfter(project(":engine").tasks.check)
 
