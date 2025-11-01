@@ -48,7 +48,7 @@ public class FrameReader implements Reader<Frame> {
         return null;
       }
       catch (IOException e) {
-        log.error("error reading multiplexed frames", e);
+        log.warn("error reading multiplexed frames", e);
         return null;
       }
     }

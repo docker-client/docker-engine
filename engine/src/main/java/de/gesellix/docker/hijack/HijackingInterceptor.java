@@ -93,14 +93,16 @@ public class HijackingInterceptor implements Interceptor {
         //         throw new RuntimeException(e); // Rethrow to mark thread as failed
       } finally {
         log.debug("reader finally block entered.");
+        attachConfig.onSourceConsumed();
         // IMPORTANT: Ensure stdout and the socket\'s source are closed
         try {
           if (stdout != null) {
             try {
               // Don't sink.close() too quickly,
               // let the reader have enough time to read all bytes
-              Thread.sleep(500);
+              Thread.sleep(10);
             } catch (InterruptedException ignored) {
+              log.debug("stdout/sleep interrupted.");
             }
             stdout.close();
             log.debug("stdout closed.");
@@ -113,8 +115,9 @@ public class HijackingInterceptor implements Interceptor {
             try {
               // Don't sink.close() too quickly,
               // let the reader have enough time to read all bytes
-              Thread.sleep(500);
+              Thread.sleep(10);
             } catch (InterruptedException ignored) {
+              log.debug("source/sleep interrupted.");
             }
             source.close(); // Close the socket's input stream
             log.debug("source stream closed.");
@@ -146,20 +149,22 @@ public class HijackingInterceptor implements Interceptor {
           throw new RuntimeException(e); // Rethrow to mark thread as failed
         } finally {
           // IMPORTANT: Ensure the sink is closed to signal EOF to the server
+          attachConfig.onSinkClosed(response); // Callback after sink is closed
           try {
             if (sink != null) { // Defensive check
               try {
                 // Don't sink.close() too quickly,
                 // let the reader have enough time to read all bytes
-                Thread.sleep(500);
+                Thread.sleep(10);
               } catch (InterruptedException ignored) {
               }
               sink.close();
             }
           } catch (IOException e) {
-            log.error("Failed to close sink", e);
+            log.warn("Failed to close sink", e);
+          } finally {
+            attachConfig.onSinkClosed(response); // Callback after sink is closed
           }
-          attachConfig.onSinkClosed(response); // Callback after sink is closed
         }
       });
       writer.setName("writer-" + System.identityHashCode(chain.request()));
