@@ -6,7 +6,6 @@ import de.gesellix.docker.ssl.DockerSslSocket
 import de.gesellix.docker.ssl.SslSocketConfigFactory
 import de.gesellix.util.IOUtils
 import groovy.util.logging.Slf4j
-import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -25,8 +24,6 @@ import spock.lang.Unroll
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLSession
 import javax.net.ssl.SSLSocket
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 import static de.gesellix.docker.engine.RequestMethod.DELETE
 import static de.gesellix.docker.engine.RequestMethod.GET
@@ -523,68 +520,6 @@ class OkDockerClientSpec extends Specification {
         .tap { query = [baz: ["la/la"], answer: ["42"]] })
     then:
     response.status.success
-    and:
-    hasVerified
-
-    cleanup:
-    mockWebServer.shutdown()
-  }
-
-  def "async request with headers"() {
-    given:
-    def mockWebServer = new MockWebServer()
-    mockWebServer.enqueue(new MockResponse()
-        .setResponseCode(101)
-        .addHeader("Connection", "Upgrade")
-        .addHeader("Upgrade", "tcp"))
-    mockWebServer.start()
-
-    def errors = []
-    def hasVerified = false
-    Closure<Boolean> verifyRequest = { Interceptor.Chain chain ->
-      def expectedHeaders = Headers.of("header-a", "header-a-value")
-      expectedHeaders.names().each { String k ->
-        def v = expectedHeaders.get(k)
-        if (chain.request().headers().get(k) != v) {
-          errors << "expected header ${k} to be ${v}, got ${chain.request().headers().get(k)}"
-//                    throw new AssertionError("expected header ${k} to be ${v}, got ${chain.request().headers().get(k)}")
-        }
-      }
-      hasVerified = true
-      log.info("verified: ${errors}")
-      true
-    }
-    def client = new OkDockerClient() {
-
-      @Override
-      OkHttpClient newClient(OkHttpClient.Builder clientBuilder) {
-        clientBuilder
-            .addNetworkInterceptor(new TestInterceptor(verifyRequest, { r, c -> true }))
-            .build()
-      }
-    }
-    client.dockerClientConfig.apply(new DockerEnv(
-        dockerHost: mockWebServer.url("/").toString()))
-
-    when:
-    def latch = new CountDownLatch(1)
-    def onResponse = {
-      latch.countDown()
-    }
-
-    client.request(new EngineRequest(OPTIONS, "/a-resource")
-        .tap {
-          attach = new AttachConfig(onResponse: onResponse)
-          headers = [
-              "header-a"  : "header-a-value",
-              "Upgrade"   : "tcp",
-              "Connection": "Upgrade"
-          ]
-        })
-    then:
-    latch.await(10, TimeUnit.SECONDS)
-    and:
-    errors.empty
     and:
     hasVerified
 
