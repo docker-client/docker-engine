@@ -6,8 +6,6 @@ import de.gesellix.docker.client.filesocket.HostnameEncoder;
 import de.gesellix.docker.client.filesocket.NamedPipeSocketFactory;
 import de.gesellix.docker.client.filesocket.UnixSocketFactory;
 import de.gesellix.docker.client.filesocket.UnixSocketFactorySupport;
-import de.gesellix.docker.hijack.HijackingInterceptor;
-import de.gesellix.docker.hijack.OkResponseCallback;
 import de.gesellix.docker.json.CustomObjectAdapterFactory;
 import de.gesellix.docker.rawstream.RawInputStream;
 import de.gesellix.docker.response.JsonContentHandler;
@@ -148,60 +146,30 @@ public class OkDockerClient implements EngineClient {
   public EngineResponse request(EngineRequest requestConfig) {
     EngineRequest config = ensureValidRequestConfig(requestConfig);
 
-    AttachConfig attachConfig = null;
-    if (config.getAttach() != null) {
-      Map<String, String> headers = config.getHeaders();
-      if (headers == null) {
-        headers = new HashMap<>();
-      }
-      config.setHeaders(headers);
-      // https://docs.docker.com/engine/api/v1.41/#operation/ContainerAttach
-      // To hint potential proxies about connection hijacking, the Docker client sends connection upgrade headers.
-      headers.put("Upgrade", "tcp");
-      headers.put("Connection", "Upgrade");
-      attachConfig = config.getAttach();
-    }
-//        boolean multiplexStreams = config.multiplexStreams
-
     Request.Builder requestBuilder = prepareRequest(new Request.Builder(), config);
     final Request request = requestBuilder.build();
 
     OkHttpClient.Builder clientBuilder = prepareClient(new OkHttpClient.Builder(), config.getTimeout());
-    OkResponseCallback responseCallback = null;
-    if (attachConfig != null) {
-      clientBuilder.addNetworkInterceptor(new HijackingInterceptor(
-          attachConfig,
-          attachConfig.getStreams().getStdin() == null ? null : Okio.source(attachConfig.getStreams().getStdin()),
-          attachConfig.getStreams().getStdout() == null ? null : Okio.sink(attachConfig.getStreams().getStdout())));
-      responseCallback = new OkResponseCallback(attachConfig);
-    }
     final OkHttpClient client = newClient(clientBuilder);
 
     log.debug(request.method() + " " + request.url() + " using proxy: " + client.proxy());
 
     Call call = client.newCall(request);
-    if (responseCallback != null) {
-      call.enqueue(responseCallback);
-      log.debug("request enqueued");
-      return new EngineResponse<Void>();
-    }
-    else {
-      EngineResponse dockerResponse;
-      try {
-        Response response = call.execute();
-        log.debug("response: " + response);
-        dockerResponse = handleResponse(response, config);
-        if (dockerResponse.getStream() == null) {
+    EngineResponse dockerResponse;
+    try {
+      Response response = call.execute();
+      log.debug("response: " + response);
+      dockerResponse = handleResponse(response, config);
+      if (dockerResponse.getStream() == null) {
 //          log.warn("closing response...");
-          response.close();
-        }
+        response.close();
       }
-      catch (Exception e) {
-        log.error("Request failed", e);
-        throw new RuntimeException("Request failed", e);
-      }
-      return dockerResponse;
     }
+    catch (Exception e) {
+      log.error("Request failed", e);
+      throw new RuntimeException("Request failed", e);
+    }
+    return dockerResponse;
   }
 
   private Request.Builder prepareRequest(final Request.Builder builder, final EngineRequest config) {
@@ -526,7 +494,6 @@ public class OkDockerClient implements EngineClient {
     engineRequest.setBody(config.get("body"));
 
     engineRequest.setAsync(config.get("async") != null && (Boolean) config.get("async"));
-    engineRequest.setAttach((AttachConfig) config.get("attach"));
     engineRequest.setStdout((OutputStream) config.get("stdout"));
 
     engineRequest.setApiVersion((String) config.get("apiVersion"));

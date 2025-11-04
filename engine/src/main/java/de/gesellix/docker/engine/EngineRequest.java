@@ -19,7 +19,6 @@ public class EngineRequest {
   private int timeout = 0;
 
   private boolean async = false;
-  private AttachConfig attach = null;
   private OutputStream stdout;
 
   private String apiVersion = null;
@@ -93,14 +92,6 @@ public class EngineRequest {
     this.async = async;
   }
 
-  public AttachConfig getAttach() {
-    return attach;
-  }
-
-  public void setAttach(AttachConfig attach) {
-    this.attach = attach;
-  }
-
   public OutputStream getStdout() {
     return stdout;
   }
@@ -124,11 +115,11 @@ public class EngineRequest {
     EngineRequest that = (EngineRequest) o;
     return timeout == that.timeout && async == that.async && method == that.method && Objects.equals(path, that.path) && Objects.equals(headers, that.headers) &&
            Objects.equals(query, that.query) && Objects.equals(contentType, that.contentType) && Objects.equals(body, that.body) &&
-           Objects.equals(attach, that.attach) && Objects.equals(stdout, that.stdout) && Objects.equals(apiVersion, that.apiVersion);
+           Objects.equals(stdout, that.stdout) && Objects.equals(apiVersion, that.apiVersion);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(method, path, headers, query, contentType, body, timeout, async, attach, stdout, apiVersion);
+    return Objects.hash(method, path, headers, query, contentType, body, timeout, async, stdout, apiVersion);
   }
 }
