@@ -29,16 +29,6 @@ dependencies {
       }
     }
     listOf(
-      "com.squareup.okhttp3:okhttp"
-    ).forEach {
-      implementation(it) {
-        version {
-          strictly(libs.versions.okhttpVersionrange.get())
-          prefer(libs.versions.okhttp.get())
-        }
-      }
-    }
-    listOf(
       libs.bundles.okio
     ).forEach {
       implementation(it) {
@@ -66,8 +56,6 @@ dependencies {
   testImplementation("ch.qos.logback:logback-classic:${libs.versions.logbackVersionrange.get()}!!${libs.versions.logback.get()}")
 
   implementation(libs.okio)
-  implementation(libs.okhttp)
-  testImplementation(libs.okhttpMockwebserver)
 
   implementation("org.apache.commons:commons-compress:1.28.0")
   testImplementation("org.apache.commons:commons-lang3:3.19.0")
