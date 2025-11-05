@@ -1,5 +1,5 @@
 rootProject.name = "docker-engine"
-include("engine", "integrationtest")
+include("engine")
 
 // https://docs.gradle.org/current/userguide/toolchains.html#sub:download_repositories
 plugins {

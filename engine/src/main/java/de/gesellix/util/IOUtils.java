@@ -11,10 +11,6 @@ import java.io.OutputStream;
 
 public class IOUtils {
 
-  public static long consumeToDevNull(InputStream source) throws IOException {
-    return copy(Okio.source(source), Okio.blackhole());
-  }
-
   public static long copy(InputStream source, OutputStream sink) throws IOException {
     return copy(Okio.source(source), Okio.sink(sink));
   }
